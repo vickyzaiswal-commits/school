@@ -1,0 +1,1700 @@
+"use client";
+import React, { useState, useEffect } from 'react';
+import { 
+  User,
+  Heart,
+  BookOpen,
+  Users,
+  Globe,
+  Star,
+  Award,
+  ArrowRight,
+  CheckCircle,
+  GraduationCap,
+  Target,
+  Lightbulb,
+  Shield,
+  Trophy,
+  Clock,
+  Building,
+  FileText,
+  Camera,
+  Phone,
+  ExternalLink,
+  Quote,
+  Crown,
+  Handshake,
+  Mail,
+  MapPin,
+  Settings,
+  X
+} from 'lucide-react';
+
+const PrincipalMessagePage = ({ schoolData = {} }) => {
+  const [isVisible, setIsVisible] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [editSection, setEditSection] = useState(null);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [editData, setEditData] = useState({});
+  const role = 'admin'; // Should come from auth context
+
+  // Default data structure - Consistent with other pages
+  const defaultData = {
+    hero: {
+      show: true,
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      title: "Principal's Message",
+      subtitle: "A message of inspiration and commitment to excellence",
+      height: "h-96"
+    },
+    principalInfo: {
+      show: true,
+      name: "Dr. Mary Johnson",
+      role: "Principal, St. Columba's School",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      experience: "25+ years in education",
+      tenure: "Principal since 2015",
+      education: [
+        "Ph.D. Educational Administration, Delhi University",
+        "M.Ed. Educational Leadership, Jamia Millia Islamia",
+        "B.Ed. Teaching Methodology, Lady Shri Ram College"
+      ],
+      description: "With over 25 years of experience in educational leadership and administration, Dr. Mary Johnson brings a wealth of knowledge and passion for student-centered learning to St. Columba's School.",
+      show: true
+    },
+    message: {
+      show: true,
+      title: "A Message of Commitment",
+      quote: "Education is not just about imparting knowledge; it's about igniting a passion for learning, nurturing character, and empowering young minds to become compassionate leaders who will shape a better tomorrow.",
+      content: [
+        "As I reflect on our journey at St. Columba's School, I am filled with immense pride and gratitude. Our institution stands as a testament to nearly a century of educational excellence, built on the solid foundation of Edmund Rice values that continue to guide us today.",
+        "In today's rapidly evolving world, we face both unprecedented challenges and extraordinary opportunities. Our role as educators extends far beyond traditional academics. We are called to prepare students not just for examinations, but for life.",
+        "Every day, I witness the incredible potential within our students. Our dedicated faculty works tirelessly to create an environment where this potential can flourish through personalized attention, innovative teaching methods, and a holistic approach."
+      ],
+      show: true
+    },
+    educationalPriorities: {
+      show: true,
+      title: "Our Educational Priorities",
+      description: "The key areas where we focus our efforts to ensure comprehensive development of every student.",
+      priorities: [
+        {
+          icon: BookOpen,
+          title: "Academic Excellence",
+          description: "Fostering intellectual curiosity and critical thinking skills that prepare students for higher education and lifelong learning.",
+          show: true
+        },
+        {
+          icon: Heart,
+          title: "Character Development",
+          description: "Nurturing moral values, integrity, and compassion based on Edmund Rice's educational philosophy.",
+          show: true
+        },
+        {
+          icon: Users,
+          title: "Community Building",
+          description: "Creating an inclusive environment where diversity is celebrated and every voice is heard and valued.",
+          show: true
+        },
+        {
+          icon: Globe,
+          title: "Global Citizenship",
+          description: "Preparing students to be responsible global citizens who can contribute meaningfully to society.",
+          show: true
+        }
+      ],
+      show: true
+    },
+    achievements: {
+      show: true,
+      title: "Achievements Under My Leadership",
+      description: "Since joining St. Columba's as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
+      stats: [
+        { value: "100%", label: "Board Pass Rate", show: true },
+        { value: "95%", label: "College Admissions", show: true },
+        { value: "85%", label: "Above 90% Scores", show: true },
+        { value: "50+", label: "Awards Won", show: true }
+      ],
+      highlights: [
+        {
+          icon: Trophy,
+          title: "ISO 9001:2015 Certification",
+          description: "Quality management system recognition",
+          show: true
+        },
+        {
+          icon: Award,
+          title: "Best Principal Award 2022",
+          description: "Delhi Education Excellence Awards",
+          show: true
+        },
+        {
+          icon: Star,
+          title: "Green School Certification",
+          description: "Environmental sustainability initiative",
+          show: true
+        }
+      ],
+      show: true
+    },
+    leadershipPrinciples: {
+      show: true,
+      title: "Leadership Philosophy",
+      principles: [
+        {
+          icon: Target,
+          title: "Vision-Driven Leadership",
+          description: "Leading with a clear vision that inspires excellence and innovation in education.",
+          show: true
+        },
+        {
+          icon: Handshake,
+          title: "Collaborative Approach",
+          description: "Working together with teachers, parents, and students to create the best learning environment.",
+          show: true
+        },
+        {
+          icon: Shield,
+          title: "Ethical Foundation",
+          description: "Upholding the highest standards of integrity and moral leadership in all decisions.",
+          show: true
+        },
+        {
+          icon: Lightbulb,
+          title: "Continuous Innovation",
+          description: "Embracing new ideas and methodologies to enhance educational outcomes.",
+          show: true
+        }
+      ],
+      show: true
+    },
+    contact: {
+      show: true,
+      title: "Connect With Me",
+      description: "I believe in open communication and welcome the opportunity to connect with parents, students, and community members.",
+      info: [
+        {
+          icon: Clock,
+          title: "Office Hours",
+          content: "Monday - Friday: 9:00 AM - 5:00 PM",
+          show: true
+        },
+        {
+          icon: Mail,
+          title: "Email",
+          content: "principal@stcolumbas.edu.in",
+          show: true
+        },
+        {
+          icon: MapPin,
+          title: "Principal's Office",
+          content: "Administrative Block, First Floor",
+          show: true
+        }
+      ],
+      buttons: [
+        { label: "Schedule Appointment", icon: ExternalLink, link: "/appointment", show: true },
+        { label: "Admission Information", icon: FileText, link: "/admissions", show: true },
+        { label: "Academic Programs", icon: BookOpen, link: "/academics", show: true },
+        { label: "Vision & Mission", icon: Target, link: "/about/vision-mission", show: true }
+      ],
+      show: true
+    },
+    showHero: true,
+    showPrincipalInfo: true,
+    showMessage: true,
+    showPriorities: true,
+    showAchievements: true,
+    showLeadership: true,
+    showContact: true
+  };
+
+  // Initialize data by merging defaultData with schoolData
+  const [data, setData] = useState({ ...defaultData, ...schoolData });
+
+  // Check role to enable edit mode
+  useEffect(() => {
+    if (role === 'admin') {
+      setEditMode(true);
+    } else {
+      setEditMode(false);
+      setEditFormOpen(false);
+    }
+  }, [role]);
+
+  // IntersectionObserver for animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible((prev) => ({
+              ...prev,
+              [entry.target.id]: true
+            }));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Handle opening edit modal for a section
+  const openEditModal = (section) => {
+    setEditSection(section);
+    setEditFormOpen(true);
+    if (Array.isArray(data[section])) {
+      setEditData([...data[section]]);
+    } else {
+      setEditData({ ...data[section] });
+    }
+  };
+
+  // Handle change for object fields
+  const handleObjectChange = (field, value) => {
+    setEditData({ ...editData, [field]: value });
+  };
+
+  // Handle change for nested arrays (e.g., priorities, stats, highlights)
+  const handleNestedArrayChange = (nestedKey, index, field, value) => {
+    const updated = { ...editData };
+    updated[nestedKey][index] = { ...updated[nestedKey][index], [field]: value };
+    setEditData(updated);
+  };
+
+  // Handle change for education and content arrays (string arrays)
+  const handleStringArrayChange = (nestedKey, index, value) => {
+    const updated = { ...editData };
+    updated[nestedKey][index] = value;
+    setEditData(updated);
+  };
+
+  // Save changes to state
+  const saveChanges = () => {
+    const updatedData = { ...data, [editSection]: editData };
+    setData(updatedData);
+    console.log('Payload to save in database:', JSON.stringify(updatedData, null, 2));
+    setEditFormOpen(false);
+  };
+
+  // Filter functions
+  const filteredEducation = data.principalInfo.education.filter(edu => edu.show !== false);
+  const filteredPriorities = data.educationalPriorities.priorities.filter(priority => priority.show !== false);
+  const filteredAchievementStats = data.achievements.stats.filter(stat => stat.show !== false);
+  const filteredAchievementHighlights = data.achievements.highlights.filter(highlight => highlight.show !== false);
+  const filteredPrinciples = data.leadershipPrinciples.principles.filter(principle => principle.show !== false);
+  const filteredContactInfo = data.contact.info.filter(info => info.show !== false);
+  const filteredContactButtons = data.contact.buttons.filter(button => button.show !== false);
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Edit Modal */}
+      {editMode && editFormOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[90vh]">
+            {/* Fixed Modal Header */}
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold">Edit {editSection}</h2>
+              <button
+                onClick={() => setEditFormOpen(false)}
+                className="p-2 text-gray-600 hover:text-gray-800"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            {/* Scrollable Modal Content */}
+            <div className="p-6 overflow-y-auto">
+              {editSection === 'hero' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Image URL</label>
+                    <input
+                      type="text"
+                      value={editData.image || ''}
+                      onChange={(e) => handleObjectChange('image', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Subtitle</label>
+                    <textarea
+                      value={editData.subtitle || ''}
+                      onChange={(e) => handleObjectChange('subtitle', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Height</label>
+                    <input
+                      type="text"
+                      value={editData.height || ''}
+                      onChange={(e) => handleObjectChange('height', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Hero</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+              {editSection === 'principalInfo' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Name</label>
+                    <input
+                      type="text"
+                      value={editData.name || ''}
+                      onChange={(e) => handleObjectChange('name', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Role</label>
+                    <input
+                      type="text"
+                      value={editData.role || ''}
+                      onChange={(e) => handleObjectChange('role', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Image URL</label>
+                    <input
+                      type="text"
+                      value={editData.image || ''}
+                      onChange={(e) => handleObjectChange('image', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Experience</label>
+                    <input
+                      type="text"
+                      value={editData.experience || ''}
+                      onChange={(e) => handleObjectChange('experience', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Tenure</label>
+                    <input
+                      type="text"
+                      value={editData.tenure || ''}
+                      onChange={(e) => handleObjectChange('tenure', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea
+                      value={editData.description || ''}
+                      onChange={(e) => handleObjectChange('description', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Principal Info</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Education</h3>
+                  {editData.education && editData.education.map((edu, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Degree {index + 1}</label>
+                        <input
+                          type="text"
+                          value={edu || ''}
+                          onChange={(e) => handleStringArrayChange('education', index, e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'message' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Quote</label>
+                    <textarea
+                      value={editData.quote || ''}
+                      onChange={(e) => handleObjectChange('quote', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Message</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Content</h3>
+                  {editData.content && editData.content.map((paragraph, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Paragraph {index + 1}</label>
+                        <textarea
+                          value={paragraph || ''}
+                          onChange={(e) => handleStringArrayChange('content', index, e.target.value)}
+                          className="w-full p-2 border rounded"
+                          rows="3"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'educationalPriorities' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea
+                      value={editData.description || ''}
+                      onChange={(e) => handleObjectChange('description', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Priorities</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Priorities</h3>
+                  {editData.priorities && editData.priorities.map((priority, index) => (
+                    <div key={index} className="mb-6 border-b pb-4">
+                      <h4 className="text-md font-semibold mb-2">Priority {index + 1}</h4>
+                      <div>
+                        <label className="block text-sm font-medium">Title</label>
+                        <input
+                          type="text"
+                          value={priority.title || ''}
+                          onChange={(e) => handleNestedArrayChange('priorities', index, 'title', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Description</label>
+                        <textarea
+                          value={priority.description || ''}
+                          onChange={(e) => handleNestedArrayChange('priorities', index, 'description', e.target.value)}
+                          className="w-full p-2 border rounded"
+                          rows="3"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={priority.show !== false}
+                            onChange={(e) => handleNestedArrayChange('priorities', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Priority</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'achievements' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea
+                      value={editData.description || ''}
+                      onChange={(e) => handleObjectChange('description', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Achievements</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Stats</h3>
+                  {editData.stats && editData.stats.map((stat, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Value</label>
+                        <input
+                          type="text"
+                          value={stat.value || ''}
+                          onChange={(e) => handleNestedArrayChange('stats', index, 'value', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Label</label>
+                        <input
+                          type="text"
+                          value={stat.label || ''}
+                          onChange={(e) => handleNestedArrayChange('stats', index, 'label', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={stat.show !== false}
+                            onChange={(e) => handleNestedArrayChange('stats', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Stat</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Highlights</h3>
+                  {editData.highlights && editData.highlights.map((highlight, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Title</label>
+                        <input
+                          type="text"
+                          value={highlight.title || ''}
+                          onChange={(e) => handleNestedArrayChange('highlights', index, 'title', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Description</label>
+                        <textarea
+                          value={highlight.description || ''}
+                          onChange={(e) => handleNestedArrayChange('highlights', index, 'description', e.target.value)}
+                          className="w-full p-2 border rounded"
+                          rows="3"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={highlight.show !== false}
+                            onChange={(e) => handleNestedArrayChange('highlights', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Highlight</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'leadershipPrinciples' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Leadership Principles</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Principles</h3>
+                  {editData.principles && editData.principles.map((principle, index) => (
+                    <div key={index} className="mb-6 border-b pb-4">
+                      <h4 className="text-md font-semibold mb-2">Principle {index + 1}</h4>
+                      <div>
+                        <label className="block text-sm font-medium">Title</label>
+                        <input
+                          type="text"
+                          value={principle.title || ''}
+                          onChange={(e) => handleNestedArrayChange('principles', index, 'title', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Description</label>
+                        <textarea
+                          value={principle.description || ''}
+                          onChange={(e) => handleNestedArrayChange('principles', index, 'description', e.target.value)}
+                          className="w-full p-2 border rounded"
+                          rows="3"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={principle.show !== false}
+                            onChange={(e) => handleNestedArrayChange('principles', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Principle</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'contact' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input
+                      type="text"
+                      value={editData.title || ''}
+                      onChange={(e) => handleObjectChange('title', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea
+                      value={editData.description || ''}
+                      onChange={(e) => handleObjectChange('description', e.target.value)}
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.show !== false}
+                        onChange={(e) => handleObjectChange('show', e.target.checked)}
+                      />
+                      <span>Show Contact</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Contact Info</h3>
+                  {editData.info && editData.info.map((info, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Title</label>
+                        <input
+                          type="text"
+                          value={info.title || ''}
+                          onChange={(e) => handleNestedArrayChange('info', index, 'title', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Content</label>
+                        <input
+                          type="text"
+                          value={info.content || ''}
+                          onChange={(e) => handleNestedArrayChange('info', index, 'content', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={info.show !== false}
+                            onChange={(e) => handleNestedArrayChange('info', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Info</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
+                  {editData.buttons && editData.buttons.map((button, index) => (
+                    <div key={index} className="mb-4 border p-2 rounded">
+                      <div>
+                        <label className="block text-sm font-medium">Label</label>
+                        <input
+                          type="text"
+                          value={button.label || ''}
+                          onChange={(e) => handleNestedArrayChange('buttons', index, 'label', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">Link</label>
+                        <input
+                          type="text"
+                          value={button.link || ''}
+                          onChange={(e) => handleNestedArrayChange('buttons', index, 'link', e.target.value)}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={button.show !== false}
+                            onChange={(e) => handleNestedArrayChange('buttons', index, 'show', e.target.checked)}
+                          />
+                          <span>Show Button</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Modal Footer */}
+            <div className="p-4 border-t">
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setEditFormOpen(false)}
+                  className="px-4 py-2 bg-gray-300 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveChanges}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section */}
+      {data.showHero && data.hero.show && (
+        <section
+          id="hero"
+          className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+            <div className="max-w-3xl">
+              <div className="flex items-center space-x-2 mb-4">
+                <User className="h-6 w-6 text-yellow-400" />
+                <span className="text-yellow-400 font-semibold">Leadership Message</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
+              <p className="text-xl text-green-100 leading-relaxed">{data.hero.subtitle}</p>
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('hero')}
+                className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Principal Introduction */}
+      {data.showPrincipalInfo && data.principalInfo.show && (
+        <section
+          id="principalInfo"
+          className={`py-16 bg-white animate-on-scroll ${isVisible.principalInfo ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="bg-green-50 inline-block px-3 py-1 rounded-full mb-4">
+                  <span className="text-green-700 font-semibold text-sm">Educational Leadership</span>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.principalInfo.name}</h2>
+                <p className="text-lg text-green-600 mb-6 font-medium">{data.principalInfo.role}</p>
+                
+                <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
+                  <p>{data.principalInfo.description}</p>
+                </div>
+                
+                {filteredEducation.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-gray-800">Academic Background:</h4>
+                    <div className="space-y-2">
+                      {filteredEducation.map((edu, index) => (
+                        <div key={index} className="flex items-center space-x-3">
+                          <GraduationCap className="h-4 w-4 text-green-600" />
+                          <span className="text-gray-700 text-sm">{edu}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div className="relative rounded-lg overflow-hidden shadow-2xl">
+                  <img
+                    src={data.principalInfo.image}
+                    alt={data.principalInfo.name}
+                    className="w-full h-96 object-cover"
+                  />
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+                      <h3 className="font-semibold text-gray-800">{data.principalInfo.name}</h3>
+                      <p className="text-sm text-gray-600">{data.principalInfo.tenure}</p>
+                      <p className="text-xs text-gray-500 mt-1">{data.principalInfo.experience}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('principalInfo')}
+                className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Principal's Core Message */}
+      {data.showMessage && data.message.show && (
+        <section
+          id="message"
+          className={`py-16 bg-gray-50 animate-on-scroll ${isVisible.message ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.message.title}</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                My vision for St. Columba's School and our journey together toward educational excellence.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-5xl mx-auto">
+              <div className="flex items-start space-x-4 mb-6">
+                <Quote className="h-8 w-8 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <blockquote className="text-lg text-gray-700 leading-relaxed italic mb-6">
+                    "{data.message.quote}"
+                  </blockquote>
+                  
+                  <div className="space-y-4 text-gray-600 leading-relaxed">
+                    {data.message.content.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('message')}
+                className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Educational Priorities */}
+      {data.showPriorities && data.educationalPriorities.show && filteredPriorities.length > 0 && (
+        <section
+          id="educationalPriorities"
+          className={`py-16 bg-white animate-on-scroll ${isVisible.educationalPriorities ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.educationalPriorities.title}</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                {data.educationalPriorities.description}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredPriorities.map((priority, index) => {
+                const IconComponent = priority.icon;
+                return (
+                  <div 
+                    key={index}
+                    className="bg-gray-50 rounded-lg p-6 hover:bg-green-50 transition-all duration-300 hover:shadow-lg group"
+                  >
+                    <div className="bg-green-100 rounded-full w-10 h-10 flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+                      <IconComponent className="h-5 w-5 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">{priority.title}</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">{priority.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('educationalPriorities')}
+                className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Achievements */}
+      {data.showAchievements && data.achievements.show && (
+        <section
+          id="achievements"
+          className={`py-16 bg-gradient-to-r from-green-700 to-green-600 text-white animate-on-scroll ${isVisible.achievements ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <h2 className="text-3xl font-bold mb-4">{data.achievements.title}</h2>
+                <p className="text-base leading-relaxed mb-6 text-green-100">
+                  {data.achievements.description}
+                </p>
+                
+                <div className="space-y-4">
+                  {filteredAchievementHighlights.map((highlight, index) => {
+                    const IconComponent = highlight.icon;
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        <IconComponent className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="text-base font-semibold mb-1">{highlight.title}</h3>
+                          <p className="text-green-100 text-sm">{highlight.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {filteredAchievementStats.length > 0 && (
+                <div>
+                  <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      {filteredAchievementStats.map((stat, index) => (
+                        <div key={index}>
+                          <div className="text-2xl font-bold text-yellow-300 mb-1">{stat.value}</div>
+                          <div className="text-xs text-green-100">{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('achievements')}
+                className="absolute top-4 right-4 bg-white/50 text-green-800 p-2 rounded-full hover:bg-white/70"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Leadership Philosophy */}
+      {data.showLeadership && data.leadershipPrinciples.show && filteredPrinciples.length > 0 && (
+        <section
+          id="leadershipPrinciples"
+          className={`py-16 bg-white animate-on-scroll ${isVisible.leadershipPrinciples ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-800">{data.leadershipPrinciples.title}</h2>
+              <a href="/about/vision-mission" className="text-green-600 hover:text-green-700 font-semibold flex items-center text-sm">
+                Our Vision
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredPrinciples.map((principle, index) => {
+                const IconComponent = principle.icon;
+                return (
+                  <div key={index} className="bg-gray-50 rounded-lg p-5 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center mb-3">
+                      <IconComponent className="h-5 w-5 text-green-600 mr-2" />
+                      <span className="text-sm font-semibold text-green-600">{principle.title}</span>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed text-sm">{principle.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('leadershipPrinciples')}
+                className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Contact Section */}
+      {data.showContact && data.contact.show && (
+        <section
+          id="contact"
+          className={`py-16 bg-green-800 text-white animate-on-scroll ${isVisible.contact ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              <div>
+                <h2 className="text-3xl font-bold mb-6">{data.contact.title}</h2>
+                <p className="text-green-100 text-base leading-relaxed mb-6">
+                  {data.contact.description}
+                </p>
+                
+                <div className="space-y-4">
+                  {filteredContactInfo.map((info, index) => {
+                    const IconComponent = info.icon;
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        <IconComponent className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="text-base font-semibold mb-1">{info.title}</h3>
+                          <p className="text-green-100 text-sm">{info.content}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-6">
+                  <a 
+                    href="/appointment" 
+                    className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-5 py-2 rounded-lg font-semibold transition-colors text-sm inline-flex items-center"
+                  >
+                    Schedule Appointment
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+              
+              {filteredContactButtons.length > 0 && (
+                <div>
+                  <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+                    <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+                    <div className="grid grid-cols-1 gap-3">
+                      {filteredContactButtons.map((button, index) => {
+                        const IconComponent = button.icon;
+                        return (
+                          <a key={index} href={button.link} className="flex items-center justify-between bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-colors text-sm">
+                            <div className="flex items-center space-x-2">
+                              <IconComponent className="h-4 w-4 text-yellow-400" />
+                              <span>{button.label}</span>
+                            </div>
+                            <ArrowRight className="h-4 w-4" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {editMode && (
+              <button
+                onClick={() => openEditModal('contact')}
+                className="absolute top-4 right-4 bg-white/50 text-green-800 p-2 rounded-full hover:bg-white/70"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+export default PrincipalMessagePage;
+
+// "use client";
+// import React, { useState, useEffect } from 'react';
+// import { 
+//   User,
+//   Heart,
+//   BookOpen,
+//   Users,
+//   Globe,
+//   Star,
+//   Award,
+//   ArrowRight,
+//   CheckCircle,
+//   GraduationCap,
+//   Target,
+//   Lightbulb,
+//   Shield,
+//   Trophy,
+//   Clock,
+//   Building,
+//   FileText,
+//   Camera,
+//   Phone,
+//   ExternalLink,
+//   Quote,
+//   Crown,
+//   Handshake,
+//   Mail,
+//   MapPin
+// } from 'lucide-react';
+
+// const PrincipalMessagePage = ({ schoolData = {} }) => {
+//   const [isVisible, setIsVisible] = useState({});
+
+//   // Default data structure - Consistent with other pages
+//   const defaultData = {
+//     hero: {
+//       show: true,
+//       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+//       title: "Principal's Message",
+//       subtitle: "A message of inspiration and commitment to excellence",
+//       height: "h-96" // Consistent with other pages
+//     },
+//     principalInfo: {
+//       show: true,
+//       name: "Dr. Mary Johnson",
+//       role: "Principal, St. Columba's School",
+//       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+//       experience: "25+ years in education",
+//       tenure: "Principal since 2015",
+//       education: [
+//         "Ph.D. Educational Administration, Delhi University",
+//         "M.Ed. Educational Leadership, Jamia Millia Islamia",
+//         "B.Ed. Teaching Methodology, Lady Shri Ram College"
+//       ],
+//       description: "With over 25 years of experience in educational leadership and administration, Dr. Mary Johnson brings a wealth of knowledge and passion for student-centered learning to St. Columba's School.",
+//       show: true
+//     },
+//     message: {
+//       show: true,
+//       title: "A Message of Commitment",
+//       quote: "Education is not just about imparting knowledge; it's about igniting a passion for learning, nurturing character, and empowering young minds to become compassionate leaders who will shape a better tomorrow.",
+//       content: [
+//         "As I reflect on our journey at St. Columba's School, I am filled with immense pride and gratitude. Our institution stands as a testament to nearly a century of educational excellence, built on the solid foundation of Edmund Rice values that continue to guide us today.",
+//         "In today's rapidly evolving world, we face both unprecedented challenges and extraordinary opportunities. Our role as educators extends far beyond traditional academics. We are called to prepare students not just for examinations, but for life.",
+//         "Every day, I witness the incredible potential within our students. Our dedicated faculty works tirelessly to create an environment where this potential can flourish through personalized attention, innovative teaching methods, and a holistic approach."
+//       ],
+//       show: true
+//     },
+//     educationalPriorities: {
+//       show: true,
+//       title: "Our Educational Priorities",
+//       description: "The key areas where we focus our efforts to ensure comprehensive development of every student.",
+//       priorities: [
+//         {
+//           icon: BookOpen,
+//           title: "Academic Excellence",
+//           description: "Fostering intellectual curiosity and critical thinking skills that prepare students for higher education and lifelong learning.",
+//           show: true
+//         },
+//         {
+//           icon: Heart,
+//           title: "Character Development",
+//           description: "Nurturing moral values, integrity, and compassion based on Edmund Rice's educational philosophy.",
+//           show: true
+//         },
+//         {
+//           icon: Users,
+//           title: "Community Building",
+//           description: "Creating an inclusive environment where diversity is celebrated and every voice is heard and valued.",
+//           show: true
+//         },
+//         {
+//           icon: Globe,
+//           title: "Global Citizenship",
+//           description: "Preparing students to be responsible global citizens who can contribute meaningfully to society.",
+//           show: true
+//         }
+//       ],
+//       show: true
+//     },
+//     achievements: {
+//       show: true,
+//       title: "Achievements Under My Leadership",
+//       description: "Since joining St. Columba's as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
+//       stats: [
+//         { value: "100%", label: "Board Pass Rate", show: true },
+//         { value: "95%", label: "College Admissions", show: true },
+//         { value: "85%", label: "Above 90% Scores", show: true },
+//         { value: "50+", label: "Awards Won", show: true }
+//       ],
+//       highlights: [
+//         {
+//           icon: Trophy,
+//           title: "ISO 9001:2015 Certification",
+//           description: "Quality management system recognition",
+//           show: true
+//         },
+//         {
+//           icon: Award,
+//           title: "Best Principal Award 2022",
+//           description: "Delhi Education Excellence Awards",
+//           show: true
+//         },
+//         {
+//           icon: Star,
+//           title: "Green School Certification",
+//           description: "Environmental sustainability initiative",
+//           show: true
+//         }
+//       ],
+//       show: true
+//     },
+//     leadershipPrinciples: {
+//       show: true,
+//       title: "Leadership Philosophy",
+//       principles: [
+//         {
+//           icon: Target,
+//           title: "Vision-Driven Leadership",
+//           description: "Leading with a clear vision that inspires excellence and innovation in education.",
+//           show: true
+//         },
+//         {
+//           icon: Handshake,
+//           title: "Collaborative Approach",
+//           description: "Working together with teachers, parents, and students to create the best learning environment.",
+//           show: true
+//         },
+//         {
+//           icon: Shield,
+//           title: "Ethical Foundation",
+//           description: "Upholding the highest standards of integrity and moral leadership in all decisions.",
+//           show: true
+//         },
+//         {
+//           icon: Lightbulb,
+//           title: "Continuous Innovation",
+//           description: "Embracing new ideas and methodologies to enhance educational outcomes.",
+//           show: true
+//         }
+//       ],
+//       show: true
+//     },
+//     contact: {
+//       show: true,
+//       title: "Connect With Me",
+//       description: "I believe in open communication and welcome the opportunity to connect with parents, students, and community members.",
+//       info: [
+//         {
+//           icon: Clock,
+//           title: "Office Hours",
+//           content: "Monday - Friday: 9:00 AM - 5:00 PM",
+//           show: true
+//         },
+//         {
+//           icon: Mail,
+//           title: "Email",
+//           content: "principal@stcolumbas.edu.in",
+//           show: true
+//         },
+//         {
+//           icon: MapPin,
+//           title: "Principal's Office",
+//           content: "Administrative Block, First Floor",
+//           show: true
+//         }
+//       ],
+//       buttons: [
+//         { label: "Schedule Appointment", icon: ExternalLink, link: "/appointment", show: true },
+//         { label: "Admission Information", icon: FileText, link: "/admissions", show: true },
+//         { label: "Academic Programs", icon: BookOpen, link: "/academics", show: true },
+//         { label: "Vision & Mission", icon: Target, link: "/about/vision-mission", show: true }
+//       ],
+//       show: true
+//     },
+//     showHero: true,
+//     showPrincipalInfo: true,
+//     showMessage: true,
+//     showPriorities: true,
+//     showAchievements: true,
+//     showLeadership: true,
+//     showContact: true
+//   };
+
+//   // Merge provided data with defaults
+//   const data = { ...defaultData, ...schoolData };
+
+//   useEffect(() => {
+//     const observer = new IntersectionObserver(
+//       (entries) => {
+//         entries.forEach((entry) => {
+//           if (entry.isIntersecting) {
+//             setIsVisible((prev) => ({
+//               ...prev,
+//               [entry.target.id]: true
+//             }));
+//           }
+//         });
+//       },
+//       { threshold: 0.1 }
+//     );
+
+//     const elements = document.querySelectorAll('.animate-on-scroll');
+//     elements.forEach((el) => observer.observe(el));
+
+//     return () => observer.disconnect();
+//   }, []);
+
+//   // Filter functions
+//   const filteredEducation = data.principalInfo.education.filter(edu => edu.show !== false);
+//   const filteredPriorities = data.educationalPriorities.priorities.filter(priority => priority.show !== false);
+//   const filteredAchievementStats = data.achievements.stats.filter(stat => stat.show !== false);
+//   const filteredAchievementHighlights = data.achievements.highlights.filter(highlight => highlight.show !== false);
+//   const filteredPrinciples = data.leadershipPrinciples.principles.filter(principle => principle.show !== false);
+//   const filteredContactInfo = data.contact.info.filter(info => info.show !== false);
+//   const filteredContactButtons = data.contact.buttons.filter(button => button.show !== false);
+
+//   return (
+//     <div className="min-h-screen bg-white">
+      
+//       {/* Hero Section - Consistent with other pages */}
+//       {data.showHero && data.hero.show && (
+//         <section className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+//           <div className="absolute inset-0 bg-black/20"></div>
+//           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+//             <div className="max-w-3xl">
+//               <div className="flex items-center space-x-2 mb-4">
+//                 <User className="h-6 w-6 text-yellow-400" />
+//                 <span className="text-yellow-400 font-semibold">Leadership Message</span>
+//               </div>
+//               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
+//               <p className="text-xl text-green-100 leading-relaxed">
+//                 {data.hero.subtitle}
+//               </p>
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Principal Introduction */}
+//       {data.showPrincipalInfo && data.principalInfo.show && (
+//         <section className="py-16 bg-white">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+//               <div>
+//                 <div className="bg-green-50 inline-block px-3 py-1 rounded-full mb-4">
+//                   <span className="text-green-700 font-semibold text-sm">Educational Leadership</span>
+//                 </div>
+//                 <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.principalInfo.name}</h2>
+//                 <p className="text-lg text-green-600 mb-6 font-medium">{data.principalInfo.role}</p>
+                
+//                 <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
+//                   <p>{data.principalInfo.description}</p>
+//                 </div>
+                
+//                 {filteredEducation.length > 0 && (
+//                   <div className="space-y-3">
+//                     <h4 className="font-semibold text-gray-800">Academic Background:</h4>
+//                     <div className="space-y-2">
+//                       {filteredEducation.map((edu, index) => (
+//                         <div key={index} className="flex items-center space-x-3">
+//                           <GraduationCap className="h-4 w-4 text-green-600" />
+//                           <span className="text-gray-700 text-sm">{edu}</span>
+//                         </div>
+//                       ))}
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+
+//               <div>
+//                 <div className="relative rounded-lg overflow-hidden shadow-2xl">
+//                   <img
+//                     src={data.principalInfo.image}
+//                     alt={data.principalInfo.name}
+//                     className="w-full h-96 object-cover"
+//                   />
+//                   <div className="absolute bottom-4 left-4 right-4">
+//                     <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+//                       <h3 className="font-semibold text-gray-800">{data.principalInfo.name}</h3>
+//                       <p className="text-sm text-gray-600">{data.principalInfo.tenure}</p>
+//                       <p className="text-xs text-gray-500 mt-1">{data.principalInfo.experience}</p>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Principal's Core Message */}
+//       {data.showMessage && data.message.show && (
+//         <section className="py-16 bg-gray-50">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="text-center mb-12">
+//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.message.title}</h2>
+//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+//                 My vision for St. Columba's School and our journey together toward educational excellence.
+//               </p>
+//             </div>
+
+//             <div className="bg-white rounded-lg shadow-lg p-8 max-w-5xl mx-auto">
+//               <div className="flex items-start space-x-4 mb-6">
+//                 <Quote className="h-8 w-8 text-green-600 flex-shrink-0 mt-1" />
+//                 <div>
+//                   <blockquote className="text-lg text-gray-700 leading-relaxed italic mb-6">
+//                     "{data.message.quote}"
+//                   </blockquote>
+                  
+//                   <div className="space-y-4 text-gray-600 leading-relaxed">
+//                     {data.message.content.map((paragraph, index) => (
+//                       <p key={index}>{paragraph}</p>
+//                     ))}
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Educational Priorities */}
+//       {data.showPriorities && data.educationalPriorities.show && filteredPriorities.length > 0 && (
+//         <section className="py-16 bg-white">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="text-center mb-12">
+//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.educationalPriorities.title}</h2>
+//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+//                 {data.educationalPriorities.description}
+//               </p>
+//             </div>
+
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+//               {filteredPriorities.map((priority, index) => {
+//                 const IconComponent = priority.icon;
+//                 return (
+//                   <div 
+//                     key={index}
+//                     className="bg-gray-50 rounded-lg p-6 hover:bg-green-50 transition-all duration-300 hover:shadow-lg group"
+//                   >
+//                     <div className="bg-green-100 rounded-full w-10 h-10 flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+//                       <IconComponent className="h-5 w-5 text-green-600" />
+//                     </div>
+//                     <h3 className="text-lg font-semibold text-gray-800 mb-3">{priority.title}</h3>
+//                     <p className="text-gray-600 leading-relaxed text-sm">{priority.description}</p>
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Achievements */}
+//       {data.showAchievements && data.achievements.show && (
+//         <section className="py-16 bg-gradient-to-r from-green-700 to-green-600 text-white">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+//               <div>
+//                 <h2 className="text-3xl font-bold mb-4">{data.achievements.title}</h2>
+//                 <p className="text-base leading-relaxed mb-6 text-green-100">
+//                   {data.achievements.description}
+//                 </p>
+                
+//                 <div className="space-y-4">
+//                   {filteredAchievementHighlights.map((highlight, index) => {
+//                     const IconComponent = highlight.icon;
+//                     return (
+//                       <div key={index} className="flex items-start space-x-3">
+//                         <IconComponent className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
+//                         <div>
+//                           <h3 className="text-base font-semibold mb-1">{highlight.title}</h3>
+//                           <p className="text-green-100 text-sm">{highlight.description}</p>
+//                         </div>
+//                       </div>
+//                     );
+//                   })}
+//                 </div>
+//               </div>
+              
+//               {filteredAchievementStats.length > 0 && (
+//                 <div className="relative">
+//                   <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+//                     <div className="grid grid-cols-2 gap-4 text-center">
+//                       {filteredAchievementStats.map((stat, index) => (
+//                         <div key={index}>
+//                           <div className="text-2xl font-bold text-yellow-300 mb-1">{stat.value}</div>
+//                           <div className="text-xs text-green-100">{stat.label}</div>
+//                         </div>
+//                       ))}
+//                     </div>
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Leadership Philosophy */}
+//       {data.showLeadership && data.leadershipPrinciples.show && filteredPrinciples.length > 0 && (
+//         <section className="py-16 bg-white">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="flex justify-between items-center mb-8">
+//               <h2 className="text-3xl font-bold text-gray-800">{data.leadershipPrinciples.title}</h2>
+//               <a href="/about/vision-mission" className="text-green-600 hover:text-green-700 font-semibold flex items-center text-sm">
+//                 Our Vision
+//                 <ArrowRight className="ml-1 h-4 w-4" />
+//               </a>
+//             </div>
+
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+//               {filteredPrinciples.map((principle, index) => {
+//                 const IconComponent = principle.icon;
+//                 return (
+//                   <div key={index} className="bg-gray-50 rounded-lg p-5 hover:shadow-lg transition-shadow">
+//                     <div className="flex items-center mb-3">
+//                       <IconComponent className="h-5 w-5 text-green-600 mr-2" />
+//                       <span className="text-sm font-semibold text-green-600">{principle.title}</span>
+//                     </div>
+//                     <p className="text-gray-600 leading-relaxed text-sm">{principle.description}</p>
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         </section>
+//       )}
+
+//       {/* Contact Section */}
+//       {data.showContact && data.contact.show && (
+//         <section className="py-16 bg-green-800 text-white">
+//           <div className="max-w-7xl mx-auto px-4">
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+//               <div>
+//                 <h2 className="text-3xl font-bold mb-6">{data.contact.title}</h2>
+//                 <p className="text-green-100 text-base leading-relaxed mb-6">
+//                   {data.contact.description}
+//                 </p>
+                
+//                 <div className="space-y-4">
+//                   {filteredContactInfo.map((info, index) => {
+//                     const IconComponent = info.icon;
+//                     return (
+//                       <div key={index} className="flex items-start space-x-3">
+//                         <IconComponent className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
+//                         <div>
+//                           <h3 className="text-base font-semibold mb-1">{info.title}</h3>
+//                           <p className="text-green-100 text-sm">{info.content}</p>
+//                         </div>
+//                       </div>
+//                     );
+//                   })}
+//                 </div>
+                
+//                 <div className="mt-6">
+//                   <a 
+//                     href="/appointment" 
+//                     className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-5 py-2 rounded-lg font-semibold transition-colors text-sm inline-flex items-center"
+//                   >
+//                     Schedule Appointment
+//                     <ExternalLink className="ml-2 h-4 w-4" />
+//                   </a>
+//                 </div>
+//               </div>
+              
+//               {filteredContactButtons.length > 0 && (
+//                 <div>
+//                   <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+//                     <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+//                     <div className="grid grid-cols-1 gap-3">
+//                       {filteredContactButtons.map((button, index) => {
+//                         const IconComponent = button.icon;
+//                         return (
+//                           <a key={index} href={button.link} className="flex items-center justify-between bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-colors text-sm">
+//                             <div className="flex items-center space-x-2">
+//                               <IconComponent className="h-4 w-4 text-yellow-400" />
+//                               <span>{button.label}</span>
+//                             </div>
+//                             <ArrowRight className="h-4 w-4" />
+//                           </a>
+//                         );
+//                       })}
+//                     </div>
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </section>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default PrincipalMessagePage;

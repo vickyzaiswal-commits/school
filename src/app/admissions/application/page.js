@@ -1,0 +1,1150 @@
+"use client";
+import React, { useState } from 'react';
+import { 
+  FileText, 
+  User,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  Users,
+  BookOpen,
+  Award,
+  Heart,
+  Shield,
+  CheckCircle,
+  ChevronRight,
+  ChevronLeft,
+  Download,
+  Upload,
+  X,
+  AlertCircle,
+  Bookmark,
+  GraduationCap,
+  School,
+  BookKey,
+  Eye,
+  EyeOff,
+  ArrowRight
+} from 'lucide-react';
+
+const ApplicationFormPage = ({ schoolData = {} }) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  
+  // Default configuration with all fields enabled
+  const defaultConfig = {
+    // Hero Section
+    hero: {
+      show: true,
+      title: "Admission Application",
+      subtitle: "Join the St. Columba's family - Begin your journey to excellence",
+      height: "h-96",
+      cta: "Start Application",
+      ctaIcon: ArrowRight,
+      ctaLink: "#"
+    },
+    // Student Information
+    firstName: { show: true, required: true, label: 'First Name' },
+    lastName: { show: true, required: true, label: 'Last Name' },
+    dateOfBirth: { show: true, required: true, label: 'Date of Birth' },
+    gender: { show: true, required: true, label: 'Gender' },
+    nationality: { show: true, required: true, label: 'Nationality' },
+    bloodGroup: { show: true, required: false, label: 'Blood Group' },
+    
+    // Contact Information
+    address: { show: true, required: true, label: 'Address' },
+    city: { show: true, required: true, label: 'City' },
+    state: { show: true, required: true, label: 'State' },
+    pincode: { show: true, required: true, label: 'Pincode' },
+    phone: { show: true, required: true, label: 'Phone Number' },
+    email: { show: true, required: true, label: 'Email Address' },
+    
+    // Parent Information
+    fatherName: { show: true, required: true, label: "Father's Name" },
+    fatherOccupation: { show: true, required: false, label: "Father's Occupation" },
+    fatherQualification: { show: true, required: false, label: "Father's Qualification" },
+    fatherPhone: { show: true, required: false, label: "Father's Phone" },
+    fatherEmail: { show: true, required: false, label: "Father's Email" },
+    
+    motherName: { show: true, required: true, label: "Mother's Name" },
+    motherOccupation: { show: true, required: false, label: "Mother's Occupation" },
+    motherQualification: { show: true, required: false, label: "Mother's Qualification" },
+    motherPhone: { show: true, required: false, label: "Mother's Phone" },
+    motherEmail: { show: true, required: false, label: "Mother's Email" },
+    
+    // Academic Information
+    applyingForClass: { show: true, required: true, label: 'Applying for Class' },
+    currentSchool: { show: true, required: true, label: 'Current/Previous School' },
+    lastClass: { show: true, required: false, label: 'Last Class Completed' },
+    lastPercentage: { show: true, required: false, label: 'Percentage/CGPA in Last Class' },
+    board: { show: true, required: false, label: 'Board/Curriculum' },
+    
+    // Documents
+    birthCertificate: { show: true, required: true, label: 'Birth Certificate' },
+    aadhaarCard: { show: true, required: true, label: 'Aadhaar Card' },
+    photograph: { show: true, required: true, label: 'Passport Size Photograph' },
+    previousMarksheet: { show: true, required: false, label: 'Previous Year Marksheet' },
+    transferCertificate: { show: true, required: false, label: 'Transfer Certificate' },
+    
+    // Steps configuration
+    showStudentInfo: true,
+    showContactDetails: true,
+    showParentInfo: true,
+    showAcademicInfo: true,
+    showDocuments: true,
+    showReview: true,
+    
+    // Custom labels
+    stepTitles: {
+      studentInfo: 'Student Information',
+      contactDetails: 'Contact Details',
+      parentInfo: 'Parent Information',
+      academicInfo: 'Academic History',
+      documents: 'Documents Upload',
+      review: 'Review & Submit'
+    }
+  };
+
+  // Merge with provided configuration
+  const config = { ...defaultConfig, ...schoolData };
+
+  const [formData, setFormData] = useState({
+    // Student Information
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    nationality: '',
+    bloodGroup: '',
+    
+    // Contact Information
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    phone: '',
+    email: '',
+    
+    // Parent Information
+    fatherName: '',
+    fatherOccupation: '',
+    fatherQualification: '',
+    fatherPhone: '',
+    fatherEmail: '',
+    
+    motherName: '',
+    motherOccupation: '',
+    motherQualification: '',
+    motherPhone: '',
+    motherEmail: '',
+    
+    // Academic Information
+    applyingForClass: '',
+    currentSchool: '',
+    lastClass: '',
+    lastPercentage: '',
+    board: '',
+    
+    // Documents
+    birthCertificate: null,
+    aadhaarCard: null,
+    photograph: null,
+    previousMarksheet: null,
+    transferCertificate: null,
+    
+    // Declaration
+    termsAccepted: false
+  });
+
+  const [errors, setErrors] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState({});
+
+  const steps = [
+    { number: 1, title: config.stepTitles.studentInfo, icon: User, show: config.showStudentInfo },
+    { number: 2, title: config.stepTitles.contactDetails, icon: MapPin, show: config.showContactDetails },
+    { number: 3, title: config.stepTitles.parentInfo, icon: Users, show: config.showParentInfo },
+    { number: 4, title: config.stepTitles.academicInfo, icon: BookOpen, show: config.showAcademicInfo },
+    { number: 5, title: config.stepTitles.documents, icon: Upload, show: config.showDocuments },
+    { number: 6, title: config.stepTitles.review, icon: CheckCircle, show: config.showReview }
+  ].filter(step => step.show);
+
+  const classOptions = [
+    'Nursery', 'Kindergarten', 'Class I', 'Class II', 'Class III', 
+    'Class IV', 'Class V', 'Class VI', 'Class VII', 'Class VIII',
+    'Class IX', 'Class X', 'Class XI (Science)', 'Class XI (Commerce)', 'Class XI (Humanities)',
+    'Class XII (Science)', 'Class XII (Commerce)', 'Class XII (Humanities)'
+  ];
+
+  const boardOptions = [
+    'CBSE', 'ICSE', 'State Board', 'IGCSE', 'IB', 'Other'
+  ];
+
+  const bloodGroupOptions = [
+    'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+  ];
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value
+    }));
+
+    // Clear error when field is updated
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const handleFileUpload = (name, file) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [name]: file
+    }));
+  };
+
+  const removeFile = (name) => {
+    setUploadedFiles(prev => {
+      const newFiles = { ...prev };
+      delete newFiles[name];
+      return newFiles;
+    });
+  };
+
+  // Validate all required fields across all steps
+  const validateAll = () => {
+    const newErrors = {};
+
+    // Student Info
+    if (config.showStudentInfo) {
+      if (config.firstName.show && config.firstName.required && !formData.firstName) 
+        newErrors.firstName = `${config.firstName.label} is required`;
+      if (config.lastName.show && config.lastName.required && !formData.lastName) 
+        newErrors.lastName = `${config.lastName.label} is required`;
+      if (config.dateOfBirth.show && config.dateOfBirth.required && !formData.dateOfBirth) 
+        newErrors.dateOfBirth = `${config.dateOfBirth.label} is required`;
+      if (config.gender.show && config.gender.required && !formData.gender) 
+        newErrors.gender = `${config.gender.label} is required`;
+      if (config.nationality.show && config.nationality.required && !formData.nationality) 
+        newErrors.nationality = `${config.nationality.label} is required`;
+    }
+
+    // Contact Details
+    if (config.showContactDetails) {
+      if (config.address.show && config.address.required && !formData.address) 
+        newErrors.address = `${config.address.label} is required`;
+      if (config.city.show && config.city.required && !formData.city) 
+        newErrors.city = `${config.city.label} is required`;
+      if (config.state.show && config.state.required && !formData.state) 
+        newErrors.state = `${config.state.label} is required`;
+      if (config.pincode.show && config.pincode.required && !formData.pincode) 
+        newErrors.pincode = `${config.pincode.label} is required`;
+      if (config.phone.show && config.phone.required && !formData.phone) 
+        newErrors.phone = `${config.phone.label} is required`;
+      if (config.email.show && config.email.required && !formData.email) 
+        newErrors.email = `${config.email.label} is required`;
+    }
+
+    // Parent Info
+    if (config.showParentInfo) {
+      if (config.fatherName.show && config.fatherName.required && !formData.fatherName) 
+        newErrors.fatherName = `${config.fatherName.label} is required`;
+      if (config.motherName.show && config.motherName.required && !formData.motherName) 
+        newErrors.motherName = `${config.motherName.label} is required`;
+    }
+
+    // Academic Info
+    if (config.showAcademicInfo) {
+      if (config.applyingForClass.show && config.applyingForClass.required && !formData.applyingForClass) 
+        newErrors.applyingForClass = `${config.applyingForClass.label} is required`;
+      if (config.currentSchool.show && config.currentSchool.required && !formData.currentSchool) 
+        newErrors.currentSchool = `${config.currentSchool.label} is required`;
+    }
+
+    // Documents
+    if (config.showDocuments) {
+      if (config.birthCertificate.show && config.birthCertificate.required && !formData.birthCertificate) 
+        newErrors.birthCertificate = `${config.birthCertificate.label} is required`;
+      if (config.aadhaarCard.show && config.aadhaarCard.required && !formData.aadhaarCard) 
+        newErrors.aadhaarCard = `${config.aadhaarCard.label} is required`;
+      if (config.photograph.show && config.photograph.required && !formData.photograph) 
+        newErrors.photograph = `${config.photograph.label} is required`;
+    }
+
+    // Terms
+    if (!formData.termsAccepted) {
+      newErrors.termsAccepted = 'You must accept the terms and conditions';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    setCurrentStep(prev => Math.min(prev + 1, steps.length));
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateAll()) {
+      // Submit form logic here
+      alert('Application submitted successfully!');
+      // Redirect or show success message
+    } else {
+      // Scroll to first error
+      const firstError = Object.keys(errors)[0];
+      const element = document.querySelector(`[name="${firstError}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  // Download form as JSON
+  const handleDownload = () => {
+    const dataStr = JSON.stringify({ ...formData, uploadedFiles }, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `admission-application-${new Date().toISOString().split('T')[0]}.json`;
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  // Save to localStorage and exit
+  const handleSaveExit = () => {
+    localStorage.setItem('admissionForm', JSON.stringify({ ...formData, uploadedFiles, currentStep }));
+    alert('Form saved! You can continue later.');
+    // Redirect to dashboard or home
+    window.location.href = '/'; // Example redirect
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        if (!config.showStudentInfo) return nextStep();
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.studentInfo}</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {config.firstName.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.firstName.label} {config.firstName.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.firstName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                </div>
+              )}
+
+              {config.lastName.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.lastName.label} {config.lastName.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.lastName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                </div>
+              )}
+
+              {config.dateOfBirth.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.dateOfBirth.label} {config.dateOfBirth.required && '*'}
+                  </label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
+                </div>
+              )}
+
+              {config.gender.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.gender.label} {config.gender.required && '*'}
+                  </label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.gender ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                  {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+                </div>
+              )}
+
+              {config.nationality.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.nationality.label} {config.nationality.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="nationality"
+                    value={formData.nationality}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.nationality ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.nationality && <p className="text-red-500 text-sm mt-1">{errors.nationality}</p>}
+                </div>
+              )}
+
+              {config.bloodGroup.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.bloodGroup.label} {config.bloodGroup.required && '*'}
+                  </label>
+                  <select
+                    name="bloodGroup"
+                    value={formData.bloodGroup}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="">Select Blood Group</option>
+                    {bloodGroupOptions.map(group => (
+                      <option key={group} value={group}>{group}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case 2:
+        if (!config.showContactDetails) return nextStep();
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.contactDetails}</h3>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {config.address.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.address.label} {config.address.required && '*'}
+                  </label>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.address ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {config.city.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.city.label} {config.city.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.city ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                  </div>
+                )}
+
+                {config.state.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.state.label} {config.state.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.state ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
+                  </div>
+                )}
+
+                {config.pincode.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.pincode.label} {config.pincode.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.pincode ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.pincode && <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {config.phone.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.phone.label} {config.phone.required && '*'}
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.phone ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                  </div>
+                )}
+
+                {config.email.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.email.label} {config.email.required && '*'}
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.email ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3:
+        if (!config.showParentInfo) return nextStep();
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.parentInfo}</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Father's Information */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">Father's Details</h4>
+                
+                {config.fatherName.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.fatherName.label} {config.fatherName.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="fatherName"
+                      value={formData.fatherName}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.fatherName ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.fatherName && <p className="text-red-500 text-sm mt-1">{errors.fatherName}</p>}
+                  </div>
+                )}
+
+                {config.fatherOccupation.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.fatherOccupation.label} {config.fatherOccupation.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="fatherOccupation"
+                      value={formData.fatherOccupation}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.fatherQualification.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.fatherQualification.label} {config.fatherQualification.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="fatherQualification"
+                      value={formData.fatherQualification}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.fatherPhone.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.fatherPhone.label} {config.fatherPhone.required && '*'}
+                    </label>
+                    <input
+                      type="tel"
+                      name="fatherPhone"
+                      value={formData.fatherPhone}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.fatherEmail.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.fatherEmail.label} {config.fatherEmail.required && '*'}
+                    </label>
+                    <input
+                      type="email"
+                      name="fatherEmail"
+                      value={formData.fatherEmail}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Mother's Information */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">Mother's Details</h4>
+                
+                {config.motherName.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.motherName.label} {config.motherName.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="motherName"
+                      value={formData.motherName}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                        errors.motherName ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.motherName && <p className="text-red-500 text-sm mt-1">{errors.motherName}</p>}
+                  </div>
+                )}
+
+                {config.motherOccupation.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.motherOccupation.label} {config.motherOccupation.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="motherOccupation"
+                      value={formData.motherOccupation}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.motherQualification.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.motherQualification.label} {config.motherQualification.required && '*'}
+                    </label>
+                    <input
+                      type="text"
+                      name="motherQualification"
+                      value={formData.motherQualification}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.motherPhone.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.motherPhone.label} {config.motherPhone.required && '*'}
+                    </label>
+                    <input
+                      type="tel"
+                      name="motherPhone"
+                      value={formData.motherPhone}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+
+                {config.motherEmail.show && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {config.motherEmail.label} {config.motherEmail.required && '*'}
+                    </label>
+                    <input
+                      type="email"
+                      name="motherEmail"
+                      value={formData.motherEmail}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 4:
+        if (!config.showAcademicInfo) return nextStep();
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.academicInfo}</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {config.applyingForClass.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.applyingForClass.label} {config.applyingForClass.required && '*'}
+                  </label>
+                  <select
+                    name="applyingForClass"
+                    value={formData.applyingForClass}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.applyingForClass ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  >
+                    <option value="">Select Class</option>
+                    {classOptions.map(className => (
+                      <option key={className} value={className}>{className}</option>
+                    ))}
+                  </select>
+                  {errors.applyingForClass && <p className="text-red-500 text-sm mt-1">{errors.applyingForClass}</p>}
+                </div>
+              )}
+
+              {config.currentSchool.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.currentSchool.label} {config.currentSchool.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="currentSchool"
+                    value={formData.currentSchool}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      errors.currentSchool ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.currentSchool && <p className="text-red-500 text-sm mt-1">{errors.currentSchool}</p>}
+                </div>
+              )}
+
+              {config.lastClass.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.lastClass.label} {config.lastClass.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="lastClass"
+                    value={formData.lastClass}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+              )}
+
+              {config.lastPercentage.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.lastPercentage.label} {config.lastPercentage.required && '*'}
+                  </label>
+                  <input
+                    type="text"
+                    name="lastPercentage"
+                    value={formData.lastPercentage}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+              )}
+
+              {config.board.show && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {config.board.label} {config.board.required && '*'}
+                  </label>
+                  <select
+                    name="board"
+                    value={formData.board}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="">Select Board</option>
+                    {boardOptions.map(board => (
+                      <option key={board} value={board}>{board}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case 5:
+        if (!config.showDocuments) return nextStep();
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.documents}</h3>
+            <p className="text-gray-600 mb-6">Please upload scanned copies of the following documents (PDF, JPG, or PNG, max 2MB each)</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { id: 'birthCertificate', config: config.birthCertificate },
+                { id: 'aadhaarCard', config: config.aadhaarCard },
+                { id: 'photograph', config: config.photograph },
+                { id: 'previousMarksheet', config: config.previousMarksheet },
+                { id: 'transferCertificate', config: config.transferCertificate }
+              ].filter(doc => doc.config.show).map((doc) => (
+                <div key={doc.id} className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    id={doc.id}
+                    name={doc.id}
+                    onChange={handleInputChange}
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                  />
+                  <label htmlFor={doc.id} className="cursor-pointer">
+                    <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-gray-700">{doc.config.label} {doc.config.required && '*'}</p>
+                    <p className="text-xs text-gray-500 mt-1">Click to upload</p>
+                  </label>
+                  {uploadedFiles[doc.id] && (
+                    <div className="mt-3 flex items-center justify-between bg-green-50 p-2 rounded">
+                      <span className="text-sm text-green-700 truncate">{uploadedFiles[doc.id].name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(doc.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                  {errors[doc.id] && <p className="text-red-500 text-sm mt-1">{errors[doc.id]}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 6:
+        if (!config.showReview) return handleSubmit;
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.review}</h3>
+            
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-4">Please review your information before submitting</h4>
+              
+              <div className="space-y-4">
+                {config.showStudentInfo && (
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Student Information</h5>
+                    {config.firstName.show && config.lastName.show && (
+                      <p className="text-gray-600">{formData.firstName} {formData.lastName}</p>
+                    )}
+                    {config.dateOfBirth.show && (
+                      <p className="text-gray-600">DOB: {formData.dateOfBirth}</p>
+                    )}
+                    {config.gender.show && (
+                      <p className="text-gray-600">Gender: {formData.gender}</p>
+                    )}
+                  </div>
+                )}
+
+                {config.showContactDetails && (
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Contact Details</h5>
+                    {config.address.show && config.city.show && config.state.show && config.pincode.show && (
+                      <p className="text-gray-600">{formData.address}, {formData.city}, {formData.state} - {formData.pincode}</p>
+                    )}
+                    {config.phone.show && (
+                      <p className="text-gray-600">Phone: {formData.phone}</p>
+                    )}
+                    {config.email.show && (
+                      <p className="text-gray-600">Email: {formData.email}</p>
+                    )}
+                  </div>
+                )}
+
+                {config.showParentInfo && (
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Parent Information</h5>
+                    {config.fatherName.show && (
+                      <p className="text-gray-600">Father: {formData.fatherName}</p>
+                    )}
+                    {config.motherName.show && (
+                      <p className="text-gray-600">Mother: {formData.motherName}</p>
+                    )}
+                  </div>
+                )}
+
+                {config.showAcademicInfo && (
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Academic Information</h5>
+                    {config.applyingForClass.show && (
+                      <p className="text-gray-600">Applying for: {formData.applyingForClass}</p>
+                    )}
+                    {config.currentSchool.show && (
+                      <p className="text-gray-600">Current School: {formData.currentSchool}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <AlertCircle className="h-5 w-5 text-yellow-600 mr-3 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-yellow-800">Application Fee</h4>
+                  <p className="text-yellow-700 text-sm mt-1">
+                    A non-refundable application fee of ₹1,000 is required. You will be redirected to the payment gateway after submission.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start mb-6">
+              <input
+                type="checkbox"
+                id="termsAccepted"
+                name="termsAccepted"
+                checked={formData.termsAccepted}
+                onChange={handleInputChange}
+                className="mt-1 mr-3"
+              />
+              <label htmlFor="termsAccepted" className="text-sm text-gray-700">
+                I hereby declare that all the information provided is true to the best of my knowledge. 
+                I understand that any false information may lead to cancellation of admission.
+              </label>
+              {errors.termsAccepted && <p className="text-red-500 text-sm mt-1">{errors.termsAccepted}</p>}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      {config.hero.show && (
+        <section className={`relative ${config.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{config.hero.title}</h1>
+              <p className="text-xl text-green-100 leading-relaxed">
+                {config.hero.subtitle}
+              </p>
+              {config.hero.cta && (
+                <a 
+                  href={config.hero.ctaLink} 
+                  className="mt-6 bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center hover:scale-105"
+                >
+                  {config.hero.cta}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              )}
+            </div>
+            {/* Header Buttons */}
+            <div className="absolute top-4 right-4 flex items-center space-x-4">
+              <button 
+                className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
+                onClick={handleDownload}
+                title="Download form"
+                aria-label="Download form"
+              >
+                <Download className="h-5 w-5" />
+              </button>
+              <button 
+                className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
+                onClick={handleSaveExit}
+                title="Save and exit"
+                aria-label="Save and exit"
+              >
+                <Bookmark className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Progress Bar */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => {
+              const StepIcon = step.icon;
+              return (
+                <div key={step.number} className="flex items-center">
+                  <div
+                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                      currentStep >= step.number
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {currentStep > step.number ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : (
+                      <StepIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  <span
+                    className={`ml-2 text-sm font-medium ${
+                      currentStep >= step.number ? 'text-green-600' : 'text-gray-600'
+                    }`}
+                  >
+                    {step.title}
+                  </span>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`mx-4 w-12 h-0.5 ${
+                        currentStep > step.number ? 'bg-green-600' : 'bg-gray-300'
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border p-6 md:p-8">
+          {renderStep()}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-12 pt-6 border-t">
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className={`flex items-center px-6 py-2 rounded-lg transition-all duration-200 ${
+                currentStep === 1
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105'
+              }`}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </button>
+
+            {currentStep < steps.length ? (
+              <button
+                type="button"
+                onClick={nextStep}
+                className="flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-2" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                Submit Application
+                <CheckCircle className="h-4 w-4 ml-2" />
+              </button>
+            )}
+          </div>
+        </form>
+
+        {/* Help Section */}
+        <div className="mt-8 bg-blue-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Need Help?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-medium text-gray-800 mb-2">Contact Admission Office</h4>
+              <p className="text-gray-600 text-sm">Email: admissions@stcolumbas.edu.in</p>
+              <p className="text-gray-600 text-sm">Phone: 011-2336-3462 (Ext. 110)</p>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-800 mb-2">Office Hours</h4>
+              <p className="text-gray-600 text-sm">Monday-Friday: 9:00 AM - 4:00 PM</p>
+              <p className="text-gray-600 text-sm">Saturday: 9:00 AM - 12:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ApplicationFormPage;
