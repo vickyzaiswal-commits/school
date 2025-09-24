@@ -33,13 +33,13 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-const ArtsCulturePage = ({ artsData = {} }) => {
+const ArtsCulturePage = ({ artsData }) => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeProgram, setActiveProgram] = useState('visual-arts');
   const [openEvent, setOpenEvent] = useState(null);
 
-  // Default data structure with show properties
-  const defaultData = {
+  // JSON data to drive all content (will later come from a database)
+  const jsonData = {
     hero: {
       show: true,
       title: "Arts & Culture",
@@ -64,6 +64,10 @@ const ArtsCulturePage = ({ artsData = {} }) => {
     },
     programs: {
       show: true,
+      title: "Program Details",
+      offeringsTitle: "Program Offerings",
+      achievementsTitle: "Recent Achievements",
+      joinButtonLabel: "Join This Program",
       items: {
         'visual-arts': {
           title: 'Visual Arts Program',
@@ -230,28 +234,28 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         {
           name: 'Art Studio',
           description: 'Fully equipped studio with natural lighting and various media supplies',
-          image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2158&q=80',
+          image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80',
           features: ['Natural lighting', 'Pottery wheels', 'Printing press', 'Drying racks'],
           show: true
         },
         {
           name: 'Music Rooms',
           description: 'Soundproof practice rooms with various instruments and recording equipment',
-          image: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+          image: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
           features: ['Grand piano', 'Recording equipment', 'Practice rooms', 'Instrument storage'],
           show: true
         },
         {
           name: 'Theater Auditorium',
           description: '300-seat professional theater with stage lighting and sound systems',
-          image: 'https://images.unsplash.com/photo-1542327897-d73d4ec2f6f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80',
+          image: 'https://images.unsplash.com/photo-1542327897-d73d4ec2f6f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80',
           features: ['Professional lighting', 'Sound system', 'Green room', 'Costume storage'],
           show: true
         },
         {
           name: 'Media Lab',
           description: 'Computer lab with professional software for digital arts and media production',
-          image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2086&q=80',
+          image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&auto=format&fit=crop&w=2086&q=80',
           features: ['iMac workstations', 'Adobe Creative Suite', 'Recording booth', 'Editing stations'],
           show: true
         }
@@ -260,6 +264,7 @@ const ArtsCulturePage = ({ artsData = {} }) => {
     upcomingEvents: {
       show: true,
       title: "Upcoming Events",
+      registerButtonLabel: "Register",
       items: [
         {
           date: '2024-04-20',
@@ -386,7 +391,8 @@ const ArtsCulturePage = ({ artsData = {} }) => {
       show: true,
       title: "Student Gallery",
       items: [1, 2, 3, 4, 5, 6, 7, 8],
-      showFullGalleryButton: true
+      showFullGalleryButton: true,
+      fullGalleryButtonLabel: "View Full Gallery"
     },
     cta: {
       show: true,
@@ -421,7 +427,6 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         }
       ]
     },
-    // Section visibility controls
     showHero: true,
     showCategories: true,
     showPrograms: true,
@@ -434,33 +439,34 @@ const ArtsCulturePage = ({ artsData = {} }) => {
     showContact: true
   };
 
-  // Merge provided data with defaults
-  const data = { ...defaultData, ...artsData };
+  // Use artsData if provided (e.g., from a database), otherwise fall back to jsonData
+  const data = artsData || jsonData;
 
-  // Filter functions
-  const filteredHeroStats = data.hero.stats.filter(stat => stat.show !== false);
-  const filteredCategories = data.categories.items.filter(cat => cat.show !== false);
-  const filteredPrograms = Object.fromEntries(
-    Object.entries(data.programs.items).filter(([key, program]) => program.show !== false)
-  );
-  const filteredFacilities = data.facilities.items.filter(facility => facility.show !== false);
-  const filteredEvents = data.upcomingEvents.items.filter(event => event.show !== false);
-  const filteredAchievements = data.achievements.items.filter(achievement => achievement.show !== false);
-  const filteredFaculty = data.faculty.items.filter(teacher => teacher.show !== false);
-  const filteredCtaButtons = data.cta.buttons.filter(button => button.show !== false);
-  const filteredContactItems = data.contact.items.filter(item => item.show !== false);
+  // Filter functions to respect show properties
+  const filteredHeroStats = data.hero?.stats?.filter(stat => stat.show !== false) || [];
+  const filteredCategories = data.categories?.items?.filter(cat => cat.show !== false) || [];
+  const filteredPrograms = data.programs?.items ? 
+    Object.fromEntries(
+      Object.entries(data.programs.items).filter(([key, program]) => program.show !== false)
+    ) : {};
+  const filteredFacilities = data.facilities?.items?.filter(facility => facility.show !== false) || [];
+  const filteredEvents = data.upcomingEvents?.items?.filter(event => event.show !== false) || [];
+  const filteredAchievements = data.achievements?.items?.filter(achievement => achievement.show !== false) || [];
+  const filteredFaculty = data.faculty?.items?.filter(teacher => teacher.show !== false) || [];
+  const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
+  const filteredContactItems = data.contact?.items?.filter(item => item.show !== false) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      {data.showHero && data.hero.show && (
-        <section className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+      {data.showHero && data.hero?.show && (
+        <section className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>
               <p className="text-xl text-green-100 leading-relaxed">
-                {data.hero.subtitle}
+                {data.hero?.subtitle}
               </p>
               {filteredHeroStats.length > 0 && (
                 <div className="flex flex-wrap gap-6 mt-8">
@@ -480,12 +486,12 @@ const ArtsCulturePage = ({ artsData = {} }) => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Categories Navigation */}
-        {data.showCategories && data.categories.show && filteredCategories.length > 0 && (
+        {data.showCategories && data.categories?.show && filteredCategories.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.categories.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.categories?.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {filteredCategories.map(category => {
-                const IconComponent = category.icon;
+                const IconComponent = category.icon || Palette; // Fallback to Palette if icon is missing
                 return (
                   <button
                     key={category.id}
@@ -509,7 +515,7 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Program Details */}
-        {data.showPrograms && data.programs.show && filteredPrograms[activeProgram] && (
+        {data.showPrograms && data.programs?.show && filteredPrograms[activeProgram] && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{filteredPrograms[activeProgram].title}</h2>
             <p className="text-gray-600 mb-8">{filteredPrograms[activeProgram].description}</p>
@@ -517,39 +523,39 @@ const ArtsCulturePage = ({ artsData = {} }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Activities */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Program Offerings</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs?.offeringsTitle}</h3>
                 <div className="space-y-4">
                   {filteredPrograms[activeProgram].activities
-                    .filter(activity => activity.show !== false)
+                    ?.filter(activity => activity.show !== false)
                     .map((activity, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">{activity.name}</h4>
-                      <p className="text-gray-600 text-sm mb-3">{activity.description}</p>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center text-gray-700">
-                          <Clock className="h-4 w-4 mr-2" />
-                          {activity.schedule}
-                        </div>
-                        <div className="flex items-center text-gray-700">
-                          <Users className="h-4 w-4 mr-2" />
-                          Instructor: {activity.instructor}
-                        </div>
-                        <div className="flex items-center text-gray-700">
-                          <Star className="h-4 w-4 mr-2" />
-                          Level: {activity.level}
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">{activity.name}</h4>
+                        <p className="text-gray-600 text-sm mb-3">{activity.description}</p>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center text-gray-700">
+                            <Clock className="h-4 w-4 mr-2" />
+                            {activity.schedule}
+                          </div>
+                          <div className="flex items-center text-gray-700">
+                            <Users className="h-4 w-4 mr-2" />
+                            Instructor: {activity.instructor}
+                          </div>
+                          <div className="flex items-center text-gray-700">
+                            <Star className="h-4 w-4 mr-2" />
+                            Level: {activity.level}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
 
               {/* Achievements */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Achievements</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs?.achievementsTitle}</h3>
                 <div className="bg-green-50 rounded-lg p-6">
                   <ul className="space-y-3">
-                    {filteredPrograms[activeProgram].achievements.map((achievement, index) => (
+                    {filteredPrograms[activeProgram].achievements?.map((achievement, index) => (
                       <li key={index} className="flex items-start text-gray-700">
                         <Award className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                         {achievement}
@@ -557,7 +563,7 @@ const ArtsCulturePage = ({ artsData = {} }) => {
                     ))}
                   </ul>
                   <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    Join This Program
+                    {data.programs?.joinButtonLabel}
                   </button>
                 </div>
               </div>
@@ -566,15 +572,15 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Facilities */}
-        {data.showFacilities && data.facilities.show && filteredFacilities.length > 0 && (
+        {data.showFacilities && data.facilities?.show && filteredFacilities.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.facilities.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.facilities?.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredFacilities.map((facility, index) => (
                 <div key={index} className="group cursor-pointer">
                   <div className="relative overflow-hidden rounded-lg mb-3">
                     <img
-                      src={facility.image}
+                      src={facility.image || 'https://via.placeholder.com/300'}
                       alt={facility.name}
                       className="w-full h-48 object-cover transition-transform group-hover:scale-105"
                     />
@@ -585,7 +591,7 @@ const ArtsCulturePage = ({ artsData = {} }) => {
                   <h3 className="font-semibold text-gray-800 mb-2">{facility.name}</h3>
                   <p className="text-sm text-gray-600 mb-3">{facility.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {facility.features.map((feature, idx) => (
+                    {facility.features?.map((feature, idx) => (
                       <span key={idx} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
                         {feature}
                       </span>
@@ -598,9 +604,9 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Upcoming Events */}
-        {data.showUpcomingEvents && data.upcomingEvents.show && filteredEvents.length > 0 && (
+        {data.showUpcomingEvents && data.upcomingEvents?.show && filteredEvents.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents?.title}</h2>
             <div className="space-y-4">
               {filteredEvents.map((event, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
@@ -632,7 +638,7 @@ const ArtsCulturePage = ({ artsData = {} }) => {
                       </div>
                     </div>
                     <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex-shrink-0">
-                      Register
+                      {data.upcomingEvents?.registerButtonLabel}
                     </button>
                   </div>
                 </div>
@@ -642,15 +648,15 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Achievements */}
-        {data.showAchievements && data.achievements.show && filteredAchievements.length > 0 && (
+        {data.showAchievements && data.achievements?.show && filteredAchievements.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements?.title}</h2>
             <div className="space-y-6">
               {filteredAchievements.map((year, index) => (
                 <div key={index}>
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">{year.year}</h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {year.items.map((item, idx) => (
+                    {year.items?.map((item, idx) => (
                       <li key={idx} className="flex items-center text-gray-700">
                         <Award className="h-4 w-4 text-yellow-500 mr-2 flex-shrink-0" />
                         {item}
@@ -664,9 +670,9 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Faculty */}
-        {data.showFaculty && data.faculty.show && filteredFaculty.length > 0 && (
+        {data.showFaculty && data.faculty?.show && filteredFaculty.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty?.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredFaculty.map((teacher, index) => (
                 <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
@@ -689,9 +695,9 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Gallery Preview */}
-        {data.showGallery && data.gallery.show && (
+        {data.showGallery && data.gallery?.show && data.gallery?.items?.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.gallery.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.gallery?.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {data.gallery.items.map((item) => (
                 <div key={item} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
@@ -701,20 +707,20 @@ const ArtsCulturePage = ({ artsData = {} }) => {
                 </div>
               ))}
             </div>
-            {data.gallery.showFullGalleryButton && (
+            {data.gallery?.showFullGalleryButton && (
               <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
-                View Full Gallery
+                {data.gallery?.fullGalleryButtonLabel}
               </button>
             )}
           </div>
         )}
 
         {/* CTA Section */}
-        {data.showCta && data.cta.show && (
+        {data.showCta && data.cta?.show && (
           <div className="bg-green-800 text-white rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">{data.cta.title}</h2>
+            <h2 className="text-2xl font-bold mb-4">{data.cta?.title}</h2>
             <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-              {data.cta.description}
+              {data.cta?.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {filteredCtaButtons.map((button, index) => (
@@ -727,12 +733,12 @@ const ArtsCulturePage = ({ artsData = {} }) => {
         )}
 
         {/* Contact Information */}
-        {data.showContact && data.contact.show && filteredContactItems.length > 0 && (
+        {data.showContact && data.contact?.show && filteredContactItems.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact.title}</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact?.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredContactItems.map((item, index) => {
-                const IconComponent = item.icon;
+                const IconComponent = item.icon || Phone; // Fallback to Phone if icon is missing
                 return (
                   <div key={index} className="flex items-center">
                     <IconComponent className="h-5 w-5 text-green-600 mr-3" />

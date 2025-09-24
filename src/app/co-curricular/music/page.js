@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { 
   Music,
-  Users,
+  Users, 
   Target,
   Clock,
   Calendar,
@@ -40,11 +40,11 @@ import {
   BookOpen
 } from 'lucide-react';
 
-const MusicPage = ({ musicData = {} }) => {
+const MusicPage = ({ musicData }) => {
   const [activeCategory, setActiveCategory] = useState('programs');
 
-  // Default data structure with show properties
-  const defaultData = {
+  // JSON data to drive all content (will later come from a database)
+  const jsonData = {
     hero: {
       show: true,
       title: "Music Program",
@@ -54,7 +54,12 @@ const MusicPage = ({ musicData = {} }) => {
         { value: "50+", label: "Annual Performances", show: true },
         { value: "25+", label: "State Awards", show: true }
       ],
-      height: "h-96"
+      height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      ctaButton: {
+        label: "View Music Handbook",
+        show: true
+      }
     },
     benefits: {
       show: true,
@@ -100,6 +105,26 @@ const MusicPage = ({ musicData = {} }) => {
     },
     programs: {
       show: true,
+      labels: {
+        programs: {
+          grades: "Grades",
+          description: "Description"
+        },
+        ensembles: {
+          level: "Level",
+          director: "Director",
+          meeting: "Meeting"
+        },
+        instruments: {
+          family: "Family",
+          instruments: "Instruments"
+        },
+        events: {
+          date: "Date",
+          time: "Time",
+          location: "Location"
+        }
+      },
       items: {
         'programs': [
           { 
@@ -295,6 +320,11 @@ const MusicPage = ({ musicData = {} }) => {
       show: true,
       title: "Upcoming Music Events",
       description: "Mark your calendars for these exciting performances and activities",
+      labels: {
+        time: "Time",
+        location: "Location",
+        viewDetails: "View Details"
+      },
       items: [
         {
           title: "Fall Choral Concert",
@@ -302,6 +332,7 @@ const MusicPage = ({ musicData = {} }) => {
           time: "7:00 PM - 9:00 PM",
           ensemble: "Concert Choir & Chamber Singers",
           location: "School Auditorium",
+          description: "An evening of choral performances by our talented singers",
           show: true
         },
         {
@@ -310,6 +341,7 @@ const MusicPage = ({ musicData = {} }) => {
           time: "4:00 PM - 7:00 PM",
           ensemble: "All Band Students",
           location: "Football Field",
+          description: "A fun-filled competition showcasing band skills",
           show: true
         },
         {
@@ -318,6 +350,7 @@ const MusicPage = ({ musicData = {} }) => {
           time: "6:30 PM - 8:30 PM",
           ensemble: "Middle School Bands & Choirs",
           location: "Cafeteria",
+          description: "Performances by our middle school music ensembles",
           show: true
         },
         {
@@ -326,9 +359,14 @@ const MusicPage = ({ musicData = {} }) => {
           time: "9:00 AM - 4:00 PM",
           ensemble: "Symphonic Orchestra",
           location: "Downtown Concert Hall",
+          description: "A special trip to experience a professional orchestra",
           show: true
         }
-      ]
+      ],
+      ctaButton: {
+        label: "View Full Events Calendar",
+        show: true
+      }
     },
     achievements: {
       show: true,
@@ -367,6 +405,12 @@ const MusicPage = ({ musicData = {} }) => {
     faculty: {
       show: true,
       title: "Music Faculty",
+      labels: {
+        role: "Role",
+        qualification: "Qualification",
+        specialty: "Specialty",
+        experience: "Experience"
+      },
       items: [
         {
           name: 'Mr. Karan Mehra',
@@ -474,6 +518,11 @@ const MusicPage = ({ musicData = {} }) => {
         }
       ]
     },
+    general: {
+      learnMore: "Learn more",
+      viewDetails: "View Details",
+      download: "Download"
+    },
     // Section visibility controls
     showHero: true,
     showBenefits: true,
@@ -487,37 +536,79 @@ const MusicPage = ({ musicData = {} }) => {
     showContact: true
   };
 
-  // Merge provided data with defaults
-  const data = { ...defaultData, ...musicData };
+  // Use musicData if provided (e.g., from a database), otherwise fall back to jsonData
+  const data = musicData || jsonData;
 
   // Filter functions
-  const filteredHeroStats = data.hero.stats.filter(stat => stat.show !== false);
-  const filteredBenefits = data.benefits.items.filter(benefit => benefit.show !== false);
-  const filteredCategories = data.categories.items.filter(cat => cat.show !== false);
-  const filteredPrograms = Object.fromEntries(
-    Object.entries(data.programs.items).map(([key, items]) => [
-      key, 
-      items.filter(item => item.show !== false)
-    ])
-  );
-  const filteredUpcomingEvents = data.upcomingEvents.items.filter(event => event.show !== false);
-  const filteredAchievements = data.achievements.items.filter(achievement => achievement.show !== false);
-  const filteredFaculty = data.faculty.items.filter(teacher => teacher.show !== false);
-  const filteredResources = data.resources.items.filter(resource => resource.show !== false);
-  const filteredCtaButtons = data.cta.buttons.filter(button => button.show !== false);
-  const filteredContactItems = data.contact.items.filter(item => item.show !== false);
+  const filteredHeroStats = data.hero?.stats?.filter(stat => stat.show !== false) || [];
+  const filteredBenefits = data.benefits?.items?.filter(benefit => benefit.show !== false) || [];
+  const filteredCategories = data.categories?.items?.filter(cat => cat.show !== false) || [];
+  const filteredPrograms = data.programs?.items ? 
+    Object.fromEntries(
+      Object.entries(data.programs.items).map(([key, items]) => [
+        key, 
+        items.filter(item => item.show !== false)
+      ])
+    ) : {};
+  const filteredUpcomingEvents = data.upcomingEvents?.items?.filter(event => event.show !== false) || [];
+  const filteredAchievements = data.achievements?.items?.filter(achievement => achievement.show !== false) || [];
+  const filteredFaculty = data.faculty?.items?.filter(teacher => teacher.show !== false) || [];
+  const filteredResources = data.resources?.items?.filter(resource => resource.show !== false) || [];
+  const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
+  const filteredContactItems = data.contact?.items?.filter(item => item.show !== false) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      {data.showHero && data.hero.show && (
-        <section className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+      {data.showHero && data.hero?.show && (
+  <section
+    className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}
+    id="hero"
+  >
+    <div
+      className="absolute inset-0 bg-cover bg-center"
+      // style={{ backgroundImage: `url(${data.hero?.backgroundImage || 'https://via.placeholder.com/1920x400'})` }}
+    ></div>
+    <div className="absolute inset-0 bg-black/20"></div>
+    <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+      <div className="max-w-3xl">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>
+        <p className="text-xl text-green-100 leading-relaxed">
+          {data.hero?.subtitle}
+        </p>
+        {filteredHeroStats.length > 0 && (
+          <div className="flex flex-wrap gap-6 mt-8">
+            {filteredHeroStats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl font-bold text-yellow-400">{stat.value}</div>
+                <div className="text-sm text-green-200">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {data.hero?.ctaButton?.show && (
+          <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+            {data.hero?.ctaButton?.label}
+            <Download className="ml-2 h-4 w-4" />
+          </button>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+      {/* {data.showHero && data.hero?.show && (
+        <section className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
+          <img
+            src={data.hero?.backgroundImage || 'https://via.placeholder.com/1920x400'}
+            alt={data.hero?.title}
+            className="absolute inset-0 w-full h-full object-cover opacity-50"
+          />
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>
               <p className="text-xl text-green-100 leading-relaxed">
-                {data.hero.subtitle}
+                {data.hero?.subtitle}
               </p>
               {filteredHeroStats.length > 0 && (
                 <div className="flex flex-wrap gap-6 mt-8">
@@ -529,30 +620,32 @@ const MusicPage = ({ musicData = {} }) => {
                   ))}
                 </div>
               )}
-              <button className="mt-8 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                View Music Handbook
-                <Download className="ml-2 h-4 w-4" />
-              </button>
+              {data.hero?.ctaButton?.show && (
+                <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                  {data.hero?.ctaButton?.label}
+                  <Download className="ml-2 h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Benefits Section */}
-        {data.showBenefits && data.benefits.show && filteredBenefits.length > 0 && (
+        {data.showBenefits && data.benefits?.show && filteredBenefits.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.benefits.title}</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.benefits?.title}</h2>
               <p className="text-gray-600 max-w-3xl mx-auto">
-                {data.benefits.description}
+                {data.benefits?.description}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredBenefits.map((benefit, index) => {
-                const IconComponent = benefit.icon;
+                const IconComponent = benefit.icon || Brain; // Fallback icon
                 return (
                   <div key={index} className="bg-gray-50 rounded-lg p-6 hover:bg-green-50 transition-all duration-300 group text-center">
                     <div className="bg-green-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -568,18 +661,18 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* Categories Navigation */}
-        {data.showCategories && data.categories.show && filteredCategories.length > 0 && (
+        {data.showCategories && data.categories?.show && filteredCategories.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.categories.title}</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.categories?.title}</h2>
               <p className="text-gray-600">
-                {data.categories.description}
+                {data.categories?.description}
               </p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {filteredCategories.map(category => {
-                const IconComponent = category.icon;
+                const IconComponent = category.icon || Music; // Fallback icon
                 return (
                   <button
                     key={category.id}
@@ -601,15 +694,15 @@ const MusicPage = ({ musicData = {} }) => {
             </div>
 
             {/* Content for Selected Category */}
-            {data.showPrograms && data.programs.show && filteredPrograms[activeCategory] && filteredPrograms[activeCategory].length > 0 && (
+            {data.showPrograms && data.programs?.show && filteredPrograms[activeCategory] && filteredPrograms[activeCategory].length > 0 && (
               <div className="mt-8">
                 <h3 className="text-xl font-semibold text-gray-800 mb-6">
-                  {data.categories.items.find(c => c.id === activeCategory)?.name}
+                  {data.categories?.items?.find(c => c.id === activeCategory)?.name}
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredPrograms[activeCategory].map((item, index) => {
-                    const IconComponent = item.icon;
+                    const IconComponent = item.icon || Music; // Fallback icon
                     return (
                       <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
                         <div className="flex items-center mb-4">
@@ -623,9 +716,9 @@ const MusicPage = ({ musicData = {} }) => {
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center">
                               <Users className="h-4 w-4 mr-2 text-green-500" />
-                              <span>Grades: {item.grades}</span>
+                              <span>{data.programs?.labels?.programs?.grades}: {item.grades}</span>
                             </div>
-                            <p>{item.description}</p>
+                            <p>{data.programs?.labels?.programs?.description}: {item.description}</p>
                           </div>
                         )}
                         
@@ -633,15 +726,15 @@ const MusicPage = ({ musicData = {} }) => {
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center">
                               <Target className="h-4 w-4 mr-2 text-green-500" />
-                              <span>Level: {item.level}</span>
+                              <span>{data.programs?.labels?.ensembles?.level}: {item.level}</span>
                             </div>
                             <div className="flex items-center">
                               <Users className="h-4 w-4 mr-2 text-green-500" />
-                              <span>Director: {item.director}</span>
+                              <span>{data.programs?.labels?.ensembles?.director}: {item.director}</span>
                             </div>
                             <div className="flex items-center">
                               <Clock className="h-4 w-4 mr-2 text-green-500" />
-                              <span>{item.meeting}</span>
+                              <span>{data.programs?.labels?.ensembles?.meeting}: {item.meeting}</span>
                             </div>
                           </div>
                         )}
@@ -650,9 +743,9 @@ const MusicPage = ({ musicData = {} }) => {
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center">
                               <Music className="h-4 w-4 mr-2 text-green-500" />
-                              <span>Family: {item.family}</span>
+                              <span>{data.programs?.labels?.instruments?.family}: {item.family}</span>
                             </div>
-                            <p>Instruments: {item.instruments}</p>
+                            <p>{data.programs?.labels?.instruments?.instruments}: {item.instruments}</p>
                           </div>
                         )}
                         
@@ -660,21 +753,21 @@ const MusicPage = ({ musicData = {} }) => {
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-2 text-green-500" />
-                              <span>{item.date}</span>
+                              <span>{data.programs?.labels?.events?.date}: {item.date}</span>
                             </div>
                             <div className="flex items-center">
                               <Clock className="h-4 w-4 mr-2 text-green-500" />
-                              <span>{item.time}</span>
+                              <span>{data.programs?.labels?.events?.time}: {item.time}</span>
                             </div>
                             <div className="flex items-center">
                               <MapPin className="h-4 w-4 mr-2 text-green-500" />
-                              <span>{item.location}</span>
+                              <span>{data.programs?.labels?.events?.location}: {item.location}</span>
                             </div>
                           </div>
                         )}
                         
                         <button className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
-                          Learn more
+                          {data.general?.learnMore}
                           <ChevronRight className="ml-1 h-4 w-4" />
                         </button>
                       </div>
@@ -687,10 +780,10 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* Upcoming Events */}
-        {data.showUpcomingEvents && data.upcomingEvents.show && filteredUpcomingEvents.length > 0 && (
+        {data.showUpcomingEvents && data.upcomingEvents?.show && filteredUpcomingEvents.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents.title}</h2>
-            <p className="text-gray-600 mb-6">{data.upcomingEvents.description}</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents?.title}</h2>
+            <p className="text-gray-600 mb-6">{data.upcomingEvents?.description}</p>
             
             <div className="space-y-4">
               {filteredUpcomingEvents.map((event, index) => (
@@ -702,10 +795,7 @@ const MusicPage = ({ musicData = {} }) => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-800">{event.title}</h3>
-                        <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full mt-1">
-                          {event.ensemble}
-                        </span>
-                        <div className="flex flex-wrap items-center text-sm text-gray-600 mt-2">
+                        <div className="flex flex-wrap items-center text-sm text-gray-600 mt-1">
                           <span className="flex items-center mr-4">
                             <Clock className="h-4 w-4 mr-1" />
                             {new Date(event.date).toLocaleDateString('en-IN', { 
@@ -722,37 +812,35 @@ const MusicPage = ({ musicData = {} }) => {
                             {event.location}
                           </span>
                         </div>
+                        <p className="text-sm text-gray-700 mt-2">{event.description}</p>
                       </div>
                     </div>
                     <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex-shrink-0">
-                      View Details
+                      {data.upcomingEvents?.labels?.viewDetails}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
-            
-            <div className="text-center mt-6">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                View Full Events Calendar
-                <Calendar className="ml-2 h-5 w-5" />
+            {data.upcomingEvents?.ctaButton?.show && (
+              <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                {data.upcomingEvents?.ctaButton?.label}
               </button>
-            </div>
+            )}
           </div>
         )}
 
         {/* Achievements */}
-        {data.showAchievements && data.achievements.show && filteredAchievements.length > 0 && (
+        {data.showAchievements && data.achievements?.show && filteredAchievements.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements.title}</h2>
-            <p className="text-gray-600 mb-6">{data.achievements.description}</p>
-            
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements?.title}</h2>
+            <p className="text-gray-600 mb-6">{data.achievements?.description}</p>
             <div className="space-y-6">
               {filteredAchievements.map((year, index) => (
                 <div key={index}>
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">{year.year}</h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {year.items.map((item, idx) => (
+                    {year.items?.map((item, idx) => (
                       <li key={idx} className="flex items-center text-gray-700">
                         <Award className="h-4 w-4 text-yellow-500 mr-2 flex-shrink-0" />
                         {item}
@@ -766,9 +854,9 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* Faculty */}
-        {data.showFaculty && data.faculty.show && filteredFaculty.length > 0 && (
+        {data.showFaculty && data.faculty?.show && filteredFaculty.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty?.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredFaculty.map((teacher, index) => (
                 <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
@@ -779,9 +867,9 @@ const MusicPage = ({ musicData = {} }) => {
                     <h3 className="font-semibold text-gray-800">{teacher.name}</h3>
                     <p className="text-green-600 font-medium">{teacher.role}</p>
                     <div className="mt-2 text-sm text-gray-600 space-y-1">
-                      <p>{teacher.qualification}</p>
-                      <p>Specialty: {teacher.specialty}</p>
-                      <p>Experience: {teacher.experience}</p>
+                      <p>{data.faculty?.labels?.qualification}: {teacher.qualification}</p>
+                      <p>{data.faculty?.labels?.specialty}: {teacher.specialty}</p>
+                      <p>{data.faculty?.labels?.experience}: {teacher.experience}</p>
                     </div>
                   </div>
                 </div>
@@ -791,14 +879,13 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* Resources */}
-        {data.showResources && data.resources.show && filteredResources.length > 0 && (
+        {data.showResources && data.resources?.show && filteredResources.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.resources.title}</h2>
-            <p className="text-gray-600 mb-6">{data.resources.description}</p>
-            
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.resources?.title}</h2>
+            <p className="text-gray-600 mb-6">{data.resources?.description}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredResources.map((resource, index) => {
-                const IconComponent = resource.icon;
+                const IconComponent = resource.icon || FileText; // Fallback icon
                 return (
                   <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
                     <div className="flex items-start">
@@ -813,7 +900,7 @@ const MusicPage = ({ musicData = {} }) => {
                       </div>
                     </div>
                     <button className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
-                      Download
+                      {data.general?.download}
                       <Download className="ml-2 h-4 w-4" />
                     </button>
                   </div>
@@ -824,11 +911,11 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* CTA Section */}
-        {data.showCta && data.cta.show && (
-          <div className="bg-green-800 text-white rounded-lg p-8 text-center mb-8">
-            <h2 className="text-2xl font-bold mb-4">{data.cta.title}</h2>
+        {data.showCta && data.cta?.show && (
+          <div className="bg-green-800 text-white rounded-lg p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">{data.cta?.title}</h2>
             <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-              {data.cta.description}
+              {data.cta?.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {filteredCtaButtons.map((button, index) => (
@@ -841,12 +928,12 @@ const MusicPage = ({ musicData = {} }) => {
         )}
 
         {/* Contact Information */}
-        {data.showContact && data.contact.show && filteredContactItems.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact.title}</h2>
+        {data.showContact && data.contact?.show && filteredContactItems.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact?.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredContactItems.map((item, index) => {
-                const IconComponent = item.icon;
+                const IconComponent = item.icon || Phone; // Fallback to Phone if icon is missing
                 return (
                   <div key={index} className="flex items-center">
                     <IconComponent className="h-5 w-5 text-green-600 mr-3" />
@@ -866,7 +953,6 @@ const MusicPage = ({ musicData = {} }) => {
 };
 
 export default MusicPage;
-
 
 
 
