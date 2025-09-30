@@ -451,20 +451,17 @@ const HouseSystemPage = () => {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <div className="flex items-center space-x-2 mb-4">
-                <Clock className="h-6 w-6 text-green-400" />
-                <span className="text-green-400 font-semibold">Est. {houseSystemData.hero.establishedYear}</span>
-              </div>
+            
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{houseSystemData.hero.title}</h1>
-              <p className="text-xl text-green-100 mb-8 leading-relaxed">{houseSystemData.hero.subtitle}</p>
+              <p className="text-xl mb-8 leading-relaxed">{houseSystemData.hero.subtitle}</p>
               {houseSystemData.hero.stats.length > 0 && (
                 <div className="flex flex-wrap gap-6">
                   {houseSystemData.hero.stats
                     .filter(stat => stat.show !== false)
                     .map((stat, index) => (
                       <div key={index} className="text-center">
-                        <div className="text-3xl font-bold text-green-400">{stat.value}</div>
-                        <div className="text-sm text-green-200">{stat.label}</div>
+                        <div className="text-3xl font-bold ">{stat.value}</div>
+                        <div className="text-sm">{stat.label}</div>
                       </div>
                     ))}
                 </div>
@@ -891,7 +888,7 @@ const HouseSystemPage = () => {
 
       {/* CTA Section */}
       {houseSystemData.cta.show && (
-        <section className="py-16 bg-gradient-to-r from-green-600 to-green-700 text-white">
+        <section className="py-16 bg-gradient-to-r from-green-800 to-green-700 text-white">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-4">{houseSystemData.cta.title}</h2>
             <p className="text-lg text-green-100 mb-8 leading-relaxed">{houseSystemData.cta.subtitle}</p>
