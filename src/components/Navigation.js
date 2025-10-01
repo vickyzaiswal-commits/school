@@ -263,21 +263,9 @@ const Navigation = ({ schoolData = {} }) => {
     }));
   };
 
-  const removeMainItem = (index) => {
-    setConfig(prev => prev.filter((_, i) => i !== index));
-  };
+ 
 
-  const removeDropdownItem = (mainIndex, subIndex) => {
-    setConfig(prev => prev.map((item, i) => {
-      if (i === mainIndex && item.dropdown) {
-        return {
-          ...item,
-          dropdown: item.dropdown.filter((_, j) => j !== subIndex)
-        };
-      }
-      return item;
-    }));
-  };
+
 
   const validateConfig = () => {
     const newErrors = {};
@@ -390,7 +378,7 @@ const Navigation = ({ schoolData = {} }) => {
                   placeholder="/url-path"
                 />
               </div>
-              <div className="flex items-center space-x-1">
+              {/* <div className="flex items-center space-x-1">
                 <select
                   value={Object.keys(iconMap).find(key => iconMap[key] === item.icon) || 'Home'}
                   onChange={(e) => handleInputChange(index, 'icon', iconMap[e.target.value])}
@@ -407,14 +395,8 @@ const Navigation = ({ schoolData = {} }) => {
                 >
                   <Plus className="h-4 w-4" />
                 </button>
-                <button
-                  onClick={() => removeMainItem(index)}
-                  className="p-1 text-red-600 hover:bg-red-100 rounded"
-                  title="Remove menu"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+                
+              </div> */}
             </div>
 
             {/* Submenu Items - Show directly under main item */}
@@ -462,7 +444,7 @@ const Navigation = ({ schoolData = {} }) => {
                           placeholder="Description (optional)"
                         />
                       </div>
-                      <div className="flex items-center space-x-1">
+                      {/* <div className="flex items-center space-x-1">
                         <select
                           value={Object.keys(iconMap).find(key => iconMap[key] === subItem.icon) || 'Home'}
                           onChange={(e) => handleSubItemChange(index, subIndex, 'icon', iconMap[e.target.value])}
@@ -472,14 +454,8 @@ const Navigation = ({ schoolData = {} }) => {
                             <option key={iconKey} value={iconKey}>{iconKey}</option>
                           ))}
                         </select>
-                        <button
-                          onClick={() => removeDropdownItem(index, subIndex)}
-                          className="p-1 text-red-500 hover:bg-red-100 rounded"
-                          title="Remove submenu"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
+
+                      </div> */}
                     </div>
                   ))}
                 </div>
