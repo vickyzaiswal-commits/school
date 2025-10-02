@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -130,13 +131,18 @@ const Navigation = ({ schoolData = {} }) => {
     }
   ];
 
+  // Helper function to get icon component
+  const getIconComponent = (iconName) => {
+    return iconMap[iconName] || Home;
+  };
+
   const mapIconsToComponents = (items) => {
     return items.map(item => ({
       ...item,
-      icon: iconMap[item.icon] || Home,
+      icon: item.icon, // Keep as string for storage
       dropdown: item.dropdown ? item.dropdown.map(sub => ({
         ...sub,
-        icon: iconMap[sub.icon] || Home
+        icon: sub.icon // Keep as string for storage
       })) : undefined
     }));
   };
@@ -263,10 +269,6 @@ const Navigation = ({ schoolData = {} }) => {
     }));
   };
 
- 
-
-
-
   const validateConfig = () => {
     const newErrors = {};
     if (!config || config.filter(item => item.show).length === 0) {
@@ -299,17 +301,8 @@ const Navigation = ({ schoolData = {} }) => {
   };
 
   const preparePayload = () => {
-    const configToSave = config.map(item => ({
-      ...item,
-      icon: Object.keys(iconMap).find(key => iconMap[key] === item.icon) || 'Home',
-      dropdown: item.dropdown ? item.dropdown.map(sub => ({
-        ...sub,
-        icon: Object.keys(iconMap).find(key => iconMap[key] === sub.icon) || 'Home'
-      })) : undefined
-    }));
-
     return {
-      navigationItems: configToSave,
+      navigationItems: config,
       lastUpdated: new Date().toISOString(),
       updatedBy: 'admin',
       version: '1.0'
@@ -342,127 +335,102 @@ const Navigation = ({ schoolData = {} }) => {
   const renderEditForm = () => (
     <div className="p-4 bg-white max-h-[70vh] overflow-y-auto">
       <div className="space-y-4">
-        {config.map((item, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg bg-white">
-            {/* Main Item Header */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
-              <div className="flex items-center space-x-3 flex-1">
-                <input
-                  type="checkbox"
-                  checked={item.show}
-                  onChange={() => handleToggle(index, 'show')}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <div className="flex items-center space-x-2">
-                  {item.icon && <item.icon className="h-4 w-4 text-gray-600" />}
+        {config.map((item, index) => {
+          const IconComponent = getIconComponent(item.icon);
+          return (
+            <div key={index} className="border border-gray-200 rounded-lg bg-white">
+              {/* Main Item Header */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
+                <div className="flex items-center space-x-3 flex-1">
+                  <input
+                    type="checkbox"
+                    checked={item.show}
+                    onChange={() => handleToggle(index, 'show')}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <IconComponent className="h-4 w-4 text-gray-600" />
+                    <input
+                      type="text"
+                      value={item.name}
+                      onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                      className={`text-sm font-medium border-0 bg-transparent p-1 rounded ${
+                        errors[`${index}-name`] ? 'text-red-600 bg-red-50' : 'text-gray-900'
+                      }`}
+                      placeholder="Menu name"
+                    />
+                  </div>
                   <input
                     type="text"
-                    value={item.name}
-                    onChange={(e) => handleInputChange(index, 'name', e.target.value)}
-                    className={`text-sm font-medium border-0 bg-transparent p-1 rounded ${
-                      errors[`${index}-name`] ? 'text-red-600 bg-red-50' : 'text-gray-900'
-                    }`}
-                    placeholder="Menu name"
+                    value={item.href}
+                    onChange={(e) => handleInputChange(index, 'href', e.target.value)}
+                    readOnly={!item.isNew} // Only editable for new items
+                    className={`text-xs border-0 bg-transparent p-1 rounded flex-1 ${
+                      item.isNew 
+                        ? 'text-gray-700' 
+                        : 'text-gray-400 cursor-not-allowed'
+                    } ${errors[`${index}-href`] ? 'text-red-600 bg-red-50' : ''}`}
+                    placeholder="/url-path"
                   />
                 </div>
-                <input
-                  type="text"
-                  value={item.href}
-                  onChange={(e) => handleInputChange(index, 'href', e.target.value)}
-                  readOnly={!item.isNew} // Only editable for new items
-                  className={`text-xs border-0 bg-transparent p-1 rounded flex-1 ${
-                    item.isNew 
-                      ? 'text-gray-700' 
-                      : 'text-gray-400 cursor-not-allowed'
-                  } ${errors[`${index}-href`] ? 'text-red-600 bg-red-50' : ''}`}
-                  placeholder="/url-path"
-                />
               </div>
-              {/* <div className="flex items-center space-x-1">
-                <select
-                  value={Object.keys(iconMap).find(key => iconMap[key] === item.icon) || 'Home'}
-                  onChange={(e) => handleInputChange(index, 'icon', iconMap[e.target.value])}
-                  className="text-xs border border-gray-300 rounded px-2 py-1"
-                >
-                  {Object.keys(iconMap).map(iconKey => (
-                    <option key={iconKey} value={iconKey}>{iconKey}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => addDropdownItem(index)}
-                  className="p-1 text-green-600 hover:bg-green-100 rounded"
-                  title="Add submenu"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
-                
-              </div> */}
-            </div>
 
-            {/* Submenu Items - Show directly under main item */}
-            {item.dropdown && item.dropdown.length > 0 && (
-              <div className="p-2 bg-gray-25 border-t border-gray-100">
-                <div className="space-y-2">
-                  {item.dropdown.map((subItem, subIndex) => (
-                    <div key={subIndex} className="flex items-center justify-between p-2 bg-white border border-gray-100 rounded">
-                      <div className="flex items-center space-x-3 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={subItem.show}
-                          onChange={() => handleSubItemToggle(index, subIndex, 'show')}
-                          className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                        />
-                        <div className="flex items-center space-x-2">
-                          {subItem.icon && <subItem.icon className="h-3 w-3 text-gray-500" />}
-                          <input
-                            type="text"
-                            value={subItem.name}
-                            onChange={(e) => handleSubItemChange(index, subIndex, 'name', e.target.value)}
-                            className={`text-xs border-0 bg-transparent p-1 rounded ${
-                              errors[`${index}-${subIndex}-name`] ? 'text-red-600 bg-red-50' : 'text-gray-700'
-                            }`}
-                            placeholder="Submenu name"
-                          />
+              {/* Submenu Items - Show directly under main item */}
+              {item.dropdown && item.dropdown.length > 0 && (
+                <div className="p-2 bg-gray-25 border-t border-gray-100">
+                  <div className="space-y-2">
+                    {item.dropdown.map((subItem, subIndex) => {
+                      const SubIconComponent = getIconComponent(subItem.icon);
+                      return (
+                        <div key={subIndex} className="flex items-center justify-between p-2 bg-white border border-gray-100 rounded">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <input
+                              type="checkbox"
+                              checked={subItem.show}
+                              onChange={() => handleSubItemToggle(index, subIndex, 'show')}
+                              className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                            />
+                            <div className="flex items-center space-x-2">
+                              <SubIconComponent className="h-3 w-3 text-gray-500" />
+                              <input
+                                type="text"
+                                value={subItem.name}
+                                onChange={(e) => handleSubItemChange(index, subIndex, 'name', e.target.value)}
+                                className={`text-xs border-0 bg-transparent p-1 rounded ${
+                                  errors[`${index}-${subIndex}-name`] ? 'text-red-600 bg-red-50' : 'text-gray-700'
+                                }`}
+                                placeholder="Submenu name"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={subItem.href}
+                              onChange={(e) => handleSubItemChange(index, subIndex, 'href', e.target.value)}
+                              readOnly={!subItem.isNew} // Only editable for new items
+                              className={`text-xs border-0 bg-transparent p-1 rounded flex-1 ${
+                                subItem.isNew 
+                                  ? 'text-gray-700' 
+                                  : 'text-gray-400 cursor-not-allowed'
+                              } ${errors[`${index}-${subIndex}-href`] ? 'text-red-600 bg-red-50' : ''}`}
+                              placeholder="/submenu-url"
+                            />
+                            <input
+                              type="text"
+                              value={subItem.desc}
+                              onChange={(e) => handleSubItemChange(index, subIndex, 'desc', e.target.value)}
+                              className="text-xs border-0 bg-transparent p-1 rounded flex-1 text-gray-400"
+                              placeholder="Description (optional)"
+                            />
+                          </div>
                         </div>
-                        <input
-                          type="text"
-                          value={subItem.href}
-                          onChange={(e) => handleSubItemChange(index, subIndex, 'href', e.target.value)}
-                          readOnly={!subItem.isNew} // Only editable for new items
-                          className={`text-xs border-0 bg-transparent p-1 rounded flex-1 ${
-                            subItem.isNew 
-                              ? 'text-gray-700' 
-                              : 'text-gray-400 cursor-not-allowed'
-                          } ${errors[`${index}-${subIndex}-href`] ? 'text-red-600 bg-red-50' : ''}`}
-                          placeholder="/submenu-url"
-                        />
-                        <input
-                          type="text"
-                          value={subItem.desc}
-                          onChange={(e) => handleSubItemChange(index, subIndex, 'desc', e.target.value)}
-                          className="text-xs border-0 bg-transparent p-1 rounded flex-1 text-gray-400"
-                          placeholder="Description (optional)"
-                        />
-                      </div>
-                      {/* <div className="flex items-center space-x-1">
-                        <select
-                          value={Object.keys(iconMap).find(key => iconMap[key] === subItem.icon) || 'Home'}
-                          onChange={(e) => handleSubItemChange(index, subIndex, 'icon', iconMap[e.target.value])}
-                          className="text-xs border border-gray-300 rounded px-1 py-0.5"
-                        >
-                          {Object.keys(iconMap).map(iconKey => (
-                            <option key={iconKey} value={iconKey}>{iconKey}</option>
-                          ))}
-                        </select>
-
-                      </div> */}
-                    </div>
-                  ))}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
         
         {/* Add New Main Item Button */}
         <button
@@ -521,7 +489,7 @@ const Navigation = ({ schoolData = {} }) => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:space-x-1">
             {filteredNavItems.map((item) => {
-              const IconComponent = item.icon;
+              const IconComponent = getIconComponent(item.icon);
               return (
                 <div key={item.name} className="relative" ref={el => dropdownRefs.current[item.name] = el}>
                   {item.dropdown && item.dropdown.filter(sub => sub.show !== false).length > 0 ? (
@@ -545,7 +513,7 @@ const Navigation = ({ schoolData = {} }) => {
                           </div>
                           <div className="p-2 max-h-96 overflow-y-auto">
                             {item.dropdown.filter(sub => sub.show !== false).map((subItem) => {
-                              const SubIconComponent = subItem.icon;
+                              const SubIconComponent = getIconComponent(subItem.icon);
                               return (
                                 <Link
                                   key={subItem.name}
@@ -623,7 +591,7 @@ const Navigation = ({ schoolData = {} }) => {
         <div className="lg:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-2 space-y-1">
             {filteredNavItems.map((item) => {
-              const IconComponent = item.icon;
+              const IconComponent = getIconComponent(item.icon);
               return (
                 <div key={item.name}>
                   {item.dropdown && item.dropdown.filter(sub => sub.show !== false).length > 0 ? (
@@ -641,7 +609,7 @@ const Navigation = ({ schoolData = {} }) => {
                       {activeDropdown === `mobile-${item.name}` && (
                         <div className="ml-4 mt-1 space-y-1 border-l-2 border-green-100 pl-3">
                           {item.dropdown.filter(sub => sub.show !== false).map((subItem) => {
-                            const SubIconComponent = subItem.icon;
+                            const SubIconComponent = getIconComponent(subItem.icon);
                             return (
                               <Link
                                 key={subItem.name}

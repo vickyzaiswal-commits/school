@@ -1,3 +1,4 @@
+
 "use client";
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
@@ -220,53 +221,6 @@ const Navbar = ({ schoolData }) => {
     }));
   };
 
-  const addQuickLink = () => {
-    setConfig(prev => ({
-      ...prev,
-      quickLinks: [...prev.quickLinks, {
-        id: `new-${Date.now()}`,
-        show: true,
-        label: "New Link",
-        url: "/new-link",
-        icon: "Globe"
-      }]
-    }));
-  };
-
-
-
-  const addActionButton = () => {
-    setConfig(prev => ({
-      ...prev,
-      actionButtons: [...prev.actionButtons, {
-        id: `new-${Date.now()}`,
-        show: true,
-        label: "New Button",
-        url: "/new-button",
-        icon: "User",
-        buttonText: "New Button"
-      }]
-    }));
-  };
-
-
-
-  const addCard = () => {
-    setConfig(prev => ({
-      ...prev,
-      cards: [...prev.cards, {
-        id: `new-${Date.now()}`,
-        show: true,
-        title: "New Card",
-        subtitle: "Subtitle",
-        url: "/new-card",
-        icon: "MapPin"
-      }]
-    }));
-  };
-
-  
-
   const validateConfig = () => {
     const newErrors = {};
     if (!config.name.trim()) {
@@ -374,8 +328,9 @@ const Navbar = ({ schoolData }) => {
       const isLocationCard = card.id === 'locationCard';
       
       return (
-        <div 
+        <Link 
           key={card.id}
+          href={card.url}
           className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors cursor-pointer group ${
             isLocationCard 
               ? 'bg-gray-50 hover:bg-gray-100' 
@@ -400,7 +355,7 @@ const Navbar = ({ schoolData }) => {
               {isLocationCard && <ExternalLink className="w-3 h-3 ml-1" />}
             </p>
           </div>
-        </div>
+        </Link>
       );
     }).filter(Boolean);
   };
@@ -515,20 +470,12 @@ const Navbar = ({ schoolData }) => {
               <Globe className="h-4 w-4 mr-2 text-purple-600" />
               Quick Links
             </h3>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={config.showQuickLinks}
-                onChange={() => handleToggle('showQuickLinks')}
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-              />
-              <button
-                onClick={addQuickLink}
-                className="p-1 text-green-600 hover:bg-green-100 rounded"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
+            <input
+              type="checkbox"
+              checked={config.showQuickLinks}
+              onChange={() => handleToggle('showQuickLinks')}
+              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+            />
           </div>
           <div className="p-4 space-y-3">
             {config.quickLinks.map((link, index) => (
@@ -564,7 +511,6 @@ const Navbar = ({ schoolData }) => {
                     className="text-xs text-gray-400 border-0 bg-transparent p-1 rounded flex-1 cursor-not-allowed"
                   />
                 </div>
-               
               </div>
             ))}
           </div>
@@ -577,12 +523,6 @@ const Navbar = ({ schoolData }) => {
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Action Buttons
             </h3>
-            <button
-              onClick={addActionButton}
-              className="p-1 text-green-600 hover:bg-green-100 rounded"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
           </div>
           <div className="p-4 space-y-3">
             {config.actionButtons.map((button, index) => (
@@ -618,7 +558,6 @@ const Navbar = ({ schoolData }) => {
                     className="text-xs text-gray-400 border-0 bg-transparent p-1 rounded flex-1 cursor-not-allowed"
                   />
                 </div>
-                
               </div>
             ))}
           </div>
@@ -631,12 +570,6 @@ const Navbar = ({ schoolData }) => {
               <CreditCard className="h-4 w-4 mr-2 text-green-600" />
               Information Cards
             </h3>
-            <button
-              onClick={addCard}
-              className="p-1 text-green-600 hover:bg-green-100 rounded"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
           </div>
           <div className="p-4 space-y-3">
             {config.cards.map((card, index) => (
@@ -671,8 +604,14 @@ const Navbar = ({ schoolData }) => {
                     onChange={(e) => handleArrayItemChange('cards', index, 'subtitle', e.target.value)}
                     className="text-sm border-0 bg-transparent p-1 rounded text-gray-900 flex-1"
                   />
+                  <input
+                    type="text"
+                    value={card.url}
+                    onChange={(e) => handleArrayItemChange('cards', index, 'url', e.target.value)}
+                    className="text-xs border border-gray-300 rounded px-2 py-1 flex-1"
+                    placeholder="URL path"
+                  />
                 </div>
-                
               </div>
             ))}
           </div>
