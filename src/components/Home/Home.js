@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronRight,
   Award,
@@ -29,7 +29,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
-import axios from 'axios';
+import FileUpload from '@/utils/fileUpload';
 
 const HomePage = ({ schoolData = {} }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -40,22 +40,8 @@ const HomePage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const role = 'admin'; // This should ideally come from auth context
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_homes', {});
-        console.log(res, 'res');
-        if (res) {
-          setData(prev => ({ ...prev, ...res }));
-        }
-      } catch (error) {
-        console.error("Failed to fetch school data:", error);
-      } 
-    };
-    fetchData();
-  }, []);
 
   // Default data structure - all from JSON
   const defaultData = {
@@ -195,10 +181,10 @@ const HomePage = ({ schoolData = {} }) => {
       hours: "Monday - Friday: 8:00 AM - 4:00 PM\nSaturday: 8:00 AM - 12:00 PM"
     },
     quickActions: [
-      { label: "Apply for Admission", icon: "FileText", link: "/admissions", show: true },
-      { label: "Virtual Campus Tour", icon: "Globe", link: "/virtual-tour", show: true },
-      { label: "Download Prospectus", icon: "FileText", link: "/downloads", show: true },
-      { label: "Contact Admissions", icon: "Phone", link: "/contact", show: true }
+      { label: "Apply for Admission", icon: "FileText", link: "/admissions", show: true, isDownload: false },
+      { label: "Virtual Campus Tour", icon: "Globe", link: "/virtual-tour", show: true, isDownload: false },
+      { label: "Download Prospectus", icon: "FileText", link: "/downloads", show: true, isDownload: true, fileUrl: null },
+      { label: "Contact Admissions", icon: "Phone", link: "/contact", show: true, isDownload: false }
     ],
     quickAccess: [
       { label: "Admissions Open", sublabel: "Apply for 2025-26", icon: "FileText", link: "/admissions", show: true },
@@ -226,7 +212,6 @@ const HomePage = ({ schoolData = {} }) => {
         title: "Visit Our Campus",
         buttonText: "Schedule a Visit",
         ctaLink: "/appointment",
-
       }
     },
     layout: {
@@ -257,8 +242,50 @@ const HomePage = ({ schoolData = {} }) => {
     User
   };
 
-  // Merge provided data with defaults - all from JSON
-  const [data, setData] = useState({ ...defaultData, ...schoolData });
+  // Start with default data
+  const [data, setData] = useState(defaultData);
+
+  // Fetch data from database on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await apiRequest('save_data/get_all_homes', {});
+        console.log('Fetched data from DB:', res);
+        
+        if (res && res.status === 200 && res.data && res.data.length > 0) {
+          // Get the first home record (assuming single record for home page)
+          const homeRecord = res.data[0];
+          
+          // Check if Data exists and has the expected structure
+          if (homeRecord.Data && homeRecord.Data.homeData) {
+            // Use the complete homeData from database
+            console.log('Using database data:', homeRecord.Data.homeData);
+            setData(homeRecord.Data.homeData);
+          } else if (homeRecord.Data) {
+            // If Data exists but no homeData wrapper, use Data directly
+            console.log('Using database data (direct):', homeRecord.Data);
+            setData(homeRecord.Data);
+          } else {
+            // Fallback to default data
+            console.log('No valid data in database, using default');
+            setData(defaultData);
+          }
+        } else {
+          // No data in database, use default JSON data
+          console.log('No data in database, using default');
+          setData(defaultData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch school data:", error);
+        // Fallback to default data if fetch fails
+        setData(defaultData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Check role to enable edit mode
   useEffect(() => {
@@ -271,19 +298,58 @@ const HomePage = ({ schoolData = {} }) => {
     }
   }, [role]);
 
+  // Safe filter functions that handle non-array data
+  const getSafeArray = (arrayData, fallback = []) => {
+    return Array.isArray(arrayData) ? arrayData : fallback;
+  };
+
+  const getSafeObject = (objectData, fallback = {}) => {
+    return objectData && typeof objectData === 'object' ? objectData : fallback;
+  };
+
+  // Memoized filtered arrays to prevent unnecessary re-renders
+  const filteredHeroSlides = useMemo(() => 
+    getSafeArray(data.heroSlides).filter(slide => slide && slide.show !== false),
+    [data.heroSlides]
+  );
+
+  const filteredTestimonials = useMemo(() => 
+    getSafeArray(data.testimonials).filter(testimonial => testimonial && testimonial.show !== false),
+    [data.testimonials]
+  );
+
+  const filteredQuickStats = getSafeArray(data.quickStats).filter(stat => stat && stat.show !== false);
+  const filteredFeatures = getSafeArray(data.features).filter(feature => feature && feature.show !== false);
+  const filteredAnnouncements = getSafeArray(data.announcements).filter(announcement => announcement && announcement.show !== false);
+  const filteredQuickActions = getSafeArray(data.quickActions).filter(action => action && action.show !== false);
+  const filteredQuickAccess = getSafeArray(data.quickAccess).filter(access => access && access.show !== false);
+  
+  // Safe access for principal message stats
+  const principalMessage = getSafeObject(data.principalMessage);
+  const filteredPrincipalStats = getSafeArray(principalMessage.stats).filter(stat => stat && stat.show !== false);
+
+  // Safe access for layout
+  const layout = getSafeObject(data.layout);
+  const titles = getSafeObject(data.titles);
+
+  // Set up intervals only when data is available and arrays are valid
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % data.heroSlides.filter(s => s.show !== false).length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [data.heroSlides]);
+    if (filteredHeroSlides.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % filteredHeroSlides.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [filteredHeroSlides.length]); // Depend on length instead of array reference
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % data.testimonials.filter(t => t.show !== false).length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [data.testimonials]);
+    if (filteredTestimonials.length > 0) {
+      const interval = setInterval(() => {
+        setActiveTestimonial((prev) => (prev + 1) % filteredTestimonials.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [filteredTestimonials.length]);
 
   // Handle opening edit modal for a section
   const openEditModal = (section) => {
@@ -296,74 +362,82 @@ const HomePage = ({ schoolData = {} }) => {
 
     switch (section) {
       case 'heroSlides':
-        sectionData = { ...data.layout, showSection: data.layout.showHero, items: [...data.heroSlides] };
+        sectionData = { ...layout, showSection: layout.showHero, items: [...getSafeArray(data.heroSlides)] };
         layoutKey = 'showHero';
         break;
       case 'quickStats':
-        sectionData = { ...data.layout, showSection: data.layout.showStats, items: [...data.quickStats] };
+        sectionData = { ...layout, showSection: layout.showStats, items: [...getSafeArray(data.quickStats)] };
         layoutKey = 'showStats';
         break;
       case 'features':
         sectionData = {
-          ...data.layout,
-          showSection: data.layout.showFeatures,
-          title: data.titles.features.title,
-          subtitle: data.titles.features.subtitle,
-          items: [...data.features]
+          ...layout,
+          showSection: layout.showFeatures,
+          title: titles.features?.title || '',
+          subtitle: titles.features?.subtitle || '',
+          items: [...getSafeArray(data.features)]
         };
         layoutKey = 'showFeatures';
         titlesKey = 'features';
         break;
       case 'principalMessage':
         sectionData = {
-          ...data.layout,
-          showSection: data.layout.showPrincipal,
-          title: data.titles.principal.title,
-          ...data.principalMessage
+          ...layout,
+          showSection: layout.showPrincipal,
+          title: titles.principal?.title || '',
+          ...principalMessage
         };
         layoutKey = 'showPrincipal';
         titlesKey = 'principal';
         break;
       case 'announcements':
         sectionData = {
-          ...data.layout,
-          showSection: data.layout.showAnnouncements,
-          title: data.titles.announcements.title,
-          viewAll: data.titles.announcements.viewAll,
-          viewAllLink: data.titles.announcements.viewAllLink,
-          items: [...data.announcements]
+          ...layout,
+          showSection: layout.showAnnouncements,
+          title: titles.announcements?.title || '',
+          viewAll: titles.announcements?.viewAll || '',
+          viewAllLink: titles.announcements?.viewAllLink || '',
+          items: [...getSafeArray(data.announcements)]
         };
         layoutKey = 'showAnnouncements';
         titlesKey = 'announcements';
         break;
       case 'testimonials':
         sectionData = {
-          ...data.layout,
-          showSection: data.layout.showTestimonials,
-          title: data.titles.testimonials.title,
-          subtitle: data.titles.testimonials.subtitle,
-          items: [...data.testimonials]
+          ...layout,
+          showSection: layout.showTestimonials,
+          title: titles.testimonials?.title || '',
+          subtitle: titles.testimonials?.subtitle || '',
+          items: [...getSafeArray(data.testimonials)]
         };
         layoutKey = 'showTestimonials';
         titlesKey = 'testimonials';
         break;
       case 'contactInfo':
+        const contactInfo = getSafeObject(data.contactInfo);
+        const updatedQuickActions = getSafeArray(data.quickActions).map(action => {
+          if (action.label === "Download Prospectus") {
+            return { ...action, isDownload: true };
+          }
+          return action;
+        });
         sectionData = {
-          ...data.layout,
-          showSection: data.layout.showContact,
-          title: data.titles.contact.title,
-          buttonText: data.titles.contact.buttonText,
-          ...data.contactInfo,
-          quickActions: [...data.quickActions]
+          ...layout,
+          showSection: layout.showContact,
+          title: titles.contact?.title || '',
+          buttonText: titles.contact?.buttonText || '',
+          ctaLink: titles.contact?.ctaLink || '',
+          ...contactInfo,
+          quickActions: [...updatedQuickActions]
         };
         layoutKey = 'showContact';
         titlesKey = 'contact';
         break;
       case 'quickAccess':
-        sectionData = { items: [...data.quickAccess] };
+        sectionData = { items: [...getSafeArray(data.quickAccess)] };
         break;
       default:
-        sectionData = { ...data[section] };
+        sectionData = { ...getSafeObject(data[section]) };
     }
     setEditData(sectionData);
     setOriginalData(JSON.parse(JSON.stringify(sectionData)));
@@ -389,27 +463,38 @@ const HomePage = ({ schoolData = {} }) => {
     setEditData(updated);
   };
 
-  // Handle file upload for images
-  const handleFileUpload = (arrayKey, index, e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const imageUrl = URL.createObjectURL(file);
-      handleArrayChange(arrayKey, index, 'image', imageUrl);
+  // Handle download for prospectus
+const handleDownload = async (url, filename = 'prospectus.pdf') => {
+  if (!url) {
+    alert('No file available for download. Please contact administration.');
+    return;
+  }
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch file');
     }
-  };
-
+    const blob = await response.blob();
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+    alert('Download failed. Please try again.');
+  }
+};
   // Toggle showSection
   const handleToggleSection = (value) => {
     setEditData({ ...editData, showSection: value });
   };
 
-  // Save changes
-  const saveChanges = async() => {
-    const payload = preparePayload();
-        console.log('Payload:', JSON.stringify(payload, null, 2));
-    const res= await apiRequest('save_data/save_home', payload);
-
-
+  // Save changes - Save complete JSON data to database
+  const saveChanges = async () => {
     let updatedData = { ...data };
 
     // Update layout if present
@@ -422,12 +507,12 @@ const HomePage = ({ schoolData = {} }) => {
                 editSection === 'testimonials' ? 'showTestimonials' :
                   editSection === 'contactInfo' ? 'showContact' : null;
       if (layoutKey) {
-        updatedData.layout[layoutKey] = editData.showSection;
+        updatedData.layout = { ...updatedData.layout, [layoutKey]: editData.showSection };
       }
     }
 
     // Update titles if present
-    if (editData.title !== undefined || editData.subtitle !== undefined || editData.viewAll !== undefined || editData.buttonText !== undefined) {
+    if (editData.title !== undefined || editData.subtitle !== undefined || editData.viewAll !== undefined || editData.buttonText !== undefined || editData.ctaLink !== undefined) {
       const titlesKey = editSection === 'features' ? 'features' :
         editSection === 'principalMessage' ? 'principal' :
           editSection === 'announcements' ? 'announcements' :
@@ -439,43 +524,62 @@ const HomePage = ({ schoolData = {} }) => {
         if (editData.subtitle !== undefined) titleUpdates.subtitle = editData.subtitle;
         if (editData.viewAll !== undefined) {
           titleUpdates.viewAll = editData.viewAll;
-          titleUpdates.viewAllLink = editData.viewAllLink || data.titles[titlesKey].viewAllLink;
+          titleUpdates.viewAllLink = editData.viewAllLink || (titles[titlesKey]?.viewAllLink || '');
         }
         if (editData.buttonText !== undefined) titleUpdates.buttonText = editData.buttonText;
-        updatedData.titles[titlesKey] = {
-          ...data.titles[titlesKey],
-          ...titleUpdates
+        if (editData.ctaLink !== undefined) titleUpdates.ctaLink = editData.ctaLink;
+        updatedData.titles = {
+          ...updatedData.titles,
+          [titlesKey]: {
+            ...(updatedData.titles?.[titlesKey] || {}),
+            ...titleUpdates
+          }
         };
       }
     }
 
     // Update main section data
     if (editSection === 'contactInfo') {
-      const { quickActions, showSection, title, buttonText, ...contactUpdates } = editData;
-      updatedData.contactInfo = { ...data.contactInfo, ...contactUpdates };
+      const { quickActions, showSection, title, buttonText, ctaLink, ...contactUpdates } = editData;
+      updatedData.contactInfo = { ...updatedData.contactInfo, ...contactUpdates };
       if (quickActions) updatedData.quickActions = quickActions;
+    } else if (editSection === 'principalMessage') {
+      const { showSection, title, ...principalUpdates } = editData;
+      updatedData.principalMessage = { ...updatedData.principalMessage, ...principalUpdates };
     } else if (editData.items !== undefined) {
       updatedData[editSection] = editData.items;
-    } else if (editData.stats !== undefined) {
-      const { showSection, title, ...principalUpdates } = editData;
-      updatedData.principalMessage = { ...data.principalMessage, ...principalUpdates };
     } else {
       updatedData[editSection] = { ...editData };
     }
 
-    setData(updatedData);
-    setEditFormOpen(false);
-    setOriginalData(null);
-  };
+    // Prepare the complete JSON payload with all data
+    const payload = {
+      homeData: updatedData, // Send complete JSON data
+      lastUpdated: new Date().toISOString(),
+      updatedBy: 'admin',
+      version: '1.0'
+    };
 
-  // Prepare payload for log
-  const preparePayload = () => ({
-    ...data,
-    [editSection]: editData,
-    lastUpdated: new Date().toISOString(),
-    updatedBy: 'admin',
-    version: '1.0'
-  });
+    console.log('Saving complete JSON payload:', JSON.stringify(payload, null, 2));
+    
+    try {
+      const res = await apiRequest('save_data/save_home', { payload });
+      console.log('Save response:', res);
+      
+      if (res && res.status === 201) {
+        // Update local state only after successful API call
+        setData(updatedData);
+        setEditFormOpen(false);
+        setOriginalData(null);
+        alert('Data saved successfully!');
+      } else {
+        alert('Failed to save data. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to save data:', error);
+      alert('Error saving data. Please try again.');
+    }
+  };
 
   // Cancel changes
   const cancelChanges = () => {
@@ -491,16 +595,6 @@ const HomePage = ({ schoolData = {} }) => {
   const togglePreview = () => {
     setPreviewMode(!previewMode);
   };
-
-  // Filter functions
-  const filteredHeroSlides = data.heroSlides.filter(slide => slide.show !== false);
-  const filteredQuickStats = data.quickStats.filter(stat => stat.show !== false);
-  const filteredFeatures = data.features.filter(feature => feature.show !== false);
-  const filteredAnnouncements = data.announcements.filter(announcement => announcement.show !== false);
-  const filteredTestimonials = data.testimonials.filter(testimonial => testimonial.show !== false);
-  const filteredQuickActions = data.quickActions.filter(action => action.show !== false);
-  const filteredQuickAccess = data.quickAccess.filter(access => access.show !== false);
-  const filteredPrincipalStats = data.principalMessage.stats ? data.principalMessage.stats.filter(stat => stat.show !== false) : [];
 
   // Modal Footer Component
   const ModalFooter = () => (
@@ -539,6 +633,18 @@ const HomePage = ({ schoolData = {} }) => {
     const IconComponent = iconMap[iconName];
     return IconComponent ? <IconComponent className="h-4 w-4 text-yellow-400" /> : <Globe className="h-4 w-4 text-yellow-400" />;
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading school data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -588,21 +694,11 @@ const HomePage = ({ schoolData = {} }) => {
                             className="w-full p-2 border rounded mb-2"
                           />
                           <label className="block text-sm font-medium mb-1">Or Upload File</label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload('items', index, e)}
-                            className="w-full p-2 border rounded"
+                          <FileUpload
+                            currentUrl={slide.image || ''}
+                            onUploadSuccess={(url) => handleArrayChange('items', index, 'image', url)}
+                            label="Hero Slide Image"
                           />
-                          {slide.image && (
-                            <div className="mt-2">
-                              <img
-                                src={slide.image}
-                                alt={`Preview ${index + 1}`}
-                                className="w-full h-32 object-cover rounded border"
-                              />
-                            </div>
-                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Title</label>
@@ -691,6 +787,20 @@ const HomePage = ({ schoolData = {} }) => {
                           />
                         </div>
                         <div>
+                          <label className="block text-sm font-medium">Icon</label>
+                          <select
+                            value={stat.icon || ''}
+                            onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)}
+                            className="w-full p-2 border rounded"
+                          >
+                            {Object.keys(iconMap).map((key) => (
+                              <option key={key} value={key}>
+                                {key}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
@@ -732,11 +842,11 @@ const HomePage = ({ schoolData = {} }) => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium">Subtitle</label>
-                        <textarea
+                        <input
+                          type="text"
                           value={editData.subtitle || ''}
                           onChange={(e) => handleObjectChange('subtitle', e.target.value)}
                           className="w-full p-2 border rounded"
-                          rows="2"
                         />
                       </div>
                     </div>
@@ -745,6 +855,20 @@ const HomePage = ({ schoolData = {} }) => {
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <h3 className="text-lg font-semibold mb-2">Feature {index + 1}</h3>
                       <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Icon</label>
+                          <select
+                            value={feature.icon || ''}
+                            onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)}
+                            className="w-full p-2 border rounded"
+                          >
+                            {Object.keys(iconMap).map((key) => (
+                              <option key={key} value={key}>
+                                {key}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         <div>
                           <label className="block text-sm font-medium">Title</label>
                           <input
@@ -806,7 +930,7 @@ const HomePage = ({ schoolData = {} }) => {
                     </div>
                   </div>
                   <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <h3 className="text-lg font-semibold mb-2">Principal Details</h3>
+                    <h3 className="text-lg font-semibold mb-2">Message Details</h3>
                     <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium">Name</label>
@@ -832,42 +956,44 @@ const HomePage = ({ schoolData = {} }) => {
                           value={editData.message || ''}
                           onChange={(e) => handleObjectChange('message', e.target.value)}
                           className="w-full p-2 border rounded"
-                          rows="5"
+                          rows="4"
                         />
                       </div>
                     </div>
                   </div>
                   <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-2">Stats</h3>
-                    {editData.stats.map((stat, index) => (
-                      <div key={index} className="mb-4 border p-2 rounded bg-white">
-                        <div>
-                          <label className="block text-sm font-medium">Value</label>
-                          <input
-                            type="text"
-                            value={stat.value || ''}
-                            onChange={(e) => handleNestedArrayChange('stats', index, 'value', e.target.value)}
-                            className="w-full p-2 border rounded"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium">Label</label>
-                          <input
-                            type="text"
-                            value={stat.label || ''}
-                            onChange={(e) => handleNestedArrayChange('stats', index, 'label', e.target.value)}
-                            className="w-full p-2 border rounded"
-                          />
-                        </div>
-                        <div>
-                          <label className="flex items-center space-x-2">
+                    {editData.stats?.map((stat, index) => (
+                      <div key={index} className="mb-4 p-3 border rounded bg-white">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="block text-sm font-medium">Value</label>
                             <input
-                              type="checkbox"
-                              checked={stat.show !== false}
-                              onChange={(e) => handleNestedArrayChange('stats', index, 'show', e.target.checked)}
+                              type="text"
+                              value={stat.value || ''}
+                              onChange={(e) => handleNestedArrayChange('stats', index, 'value', e.target.value)}
+                              className="w-full p-2 border rounded"
                             />
-                            <span>Show Stat</span>
-                          </label>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium">Label</label>
+                            <input
+                              type="text"
+                              value={stat.label || ''}
+                              onChange={(e) => handleNestedArrayChange('stats', index, 'label', e.target.value)}
+                              className="w-full p-2 border rounded"
+                            />
+                          </div>
+                          <div>
+                            <label className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={stat.show !== false}
+                                onChange={(e) => handleNestedArrayChange('stats', index, 'show', e.target.checked)}
+                              />
+                              <span>Show Stat</span>
+                            </label>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -915,11 +1041,12 @@ const HomePage = ({ schoolData = {} }) => {
                           value={editData.viewAllLink || ''}
                           onChange={(e) => handleObjectChange('viewAllLink', e.target.value)}
                           className="w-full p-2 border rounded"
+                          placeholder="/news-events"
                         />
                       </div>
                     </div>
                   </div>
-                  {editData.items.map((ann, index) => (
+                  {editData.items.map((announcement, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <h3 className="text-lg font-semibold mb-2">Announcement {index + 1}</h3>
                       <div className="space-y-2">
@@ -927,7 +1054,7 @@ const HomePage = ({ schoolData = {} }) => {
                           <label className="block text-sm font-medium">Date</label>
                           <input
                             type="text"
-                            value={ann.date || ''}
+                            value={announcement.date || ''}
                             onChange={(e) => handleArrayChange('items', index, 'date', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
@@ -936,7 +1063,7 @@ const HomePage = ({ schoolData = {} }) => {
                           <label className="block text-sm font-medium">Title</label>
                           <input
                             type="text"
-                            value={ann.title || ''}
+                            value={announcement.title || ''}
                             onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
@@ -944,7 +1071,7 @@ const HomePage = ({ schoolData = {} }) => {
                         <div>
                           <label className="block text-sm font-medium">Content</label>
                           <textarea
-                            value={ann.content || ''}
+                            value={announcement.content || ''}
                             onChange={(e) => handleArrayChange('items', index, 'content', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
@@ -954,7 +1081,7 @@ const HomePage = ({ schoolData = {} }) => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={ann.urgent || false}
+                              checked={announcement.urgent || false}
                               onChange={(e) => handleArrayChange('items', index, 'urgent', e.target.checked)}
                             />
                             <span>Urgent</span>
@@ -964,7 +1091,7 @@ const HomePage = ({ schoolData = {} }) => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={ann.show !== false}
+                              checked={announcement.show !== false}
                               onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)}
                             />
                             <span>Show Announcement</span>
@@ -1002,11 +1129,11 @@ const HomePage = ({ schoolData = {} }) => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium">Subtitle</label>
-                        <textarea
+                        <input
+                          type="text"
                           value={editData.subtitle || ''}
                           onChange={(e) => handleObjectChange('subtitle', e.target.value)}
                           className="w-full p-2 border rounded"
-                          rows="2"
                         />
                       </div>
                     </div>
@@ -1043,14 +1170,14 @@ const HomePage = ({ schoolData = {} }) => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium">Rating</label>
+                          <label className="block text-sm font-medium">Rating (1-5)</label>
                           <input
                             type="number"
+                            min="1"
+                            max="5"
                             value={test.rating || 5}
                             onChange={(e) => handleArrayChange('items', index, 'rating', parseInt(e.target.value))}
                             className="w-full p-2 border rounded"
-                            min="1"
-                            max="5"
                           />
                         </div>
                         <div>
@@ -1106,7 +1233,7 @@ const HomePage = ({ schoolData = {} }) => {
                         <label className="block text-sm font-medium">Button Link</label>
                         <input
                           type="text"
-                          value={editData.ctaLink !== undefined ? editData.ctaLink : (data.titles.contact.ctaLink || '')}
+                          value={editData.ctaLink !== undefined ? editData.ctaLink : (titles.contact?.ctaLink || '')}
                           onChange={(e) => handleObjectChange('ctaLink', e.target.value)}
                           className="w-full p-2 border rounded"
                           placeholder="/appointment"
@@ -1183,15 +1310,29 @@ const HomePage = ({ schoolData = {} }) => {
                               ))}
                             </select>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium">Link</label>
-                            <input
-                              type="text"
-                              value={action.link || ''}
-                              onChange={(e) => handleArrayChange('quickActions', index, 'link', e.target.value)}
-                              className="w-full p-2 border rounded"
-                            />
-                          </div>
+                          {!action.isDownload && (
+                            <div>
+                              <label className="block text-sm font-medium">Link</label>
+                              <input
+                                type="text"
+                                value={action.link || ''}
+                                onChange={(e) => handleArrayChange('quickActions', index, 'link', e.target.value)}
+                                className="w-full p-2 border rounded"
+                              />
+                            </div>
+                          )}
+                          {action.isDownload && (
+                            <div>
+                              <label className="block text-sm font-medium">Upload Prospectus File</label>
+                              <FileUpload
+                                currentUrl={action.fileUrl || ''}
+                                onUploadSuccess={(url) => handleArrayChange('quickActions', index, 'fileUrl', url)}
+                                label="Upload PDF"
+                                accept="application/pdf"
+                                isDocument={true}
+                              />
+                            </div>
+                          )}
                           <div>
                             <label className="flex items-center space-x-2">
                               <input
@@ -1231,6 +1372,20 @@ const HomePage = ({ schoolData = {} }) => {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm font-medium">Icon</label>
+                      <select
+                        value={access.icon || ''}
+                        onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      >
+                        {Object.keys(iconMap).map((key) => (
+                          <option key={key} value={key}>
+                            {key}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium">Link</label>
                       <input
                         type="text"
@@ -1260,7 +1415,7 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Hero Section */}
-      {data.layout.showHero && filteredHeroSlides.length > 0 && (
+      {layout.showHero && filteredHeroSlides.length > 0 && (
         <section className="relative h-[450px] overflow-hidden">
           {filteredHeroSlides.map((slide, index) => (
             <div
@@ -1273,6 +1428,7 @@ const HomePage = ({ schoolData = {} }) => {
                 src={slide.image}
                 alt={slide.title}
                 className="w-full h-full object-cover"
+                onLoad={() => console.log(`Slide ${index} loaded`)} // Debug log
               />
               <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <div className="text-center text-white px-4 max-w-4xl">
@@ -1345,7 +1501,7 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Quick Stats */}
-      {data.layout.showStats && filteredQuickStats.length > 0 && (
+      {layout.showStats && filteredQuickStats.length > 0 && (
         <section className="py-12 bg-gray-50 relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className={`grid grid-cols-2 ${filteredQuickStats.length > 2 ? 'md:grid-cols-4' : 'md:grid-cols-2'} gap-6`}>
@@ -1372,13 +1528,13 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Features Section */}
-      {data.layout.showFeatures && filteredFeatures.length > 0 && (
+      {layout.showFeatures && filteredFeatures.length > 0 && (
         <section className="py-16 bg-white relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.titles.features.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{titles.features?.title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {data.titles.features.subtitle}
+                {titles.features?.subtitle}
               </p>
             </div>
 
@@ -1406,22 +1562,22 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Principal's Message */}
-      {data.layout.showPrincipal && (
+      {layout.showPrincipal && principalMessage.show && (
         <section className="py-16 bg-gradient-to-r from-green-700 to-green-600 text-white relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-4">{data.titles.principal.title}</h2>
+                <h2 className="text-3xl font-bold mb-4">{titles.principal?.title}</h2>
                 <blockquote className="text-base leading-relaxed mb-4">
-                  "{data.principalMessage.message}"
+                  "{principalMessage.message}"
                 </blockquote>
                 <div className="flex items-center space-x-3">
                   <div className="bg-white/20 rounded-full w-12 h-12 flex items-center justify-center">
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold">{data.principalMessage.name}</h4>
-                    <p className="text-green-100 text-sm">{data.principalMessage.role}</p>
+                    <h4 className="text-lg font-semibold">{principalMessage.name}</h4>
+                    <p className="text-green-100 text-sm">{principalMessage.role}</p>
                   </div>
                 </div>
               </div>
@@ -1454,13 +1610,13 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Announcements */}
-      {data.layout.showAnnouncements && filteredAnnouncements.length > 0 && (
+      {layout.showAnnouncements && filteredAnnouncements.length > 0 && (
         <section className="py-16 bg-white relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-800">{data.titles.announcements.title}</h2>
-              <a href={data.titles.announcements.viewAllLink} className="text-green-600 hover:text-green-700 font-semibold flex items-center text-sm">
-                {data.titles.announcements.viewAll}
+              <h2 className="text-3xl font-bold text-gray-800">{titles.announcements?.title}</h2>
+              <a href={titles.announcements?.viewAllLink} className="text-green-600 hover:text-green-700 font-semibold flex items-center text-sm">
+                {titles.announcements?.viewAll}
                 <ChevronRight className="ml-1 h-4 w-4" />
               </a>
             </div>
@@ -1494,13 +1650,13 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Testimonials */}
-      {data.layout.showTestimonials && filteredTestimonials.length > 0 && (
+      {layout.showTestimonials && filteredTestimonials.length > 0 && (
         <section className="py-16 bg-gray-50 relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.titles.testimonials.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{titles.testimonials?.title}</h2>
               <p className="text-lg text-gray-600">
-                {data.titles.testimonials.subtitle}
+                {titles.testimonials?.subtitle}
               </p>
             </div>
 
@@ -1546,19 +1702,19 @@ const HomePage = ({ schoolData = {} }) => {
       )}
 
       {/* Contact Section */}
-      {data.layout.showContact && (
+      {layout.showContact && (
         <section className="py-16 bg-green-800 text-white relative">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               <div>
-                <h2 className="text-3xl font-bold mb-6">{data.titles.contact.title}</h2>
+                <h2 className="text-3xl font-bold mb-6">{titles.contact?.title}</h2>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
                     <MapPin className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="text-base font-semibold mb-1">Address</h3>
                       <p className="text-green-100 text-sm whitespace-pre-line">
-                        {data.contactInfo.address}
+                        {data.contactInfo?.address}
                       </p>
                     </div>
                   </div>
@@ -1568,7 +1724,7 @@ const HomePage = ({ schoolData = {} }) => {
                     <div>
                       <h3 className="text-base font-semibold mb-1">Phone</h3>
                       <p className="text-green-100 text-sm whitespace-pre-line">
-                        {data.contactInfo.phone}
+                        {data.contactInfo?.phone}
                       </p>
                     </div>
                   </div>
@@ -1577,7 +1733,7 @@ const HomePage = ({ schoolData = {} }) => {
                     <Mail className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="text-base font-semibold mb-1">Email</h3>
-                      <p className="text-green-100 text-sm">{data.contactInfo.email}</p>
+                      <p className="text-green-100 text-sm">{data.contactInfo?.email}</p>
                     </div>
                   </div>
 
@@ -1586,17 +1742,20 @@ const HomePage = ({ schoolData = {} }) => {
                     <div>
                       <h3 className="text-base font-semibold mb-1">Office Hours</h3>
                       <p className="text-green-100 text-sm whitespace-pre-line">
-                        {data.contactInfo.hours}
+                        {data.contactInfo?.hours}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6">
-                  <button className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-5 py-2 rounded-lg font-semibold transition-colors text-sm">
-                    {data.titles.contact.buttonText}
+                  <a
+                    href={titles.contact?.ctaLink || "#"}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-5 py-2 rounded-lg font-semibold transition-colors text-sm inline-flex items-center"
+                  >
+                    {titles.contact?.buttonText}
                     <ExternalLink className="inline ml-2 h-4 w-4" />
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -1605,15 +1764,22 @@ const HomePage = ({ schoolData = {} }) => {
                   <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
                     <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
                     <div className="grid grid-cols-1 gap-3">
-                      {filteredQuickActions.map((action, index) => (
-                        <a key={index} href={action.link} className="flex items-center justify-between bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-colors text-sm">
-                          <div className="flex items-center space-x-2">
-                            {renderIcon(action.icon)}
-                            <span>{action.label}</span>
-                          </div>
-                          <ChevronRight className="h-4 w-4" />
-                        </a>
-                      ))}
+{filteredQuickActions.map((action, index) => (
+  <a 
+    key={index} 
+    href={action.isDownload ? (action.fileUrl || action.link) : action.link} 
+    download={action.isDownload ? "prospectus.pdf" : undefined}
+    className="flex items-center justify-between bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-colors text-sm"
+    target={action.isDownload ? "_blank" : undefined}
+    rel={action.isDownload ? "noopener noreferrer" : undefined}
+  >
+    <div className="flex items-center space-x-2">
+      {renderIcon(action.icon)}
+      <span>{action.label}</span>
+    </div>
+    <ChevronRight className="h-4 w-4" />
+  </a>
+))}
                     </div>
                   </div>
                 </div>
