@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
-
+import { toast } from "sonner";
 const HomePage = ({ schoolData = {} }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -466,7 +466,7 @@ const HomePage = ({ schoolData = {} }) => {
   // Handle download for prospectus
 const handleDownload = async (url, filename = 'prospectus.pdf') => {
   if (!url) {
-    alert('No file available for download. Please contact administration.');
+    toast.error('No file available for download. Please contact administration.');
     return;
   }
   try {
@@ -485,7 +485,7 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
     URL.revokeObjectURL(downloadUrl);
   } catch (error) {
     console.error('Download failed:', error);
-    alert('Download failed. Please try again.');
+    toast.error('Download failed. Please try again.');
   }
 };
   // Toggle showSection
@@ -571,13 +571,13 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
         setData(updatedData);
         setEditFormOpen(false);
         setOriginalData(null);
-        alert('Data saved successfully!');
+        toast.success('Data saved successfully!');
       } else {
-        alert('Failed to save data. Please try again.');
+        toast.error('Failed to save data. Please try again.');
       }
     } catch (error) {
       console.error('Failed to save data:', error);
-      alert('Error saving data. Please try again.');
+      toast.error('Error saving data. Please try again.');
     }
   };
 
