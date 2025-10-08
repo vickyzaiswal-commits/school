@@ -228,7 +228,7 @@ const FileUpload = ({
               alt="Preview"
               className="w-full h-32 object-cover rounded-lg border"
               onError={(e) => {
-                console.error('Image load error:', e);
+                console.log('Image load error:', e);
                 setPreviewType('none');
               }}
             />
