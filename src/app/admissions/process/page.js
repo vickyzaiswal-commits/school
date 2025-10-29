@@ -27,8 +27,12 @@ import {
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
   Settings,
-  X
+  X,
+  Edit,
+  Ban,
+  Send
 } from 'lucide-react';
+import { apiRequest } from '@/utils/apiRequest';
 
 const AdmissionProcessPage = ({ schoolData = {} }) => {
   const [openFaq, setOpenFaq] = useState(null);
@@ -40,8 +44,29 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
   const [editSection, setEditSection] = useState(null);
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
+  const [originalData, setOriginalData] = useState(null);
+  const [previewMode, setPreviewMode] = useState(false);
   const role = 'admin'; // Should come from auth context
   const sliderRef = useRef(null);
+
+  // Icon mapping for rendering
+  const iconMap = {
+    Users,
+    FileText,
+    UserCheck,
+    Award,
+    CheckCircle,
+    Mail,
+    Phone,
+    Clock,
+    MapPin
+  };
+
+  // Render icon component
+  const renderIcon = (iconName, className = "h-6 w-6 text-green-600") => {
+    const IconComponent = iconMap[iconName];
+    return IconComponent ? <IconComponent className={className} /> : null;
+  };
 
   // Default data structure
   const defaultData = {
@@ -51,7 +76,6 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
       subtitle: "Join the St. Columba's family - Where excellence in education meets values for life",
       height: "h-96",
       cta: "Begin Your Application",
-      ctaIcon: ArrowRight,
       ctaLink: "#"
     },
     stats: {
@@ -72,7 +96,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           step: 1,
           title: "Inquiry & Information",
           description: "Learn about our school and admission process",
-          icon: Users,
+          icon: "Users",
           details: [
             "Attend virtual information session",
             "Download prospectus and fee structure",
@@ -85,7 +109,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           step: 2,
           title: "Application Submission",
           description: "Complete and submit the application form",
-          icon: FileText,
+          icon: "FileText",
           details: [
             "Fill online application form",
             "Upload required documents",
@@ -98,7 +122,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           step: 3,
           title: "Assessment & Interaction",
           description: "Student assessment and parent interaction",
-          icon: UserCheck,
+          icon: "UserCheck",
           details: [
             "Age-appropriate assessment for student",
             "Parent interaction with admission committee",
@@ -111,7 +135,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           step: 4,
           title: "Admission Decision",
           description: "Receive and review admission offer",
-          icon: Award,
+          icon: "Award",
           details: [
             "Admission committee review",
             "Decision communicated via email",
@@ -124,7 +148,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           step: 5,
           title: "Confirmation & Enrollment",
           description: "Complete enrollment formalities",
-          icon: CheckCircle,
+          icon: "CheckCircle",
           details: [
             "Submit acceptance form",
             "Pay admission fee and first installment",
@@ -370,45 +394,61 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
       description: "Start your application today or contact our admission team for personalized assistance",
       info: [
         {
-          icon: Mail,
+          icon: "Mail",
           content: "admissions@stcolumbas.edu.in",
           show: true
         },
         {
-          icon: Phone,
+          icon: "Phone",
           content: "011-2336-3462 (Ext. 110)",
           show: true
         },
         {
-          icon: Clock,
+          icon: "Clock",
           content: "Monday-Friday: 9:00 AM - 4:00 PM",
           show: true
         },
         {
-          icon: MapPin,
+          icon: "MapPin",
           content: "1, Ashok Place, New Delhi - 110001",
           show: true
         }
       ],
       buttons: [
-        { label: "Apply Now", icon: FileText, link: "#", show: true },
-        { label: "Schedule Campus Tour", icon: MapPin, link: "#", show: true }
+        { label: "Apply Now", icon: "FileText", link: "#", show: true },
+        { label: "Schedule Campus Tour", icon: "MapPin", link: "#", show: true }
       ]
     },
-    showHero: true,
-    showStats: true,
-    showAdmissionSteps: true,
-    showGradeLevels: true,
-    showImportantDates: true,
-    showRequiredDocuments: true,
-    showFeeStructure: true,
-    showScholarships: true,
-    showFaqs: true,
-    showContact: true
+    layout: {
+      showHero: true,
+      showStats: true,
+      showAdmissionSteps: true,
+      showGradeLevels: true,
+      showImportantDates: true,
+      showRequiredDocuments: true,
+      showFeeStructure: true,
+      showScholarships: true,
+      showFaqs: true,
+      showContact: true
+    }
   };
 
-  // Initialize data by merging defaultData with schoolData
-  const [data, setData] = useState({ ...defaultData, ...schoolData });
+  // Layout key mapping
+  const layoutMap = {
+    hero: 'showHero',
+    stats: 'showStats',
+    admissionSteps: 'showAdmissionSteps',
+    gradeLevels: 'showGradeLevels',
+    importantDates: 'showImportantDates',
+    requiredDocuments: 'showRequiredDocuments',
+    feeStructure: 'showFeeStructure',
+    scholarships: 'showScholarships',
+    faqs: 'showFaqs',
+    contact: 'showContact'
+  };
+
+  // Initialize data with default
+  const [data, setData] = useState(defaultData);
 
   // Check role to enable edit mode
   useEffect(() => {
@@ -417,8 +457,32 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     } else {
       setEditMode(false);
       setEditFormOpen(false);
+      setPreviewMode(false);
     }
   }, [role]);
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await apiRequest('save_data/get_all_admission_data', {});
+        console.log('API Response:', res);
+        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+          const fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data:', fetchedData);
+          setData({ ...defaultData, ...fetchedData, ...schoolData });
+        } else {
+          console.log('No data or invalid response, using default');
+          setData({ ...defaultData, ...schoolData });
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setData({ ...defaultData, ...schoolData });
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // IntersectionObserver for animations
   useEffect(() => {
@@ -445,92 +509,161 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
   // Handle opening edit modal for a section
   const openEditModal = (section) => {
     setEditSection(section);
+    setPreviewMode(false);
     setEditFormOpen(true);
-    if (Array.isArray(data[section])) {
-      setEditData([...data[section]]);
-    } else {
-      setEditData({ ...data[section] });
-    }
+    const layoutKey = layoutMap[section];
+    let sectionData = { 
+      showSection: data.layout[layoutKey],
+      ...data[section]
+    };
+    setEditData(sectionData);
+    setOriginalData(JSON.parse(JSON.stringify(sectionData)));
   };
 
   // Handle change for object fields
   const handleObjectChange = (field, value) => {
-    setEditData({ ...editData, [field]: value });
+    setEditData(prev => ({ ...prev, [field]: value }));
   };
 
   // Handle change for nested arrays
   const handleNestedArrayChange = (nestedKey, index, field, value) => {
-    const updated = { ...editData };
-    if (!updated[nestedKey]) updated[nestedKey] = [];
-    updated[nestedKey][index] = { ...updated[nestedKey][index], [field]: value };
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[nestedKey]) updated[nestedKey] = [];
+      updated[nestedKey][index] = { ...updated[nestedKey][index], [field]: value };
+      return updated;
+    });
   };
 
   // Handle change for simple arrays of objects (e.g., stats.items, feeStructure.items)
   const handleSimpleArrayChange = (arrayKey, index, field, value) => {
-    const updated = { ...editData };
-    if (!updated[arrayKey]) updated[arrayKey] = [];
-    updated[arrayKey][index] = { ...updated[arrayKey][index], [field]: value };
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      updated[arrayKey][index] = { ...updated[arrayKey][index], [field]: value };
+      return updated;
+    });
   };
 
   // Handle change for string arrays (e.g., categories.items in requiredDocuments)
   const handleStringListChange = (arrayKey, index, value) => {
-    const updated = { ...editData };
-    if (!updated[arrayKey]) updated[arrayKey] = [];
-    const list = [...updated[arrayKey]];
-    list[index] = value;
-    updated[arrayKey] = list;
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      const list = [...updated[arrayKey]];
+      list[index] = value;
+      updated[arrayKey] = list;
+      return updated;
+    });
   };
 
   // Handle change for steps details (array of strings)
   const handleStepDetailsChange = (stepIndex, detailIndex, value) => {
-    const updated = { ...editData };
-    if (!updated.steps) updated.steps = [];
-    const details = [...updated.steps[stepIndex].details];
-    details[detailIndex] = value;
-    updated.steps[stepIndex].details = details;
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.steps) updated.steps = [];
+      const details = [...updated.steps[stepIndex].details];
+      details[detailIndex] = value;
+      updated.steps[stepIndex].details = details;
+      return updated;
+    });
   };
 
   // Handle change for categories in requiredDocuments
   const handleCategoryChange = (categoryIndex, field, value) => {
-    const updated = { ...editData };
-    if (!updated.categories) updated.categories = [];
-    updated.categories[categoryIndex] = { ...updated.categories[categoryIndex], [field]: value };
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.categories) updated.categories = [];
+      updated.categories[categoryIndex] = { ...updated.categories[categoryIndex], [field]: value };
+      return updated;
+    });
   };
 
   // Handle change for items in categories
   const handleCategoryItemChange = (categoryIndex, itemIndex, value) => {
-    const updated = { ...editData };
-    if (!updated.categories) updated.categories = [];
-    const items = [...updated.categories[categoryIndex].items];
-    items[itemIndex] = value;
-    updated.categories[categoryIndex].items = items;
-    setEditData(updated);
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.categories) updated.categories = [];
+      const items = [...updated.categories[categoryIndex].items];
+      items[itemIndex] = value;
+      updated.categories[categoryIndex].items = items;
+      return updated;
+    });
+  };
+
+  // Toggle showSection
+  const handleToggleSection = (value) => {
+    setEditData({ ...editData, showSection: value });
+  };
+
+  // Toggle preview mode
+  const togglePreview = () => {
+    setPreviewMode(!previewMode);
+  };
+
+  // Cancel changes
+  const cancelChanges = () => {
+    if (originalData) {
+      setEditData(originalData);
+    }
+    setEditFormOpen(false);
+    setPreviewMode(false);
+    setOriginalData(null);
   };
 
   // Save changes to state
-  const saveChanges = () => {
-    const updatedData = { ...data, [editSection]: editData };
-    setData(updatedData);
-    console.log('Payload to save in database:', JSON.stringify(updatedData, null, 2));
+  const saveChanges = async () => {
+    try {
+      const layoutKey = layoutMap[editSection];
+      let updatedData = { ...data };
+      if (layoutKey && 'showSection' in editData) {
+        updatedData.layout[layoutKey] = editData.showSection;
+      }
+      const { showSection, ...sectionUpdates } = editData;
+      updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+
+      const payload = {
+        ...updatedData,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+
+      console.log('Payload:', JSON.stringify(payload, null, 2));
+      const save_data = await apiRequest('save_data/save_admission_data', { payload });
+      console.log(save_data);
+      
+      if (save_data.status === 200) {
+        setData(updatedData);
+      } else {
+        console.error('Save failed:', save_data);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
     setEditFormOpen(false);
+    setOriginalData(null);
+  };
+
+  // Safe data access helper
+  const safeData = (section, key = null) => {
+    if (key) {
+      return data[section]?.[key] ?? '';
+    }
+    return data[section] ?? {};
   };
 
   // Filter functions
-  const filteredStats = data.stats.items.filter(item => item.show !== false);
-  const filteredSteps = data.admissionSteps.steps.filter(step => step.show !== false);
-  const filteredGradeLevels = data.gradeLevels.levels.filter(level => level.show !== false);
-  const filteredImportantDates = data.importantDates.dates.filter(date => date.show !== false);
-  const filteredDocumentCategories = data.requiredDocuments.categories.filter(category => category.show !== false);
-  const filteredFeeItems = data.feeStructure.items.filter(item => item.show !== false);
-  const filteredScholarships = data.scholarships.scholarships.filter(scholarship => scholarship.show !== false);
-  const filteredFaqs = data.faqs.items.filter(faq => faq.show !== false);
-  const filteredContactInfo = data.contact.info.filter(info => info.show !== false);
-  const filteredContactButtons = data.contact.buttons.filter(button => button.show !== false);
+  const filteredStats = (data.stats?.items || []).filter(item => item.show !== false);
+  const filteredSteps = (data.admissionSteps?.steps || []).filter(step => step.show !== false);
+  const filteredGradeLevels = (data.gradeLevels?.levels || []).filter(level => level.show !== false);
+  const filteredImportantDates = (data.importantDates?.dates || []).filter(date => date.show !== false);
+  const filteredDocumentCategories = (data.requiredDocuments?.categories || []).filter(category => category.show !== false);
+  const filteredFeeItems = (data.feeStructure?.items || []).filter(item => item.show !== false);
+  const filteredScholarships = (data.scholarships?.scholarships || []).filter(scholarship => scholarship.show !== false);
+  const filteredFaqs = (data.faqs?.items || []).filter(faq => faq.show !== false);
+  const filteredContactInfo = (data.contact?.info || []).filter(info => info.show !== false);
+  const filteredContactButtons = (data.contact?.buttons || []).filter(button => button.show !== false);
 
   // Slider configuration
   const cardsPerSlide = 1;
@@ -593,24 +726,551 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     }
   }, [isPaused]);
 
+  // Modal Footer Component
+  const ModalFooter = () => (
+    <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-t border-gray-200">
+      <div className="flex space-x-2">
+        <button
+          onClick={cancelChanges}
+          className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center space-x-1"
+        >
+          <Ban className="h-4 w-4" />
+          <span>Cancel</span>
+        </button>
+      </div>
+
+      <div className="flex space-x-2">
+        <button
+          onClick={togglePreview}
+          className="px-3 py-2 text-sm text-green-700 bg-white border border-green-300 rounded hover:bg-green-50 transition-colors flex items-center space-x-1"
+        >
+          <Edit className="h-4 w-4" />
+          <span>{previewMode ? 'Edit' : 'Preview'}</span>
+        </button>
+        <button
+          onClick={saveChanges}
+          className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded hover:bg-green-700 transition-colors flex items-center space-x-1"
+        >
+          <Send className="h-4 w-4" />
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Edit Modal */}
+      {editMode && editFormOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[90vh]">
+            {/* Fixed Modal Header */}
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-5 text-green-600" />
+                <h2 className="text-xl font-bold">Edit {editSection.replace(/([A-Z])/g, ' $1').trim()}</h2>
+              </div>
+              <button
+                onClick={cancelChanges}
+                className="p-2 text-gray-600 hover:text-gray-800"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            {/* Scrollable Modal Content */}
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-4">
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={editData.showSection || false}
+                      onChange={(e) => handleToggleSection(e.target.checked)}
+                    />
+                    <span>Show {editSection.replace(/([A-Z])/g, ' $1').trim()}</span>
+                  </label>
+                </div>
+
+                {editSection === 'hero' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Subtitle</label>
+                      <textarea
+                        value={editData.subtitle || ''}
+                        onChange={(e) => handleObjectChange('subtitle', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">CTA</label>
+                      <input
+                        type="text"
+                        value={editData.cta || ''}
+                        onChange={(e) => handleObjectChange('cta', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">CTA Link</label>
+                      <input
+                        type="text"
+                        value={editData.ctaLink || ''}
+                        onChange={(e) => handleObjectChange('ctaLink', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {editSection === 'stats' && (
+                  <div>
+                    {(editData.items || []).map((item, index) => (
+                      <div key={index} className="flex space-x-2 mt-2">
+                        <input
+                          type="text"
+                          value={item.number || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'number', e.target.value)}
+                          placeholder="Number"
+                          className="w-1/2 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={item.label || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'label', e.target.value)}
+                          placeholder="Label"
+                          className="w-1/2 p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'admissionSteps' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    {(editData.steps || []).map((step, stepIndex) => (
+                      <div key={stepIndex} className="border p-4 rounded mt-4">
+                        <input
+                          type="text"
+                          value={step.title || ''}
+                          onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'title', e.target.value)}
+                          placeholder="Step Title"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        <input
+                          type="text"
+                          value={step.description || ''}
+                          onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'description', e.target.value)}
+                          placeholder="Step Description"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        <input
+                          type="text"
+                          value={step.icon || ''}
+                          onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'icon', e.target.value)}
+                          placeholder="Icon Name"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        {(step.details || []).map((detail, detailIndex) => (
+                          <input
+                            key={detailIndex}
+                            type="text"
+                            value={detail || ''}
+                            onChange={(e) => handleStepDetailsChange(stepIndex, detailIndex, e.target.value)}
+                            placeholder="Detail"
+                            className="w-full p-2 border rounded mb-2"
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'gradeLevels' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    {(editData.levels || []).map((level, index) => (
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <input
+                          type="text"
+                          value={level.name || ''}
+                          onChange={(e) => handleNestedArrayChange('levels', index, 'name', e.target.value)}
+                          placeholder="Name"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        <input
+                          type="text"
+                          value={level.age || ''}
+                          onChange={(e) => handleNestedArrayChange('levels', index, 'age', e.target.value)}
+                          placeholder="Age"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        <input
+                          type="number"
+                          value={level.seats || ''}
+                          onChange={(e) => handleNestedArrayChange('levels', index, 'seats', e.target.value)}
+                          placeholder="Seats"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        <input
+                          type="text"
+                          value={level.assessment || ''}
+                          onChange={(e) => handleNestedArrayChange('levels', index, 'assessment', e.target.value)}
+                          placeholder="Assessment"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'importantDates' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    {(editData.dates || []).map((date, index) => (
+                      <div key={index} className="flex space-x-2 mt-2">
+                        <input
+                          type="text"
+                          value={date.event || ''}
+                          onChange={(e) => handleNestedArrayChange('dates', index, 'event', e.target.value)}
+                          placeholder="Event"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={date.date || ''}
+                          onChange={(e) => handleNestedArrayChange('dates', index, 'date', e.target.value)}
+                          placeholder="Date"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={date.description || ''}
+                          onChange={(e) => handleNestedArrayChange('dates', index, 'description', e.target.value)}
+                          placeholder="Description"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'requiredDocuments' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    {(editData.categories || []).map((category, catIndex) => (
+                      <div key={catIndex} className="border p-4 rounded mt-4">
+                        <input
+                          type="text"
+                          value={category.category || ''}
+                          onChange={(e) => handleCategoryChange(catIndex, 'category', e.target.value)}
+                          placeholder="Category"
+                          className="w-full p-2 border rounded mb-2"
+                        />
+                        {(category.items || []).map((item, itemIndex) => (
+                          <input
+                            key={itemIndex}
+                            type="text"
+                            value={item || ''}
+                            onChange={(e) => handleCategoryItemChange(catIndex, itemIndex, e.target.value)}
+                            placeholder="Item"
+                            className="w-full p-2 border rounded mb-2"
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'feeStructure' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    {(editData.items || []).map((item, index) => (
+                      <div key={index} className="flex space-x-2 mt-2">
+                        <input
+                          type="text"
+                          value={item.item || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'item', e.target.value)}
+                          placeholder="Item"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={item.amount || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'amount', e.target.value)}
+                          placeholder="Amount"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={item.description || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'description', e.target.value)}
+                          placeholder="Description"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'scholarships' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    {(editData.scholarships || []).map((sch, index) => (
+                      <div key={index} className="flex space-x-2 mt-2">
+                        <input
+                          type="text"
+                          value={sch.name || ''}
+                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'name', e.target.value)}
+                          placeholder="Name"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={sch.eligibility || ''}
+                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'eligibility', e.target.value)}
+                          placeholder="Eligibility"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={sch.coverage || ''}
+                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'coverage', e.target.value)}
+                          placeholder="Coverage"
+                          className="w-1/3 p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'faqs' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    {(editData.items || []).map((faq, index) => (
+                      <div key={index} className="space-y-2 mt-2">
+                        <input
+                          type="text"
+                          value={faq.question || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'question', e.target.value)}
+                          placeholder="Question"
+                          className="w-full p-2 border rounded"
+                        />
+                        <textarea
+                          value={faq.answer || ''}
+                          onChange={(e) => handleSimpleArrayChange('items', index, 'answer', e.target.value)}
+                          placeholder="Answer"
+                          className="w-full p-2 border rounded"
+                          rows="3"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editSection === 'contact' && (
+                  <div>
+                    <div>
+                      <label className="block text-sm font-medium">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ''}
+                        onChange={(e) => handleObjectChange('title', e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Description</label>
+                      <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => handleObjectChange('description', e.target.value)}
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold mt-4 mb-2">Contact Info</h3>
+                    {(editData.info || []).map((info, index) => (
+                      <div key={index} className="space-y-2 mt-2">
+                        <input
+                          type="text"
+                          value={info.icon || ''}
+                          onChange={(e) => handleNestedArrayChange('info', index, 'icon', e.target.value)}
+                          placeholder="Icon Name"
+                          className="w-full p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={info.content || ''}
+                          onChange={(e) => handleNestedArrayChange('info', index, 'content', e.target.value)}
+                          placeholder="Content"
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                    <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
+                    {(editData.buttons || []).map((button, index) => (
+                      <div key={index} className="space-y-2 mt-2">
+                        <input
+                          type="text"
+                          value={button.icon || ''}
+                          onChange={(e) => handleNestedArrayChange('buttons', index, 'icon', e.target.value)}
+                          placeholder="Icon Name"
+                          className="w-full p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={button.label || ''}
+                          onChange={(e) => handleNestedArrayChange('buttons', index, 'label', e.target.value)}
+                          placeholder="Label"
+                          className="w-1/2 p-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          value={button.link || ''}
+                          onChange={(e) => handleNestedArrayChange('buttons', index, 'link', e.target.value)}
+                          placeholder="Link"
+                          className="w-1/2 p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Modal Footer */}
+            <ModalFooter />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      {data.showHero && data.hero.show && (
-        <section className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll`} id="hero">
+      {data.layout?.showHero && safeData('hero').show && (
+        <section className={`relative ${safeData('hero').height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} id="hero">
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{safeData('hero').title}</h1>
               <p className="text-xl text-green-100 leading-relaxed">
-                {data.hero.subtitle}
+                {safeData('hero').subtitle}
               </p>
-              {data.hero.cta && (
+              {safeData('hero').cta && (
                 <a 
-                  href={data.hero.ctaLink} 
+                  href={safeData('hero').ctaLink} 
                   className="mt-6 bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center hover:scale-105"
                 >
-                  {data.hero.cta}
+                  {safeData('hero').cta}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               )}
@@ -618,14 +1278,14 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Stats Section */}
-      {data.showStats && data.stats.show && (
+      {data.layout?.showStats && safeData('stats').show && filteredStats.length > 0 && (
         <section className="py-12 bg-green-700 text-white relative animate-on-scroll" id="stats">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -639,20 +1299,20 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('stats')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Admission Process Steps */}
-      {data.showAdmissionSteps && data.admissionSteps.show && (
+      {data.layout?.showAdmissionSteps && safeData('admissionSteps').show && filteredSteps.length > 0 && (
         <section className="py-16 bg-white relative animate-on-scroll" id="admissionSteps">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.admissionSteps.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('admissionSteps').title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {data.admissionSteps.description}
+                {safeData('admissionSteps').description}
               </p>
             </div>
 
@@ -698,12 +1358,11 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
             <div className="max-w-4xl mx-auto">
               {filteredSteps.map((step) => {
                 if (activeStep !== step.step) return null;
-                const IconComponent = step.icon;
                 return (
                   <div key={step.step} className="bg-gray-50 rounded-lg p-8">
                     <div className="flex items-center mb-6">
                       <div className="bg-green-100 p-3 rounded-lg mr-4">
-                        <IconComponent className="h-8 w-8 text-green-600" />
+                        {renderIcon(step.icon, "h-8 w-8 text-green-600")}
                       </div>
                       <div>
                         <h3 className="text-2xl font-semibold text-gray-800">{step.title}</h3>
@@ -724,10 +1383,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       <button
                         onClick={() => setActiveStep(activeStep - 1)}
                         disabled={activeStep === 1}
-                        className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
+                        className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
                           activeStep === 1
-                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105'
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                       >
                         Previous
@@ -735,13 +1394,13 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       <button
                         onClick={() => setActiveStep(activeStep + 1)}
                         disabled={activeStep === filteredSteps.length}
-                        className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
+                        className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
                           activeStep === filteredSteps.length
-                            ? 'bg-green-400 text-white cursor-not-allowed'
-                            : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-green-600 text-white hover:bg-green-700'
                         }`}
                       >
-                        Next Step
+                        Next
                       </button>
                     </div>
                   </div>
@@ -750,170 +1409,106 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
             </div>
           </div>
           {editMode && (
-            <button onClick={() => openEditModal('admissionSteps')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+            <button onClick={() => openEditModal('admissionSteps')} className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
-      {/* Grade Level Information */}
-      {data.showGradeLevels && data.gradeLevels.show && (
+      {/* Grade Levels Slider */}
+      {data.layout?.showGradeLevels && safeData('gradeLevels').show && filteredGradeLevels.length > 0 && (
         <section className="py-16 bg-gray-50 relative animate-on-scroll" id="gradeLevels">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('gradeLevels').title}</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                {safeData('gradeLevels').description}
+              </p>
+            </div>
             <div className="relative">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.gradeLevels.title}</h2>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  {data.gradeLevels.description}
-                </p>
-              </div>
-
-              {/* Navigation Arrows */}
-              {filteredGradeLevels.length > 1 && (
-                <div className="absolute top-0 right-0 flex gap-2 z-10">
-                  <button
-                    onClick={prevSlide}
-                    className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    aria-label="Previous slide"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    aria-label="Next slide"
-                  >
-                    <ChevronRightIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              )}
-
-              {/* Cards Container */}
               <div 
-                className="overflow-hidden"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-                role="region"
-                aria-label="Grade levels carousel"
+                ref={sliderRef}
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
               >
-                <div 
-                  ref={sliderRef}
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
-                >
-                  {extendedGradeLevels.map((level, index) => (
-                    <div 
-                      key={`${level.id}-${index}`} 
-                      className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-4"
-                    >
-                      <div className="bg-white rounded-xl shadow-lg p-6 h-full transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                        <div className="text-center mb-6">
-                          <div className="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <GraduationCap className="h-7 w-7 text-green-600" />
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-800 mb-2">{level.name}</h3>
-                          <div className="w-12 h-1 bg-green-500 mx-auto"></div>
-                        </div>
-                        
-                        <div className="space-y-4 mb-6">
-                          <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                            <span className="text-gray-600 font-medium">Age Range:</span>
-                            <span className="text-gray-800 font-semibold">{level.age}</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                            <span className="text-gray-600 font-medium">Available Seats:</span>
-                            <span className="text-green-600 font-bold">{level.seats}</span>
-                          </div>
-                          
-                          <div className="py-2">
-                            <span className="text-gray-600 font-medium block mb-2">Assessment Process:</span>
-                            <p className="text-gray-700 text-sm leading-relaxed">{level.assessment}</p>
-                          </div>
-                        </div>
-                        
-                        <button 
-                          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
-                          aria-label={`Learn more about ${level.name}`}
-                        >
-                          Learn More
-                          <ArrowRight className="ml-2 h-4 w-4 inline" />
-                        </button>
-                      </div>
+                {extendedGradeLevels.map((level, index) => (
+                  <div key={index} className="w-full md:w-1/3 px-4">
+                    <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{level.name}</h3>
+                      <p className="text-green-600 font-semibold mb-4">{level.age}</p>
+                      <p className="text-gray-600 mb-4">Seats: <span className="font-bold">{level.seats}</span></p>
+                      <p className="text-sm text-gray-700">{level.assessment}</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-
-              {/* Dots Indicator */}
-              {totalSlides > 1 && (
-                <div className="flex justify-center mt-8">
-                  {Array.from({ length: totalSlides }).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`w-3 h-3 rounded-full mx-1 transition-all duration-200 ${
-                        index === (currentSlide % totalSlides) ? 'bg-green-600 scale-125' : 'bg-gray-300'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
+              <button
+                onClick={prevSlide}
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg"
+              >
+                <ChevronLeft className="h-6 w-6 text-gray-600" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg"
+              >
+                <ChevronRightIcon className="h-6 w-6 text-gray-600" />
+              </button>
+              <div className="flex justify-center mt-8 space-x-2">
+                {Array.from({ length: totalSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      Math.floor(currentSlide % totalSlides) === index ? 'bg-green-600' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
           {editMode && (
-            <button onClick={() => openEditModal('gradeLevels')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+            <button onClick={() => openEditModal('gradeLevels')} className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Important Dates */}
-      {data.showImportantDates && data.importantDates.show && (
+      {data.layout?.showImportantDates && safeData('importantDates').show && filteredImportantDates.length > 0 && (
         <section className="py-16 bg-white relative animate-on-scroll" id="importantDates">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.importantDates.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('importantDates').title}</h2>
             </div>
-
-            <div className="max-w-4xl mx-auto">
-              {filteredImportantDates.map((date, index) => (
-                <div key={index} className="flex mb-8">
-                  <div className="flex-shrink-0 w-24">
-                    <div className="bg-green-100 text-green-800 font-bold text-center py-2 px-4 rounded-lg">
-                      {date.date.split(' ')[0]}
-                    </div>
-                    <div className="text-center text-sm text-gray-500 mt-1">
-                      {date.date.split(' ').slice(1).join(' ')}
-                    </div>
-                  </div>
-                  <div className="ml-6 flex-1">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-1">{date.event}</h3>
-                    <p className="text-gray-600">{date.description}</p>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredImportantDates.map((dateItem, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{dateItem.event}</h3>
+                  <p className="text-2xl font-bold text-green-600 mb-2">{dateItem.date}</p>
+                  <p className="text-gray-600 text-sm">{dateItem.description}</p>
                 </div>
               ))}
             </div>
           </div>
           {editMode && (
-            <button onClick={() => openEditModal('importantDates')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+            <button onClick={() => openEditModal('importantDates')} className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Required Documents */}
-      {data.showRequiredDocuments && data.requiredDocuments.show && (
+      {data.layout?.showRequiredDocuments && safeData('requiredDocuments').show && filteredDocumentCategories.length > 0 && (
         <section className="py-16 bg-gray-50 relative animate-on-scroll" id="requiredDocuments">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.requiredDocuments.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('requiredDocuments').title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {data.requiredDocuments.description}
+                {safeData('requiredDocuments').description}
               </p>
             </div>
 
@@ -935,18 +1530,18 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('requiredDocuments')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Fee Structure */}
-      {data.showFeeStructure && data.feeStructure.show && (
+      {data.layout?.showFeeStructure && safeData('feeStructure').show && filteredFeeItems.length > 0 && (
         <section className="py-16 bg-white relative animate-on-scroll" id="feeStructure">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.feeStructure.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('feeStructure').title}</h2>
             </div>
 
             <div className="max-w-4xl mx-auto">
@@ -963,20 +1558,20 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('feeStructure')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Scholarships */}
-      {data.showScholarships && data.scholarships.show && (
+      {data.layout?.showScholarships && safeData('scholarships').show && filteredScholarships.length > 0 && (
         <section className="py-16 bg-gray-50 relative animate-on-scroll" id="scholarships">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.scholarships.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('scholarships').title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {data.scholarships.description}
+                {safeData('scholarships').description}
               </p>
             </div>
 
@@ -1000,20 +1595,20 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('scholarships')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* FAQs */}
-      {data.showFaqs && data.faqs.show && (
+      {data.layout?.showFaqs && safeData('faqs').show && filteredFaqs.length > 0 && (
         <section className="py-16 bg-white relative animate-on-scroll" id="faqs">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.faqs.title}</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('faqs').title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {data.faqs.description}
+                {safeData('faqs').description}
               </p>
             </div>
 
@@ -1042,1432 +1637,58 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           </div>
           {editMode && (
             <button onClick={() => openEditModal('faqs')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
       )}
 
       {/* Contact Section */}
-      {data.showContact && data.contact.show && (
+      {data.layout?.showContact && safeData('contact').show && (
         <section className="py-16 bg-green-700 text-white relative animate-on-scroll" id="contact">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">{data.contact.title}</h2>
+              <h2 className="text-3xl font-bold mb-4">{safeData('contact').title}</h2>
               <p className="text-lg text-green-100 max-w-3xl mx-auto">
-                {data.contact.description}
+                {safeData('contact').description}
               </p>
             </div>
 
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                {filteredContactInfo.map((info, index) => {
-                  const IconComponent = info.icon;
-                  return (
-                    <div key={index} className="flex items-center">
-                      <div className="bg-green-600 p-3 rounded-lg mr-4">
-                        <IconComponent className="h-6 w-6" />
-                      </div>
-                      <span>{info.content}</span>
+                {filteredContactInfo.map((info, index) => (
+                  <div key={index} className="flex items-center">
+                    <div className="bg-green-600 p-3 rounded-lg mr-4">
+                      {renderIcon(info.icon, "h-6 w-6")}
                     </div>
-                  );
-                })}
+                    <span>{info.content}</span>
+                  </div>
+                ))}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {filteredContactButtons.map((button, index) => {
-                  const IconComponent = button.icon;
-                  return (
-                    <a
-                      key={index}
-                      href={button.link}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center justify-center hover:scale-105"
-                    >
-                      {button.label}
-                      <IconComponent className="ml-2 h-4 w-4" />
-                    </a>
-                  );
-                })}
+                {filteredContactButtons.map((button, index) => (
+                  <a
+                    key={index}
+                    href={button.link}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center justify-center hover:scale-105"
+                  >
+                    {button.label}
+                    {renderIcon(button.icon, "ml-2 h-4 w-4")}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
           {editMode && (
             <button onClick={() => openEditModal('contact')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow">
-              <Settings className="h-5 w-5" />
+              <Edit className="h-5 w-5" />
             </button>
           )}
         </section>
-      )}
-
-      {/* Edit Modal */}
-      {editFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Edit {editSection}</h2>
-              <button onClick={() => setEditFormOpen(false)} className="text-gray-500 hover:text-gray-700">
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            {/* Dynamic Form based on section */}
-            {editSection === 'hero' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.subtitle}
-                  onChange={(e) => handleObjectChange('subtitle', e.target.value)}
-                  placeholder="Subtitle"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.height}
-                  onChange={(e) => handleObjectChange('height', e.target.value)}
-                  placeholder="Height"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.cta}
-                  onChange={(e) => handleObjectChange('cta', e.target.value)}
-                  placeholder="CTA"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.ctaLink}
-                  onChange={(e) => handleObjectChange('ctaLink', e.target.value)}
-                  placeholder="CTA Link"
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-            )}
-
-            {editSection === 'stats' && (
-              <div className="space-y-4">
-                {editData.items.map((item, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={item.number}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'number', e.target.value)}
-                      placeholder="Number"
-                      className="w-1/2 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={item.label}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'label', e.target.value)}
-                      placeholder="Label"
-                      className="w-1/2 p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'admissionSteps' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.steps.map((step, stepIndex) => (
-                  <div key={stepIndex} className="border p-4 rounded">
-                    <input
-                      type="text"
-                      value={step.title}
-                      onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'title', e.target.value)}
-                      placeholder="Step Title"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    <input
-                      type="text"
-                      value={step.description}
-                      onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'description', e.target.value)}
-                      placeholder="Step Description"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    {step.details.map((detail, detailIndex) => (
-                      <input
-                        key={detailIndex}
-                        type="text"
-                        value={detail}
-                        onChange={(e) => handleStepDetailsChange(stepIndex, detailIndex, e.target.value)}
-                        placeholder="Detail"
-                        className="w-full p-2 border rounded mb-2"
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'gradeLevels' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.levels.map((level, index) => (
-                  <div key={index} className="border p-4 rounded">
-                    <input
-                      type="text"
-                      value={level.name}
-                      onChange={(e) => handleNestedArrayChange('levels', index, 'name', e.target.value)}
-                      placeholder="Name"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    <input
-                      type="text"
-                      value={level.age}
-                      onChange={(e) => handleNestedArrayChange('levels', index, 'age', e.target.value)}
-                      placeholder="Age"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    <input
-                      type="number"
-                      value={level.seats}
-                      onChange={(e) => handleNestedArrayChange('levels', index, 'seats', e.target.value)}
-                      placeholder="Seats"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    <input
-                      type="text"
-                      value={level.assessment}
-                      onChange={(e) => handleNestedArrayChange('levels', index, 'assessment', e.target.value)}
-                      placeholder="Assessment"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'importantDates' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.dates.map((date, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={date.event}
-                      onChange={(e) => handleNestedArrayChange('dates', index, 'event', e.target.value)}
-                      placeholder="Event"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={date.date}
-                      onChange={(e) => handleNestedArrayChange('dates', index, 'date', e.target.value)}
-                      placeholder="Date"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={date.description}
-                      onChange={(e) => handleNestedArrayChange('dates', index, 'description', e.target.value)}
-                      placeholder="Description"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'requiredDocuments' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.categories.map((category, catIndex) => (
-                  <div key={catIndex} className="border p-4 rounded">
-                    <input
-                      type="text"
-                      value={category.category}
-                      onChange={(e) => handleCategoryChange(catIndex, 'category', e.target.value)}
-                      placeholder="Category"
-                      className="w-full p-2 border rounded mb-2"
-                    />
-                    {category.items.map((item, itemIndex) => (
-                      <input
-                        key={itemIndex}
-                        type="text"
-                        value={item}
-                        onChange={(e) => handleCategoryItemChange(catIndex, itemIndex, e.target.value)}
-                        placeholder="Item"
-                        className="w-full p-2 border rounded mb-2"
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'feeStructure' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.items.map((item, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={item.item}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'item', e.target.value)}
-                      placeholder="Item"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={item.amount}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'amount', e.target.value)}
-                      placeholder="Amount"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={item.description}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'description', e.target.value)}
-                      placeholder="Description"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'scholarships' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.scholarships.map((sch, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={sch.name}
-                      onChange={(e) => handleNestedArrayChange('scholarships', index, 'name', e.target.value)}
-                      placeholder="Name"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={sch.eligibility}
-                      onChange={(e) => handleNestedArrayChange('scholarships', index, 'eligibility', e.target.value)}
-                      placeholder="Eligibility"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={sch.coverage}
-                      onChange={(e) => handleNestedArrayChange('scholarships', index, 'coverage', e.target.value)}
-                      placeholder="Coverage"
-                      className="w-1/3 p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'faqs' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.items.map((faq, index) => (
-                  <div key={index} className="space-y-2">
-                    <input
-                      type="text"
-                      value={faq.question}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'question', e.target.value)}
-                      placeholder="Question"
-                      className="w-full p-2 border rounded"
-                    />
-                    <textarea
-                      value={faq.answer}
-                      onChange={(e) => handleSimpleArrayChange('items', index, 'answer', e.target.value)}
-                      placeholder="Answer"
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {editSection === 'contact' && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => handleObjectChange('title', e.target.value)}
-                  placeholder="Title"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) => handleObjectChange('description', e.target.value)}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded"
-                />
-                {editData.info.map((info, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    value={info.content}
-                    onChange={(e) => handleNestedArrayChange('info', index, 'content', e.target.value)}
-                    placeholder="Info Content"
-                    className="w-full p-2 border rounded mb-2"
-                  />
-                ))}
-                {editData.buttons.map((button, index) => (
-                  <div key={index} className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={button.label}
-                      onChange={(e) => handleNestedArrayChange('buttons', index, 'label', e.target.value)}
-                      placeholder="Button Label"
-                      className="w-1/2 p-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={button.link}
-                      onChange={(e) => handleNestedArrayChange('buttons', index, 'link', e.target.value)}
-                      placeholder="Button Link"
-                      className="w-1/2 p-2 border rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-6 flex justify-end">
-              <button onClick={saveChanges} className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
 };
 
 export default AdmissionProcessPage;
-
-
-
-
-
-// "use client";
-// import React, { useState, useEffect, useRef } from 'react';
-// import { 
-//   FileText, 
-//   Calendar,
-//   Clock,
-//   Users,
-//   Award,
-//   Download,
-//   ChevronRight,
-//   ChevronDown,
-//   CheckCircle,
-//   Mail,
-//   Phone,
-//   MapPin,
-//   ExternalLink,
-//   ArrowRight,
-//   GraduationCap,
-//   BookOpen,
-//   UserCheck,
-//   CreditCard,
-//   FileCheck,
-//   ClipboardList,
-//   Star,
-//   Shield,
-//   Heart,
-//   ChevronLeft,
-//   ChevronRight as ChevronRightIcon
-// } from 'lucide-react';
-
-// const AdmissionProcessPage = ({ schoolData = {} }) => {
-//   const [openFaq, setOpenFaq] = useState(null);
-//   const [activeStep, setActiveStep] = useState(1);
-//   const [currentSlide, setCurrentSlide] = useState(0);
-//   const [isPaused, setIsPaused] = useState(false);
-//   const sliderRef = useRef(null);
-
-//   // Default data structure - Consistent with other pages
-//   const defaultData = {
-//     hero: {
-//       show: true,
-//       title: "Admission Process",
-//       subtitle: "Join the St. Columba's family - Where excellence in education meets values for life",
-//       height: "h-96",
-//       cta: "Begin Your Application",
-//       ctaIcon: ArrowRight,
-//       ctaLink: "#"
-//     },
-//     stats: {
-//       show: true,
-//       items: [
-//         { number: "97%", label: "Acceptance Rate", show: true },
-//         { number: "1:25", label: "Teacher-Student Ratio", show: true },
-//         { number: "5", label: "Step Process", show: true },
-//         { number: "15", label: "Days Average Processing", show: true }
-//       ]
-//     },
-//     admissionSteps: {
-//       show: true,
-//       title: "Admission Process",
-//       description: "Our streamlined 5-step process makes applying to St. Columba's simple and straightforward",
-//       steps: [
-//         {
-//           step: 1,
-//           title: "Inquiry & Information",
-//           description: "Learn about our school and admission process",
-//           icon: Users,
-//           details: [
-//             "Attend virtual information session",
-//             "Download prospectus and fee structure",
-//             "Schedule campus tour (optional)",
-//             "Meet with admission counselor"
-//           ],
-//           show: true
-//         },
-//         {
-//           step: 2,
-//           title: "Application Submission",
-//           description: "Complete and submit the application form",
-//           icon: FileText,
-//           details: [
-//             "Fill online application form",
-//             "Upload required documents",
-//             "Pay application fee (₹1,000)",
-//             "Receive application confirmation"
-//           ],
-//           show: true
-//         },
-//         {
-//           step: 3,
-//           title: "Assessment & Interaction",
-//           description: "Student assessment and parent interaction",
-//           icon: UserCheck,
-//           details: [
-//             "Age-appropriate assessment for student",
-//             "Parent interaction with admission committee",
-//             "Observation of student in group setting",
-//             "Review of previous school records"
-//           ],
-//           show: true
-//         },
-//         {
-//           step: 4,
-//           title: "Admission Decision",
-//           description: "Receive and review admission offer",
-//           icon: Award,
-//           details: [
-//             "Admission committee review",
-//             "Decision communicated via email",
-//             "Offer letter with fee details",
-//             "Next steps information"
-//           ],
-//           show: true
-//         },
-//         {
-//           step: 5,
-//           title: "Confirmation & Enrollment",
-//           description: "Complete enrollment formalities",
-//           icon: CheckCircle,
-//           details: [
-//             "Submit acceptance form",
-//             "Pay admission fee and first installment",
-//             "Complete documentation",
-//             "Receive welcome package"
-//           ],
-//           show: true
-//         }
-//       ]
-//     },
-//     gradeLevels: {
-//       show: true,
-//       title: "Grade Level Information",
-//       description: "Admission criteria and process varies by grade level",
-//       levels: [
-//         {
-//           id: 'nursery',
-//           name: 'Pre-School (Nursery, KG)',
-//           age: '3-5 years',
-//           seats: 40,
-//           assessment: "Informal interaction and observation",
-//           show: true
-//         },
-//         {
-//           id: 'primary',
-//           name: 'Primary (Classes I-V)',
-//           age: '6-10 years',
-//           seats: 35,
-//           assessment: "Basic skills assessment in English and Mathematics",
-//           show: true
-//         },
-//         {
-//           id: 'middle',
-//           name: 'Middle (Classes VI-VIII)',
-//           age: '11-13 years',
-//           seats: 30,
-//           assessment: "Subject proficiency test and interaction",
-//           show: true
-//         },
-//         {
-//           id: 'secondary',
-//           name: 'Secondary (Classes IX-X)',
-//           age: '14-15 years',
-//           seats: 25,
-//           assessment: "Comprehensive entrance test in core subjects",
-//           show: true
-//         },
-//         {
-//           id: 'senior',
-//           name: 'Senior Secondary (Classes XI-XII)',
-//           age: '16-17 years',
-//           seats: 20,
-//           assessment: "Subject-specific tests and stream eligibility evaluation",
-//           show: true
-//         }
-//       ]
-//     },
-//     importantDates: {
-//       show: true,
-//       title: "Important Dates for 2025-26 Admissions",
-//       dates: [
-//         {
-//           event: "Admission Process Begins",
-//           date: "December 1, 2024",
-//           description: "Online applications open for all classes",
-//           show: true
-//         },
-//         {
-//           event: "Last Date for Applications",
-//           date: "January 15, 2025",
-//           description: "Deadline for submission of complete application forms",
-//           show: true
-//         },
-//         {
-//           event: "Assessments & Interactions",
-//           date: "January 20-30, 2025",
-//           description: "Grade-wise scheduled assessments and parent meetings",
-//           show: true
-//         },
-//         {
-//           event: "First Round of Offers",
-//           date: "February 5, 2025",
-//           description: "First batch of admission offers communicated",
-//           show: true
-//         },
-//         {
-//           event: "Fee Payment Deadline",
-//           date: "February 20, 2025",
-//           description: "Last date for fee payment to secure admission",
-//           show: true
-//         },
-//         {
-//           event: "Academic Year Begins",
-//           date: "April 1, 2025",
-//           description: "New academic session 2025-26 commences",
-//           show: true
-//         }
-//       ]
-//     },
-//     requiredDocuments: {
-//       show: true,
-//       title: "Required Documents",
-//       description: "Please keep these documents ready for the application process",
-//       categories: [
-//         {
-//           category: "Application Documents",
-//           items: [
-//             "Completed application form",
-//             "2 recent passport-size photographs of student",
-//             "Photograph of parents/guardians"
-//           ],
-//           show: true
-//         },
-//         {
-//           category: "Birth & Identity Proof",
-//           items: [
-//             "Birth certificate (original for verification)",
-//             "Aadhaar card of student (if available)"
-//           ],
-//           show: true
-//         },
-//         {
-//           category: "Academic Records",
-//           items: [
-//             "Report card of previous academic year",
-//             "Transfer certificate from previous school (if applicable)",
-//             "Achievement records (academic and co-curricular)"
-//           ],
-//           show: true
-//         },
-//         {
-//           category: "Parent Documents",
-//           items: [
-//             "Aadhaar card of both parents",
-//             "Address proof (electricity bill, rent agreement, etc.)"
-//           ],
-//           show: true
-//         }
-//       ]
-//     },
-//     feeStructure: {
-//       show: true,
-//       title: "Fee Structure 2025-26",
-//       items: [
-//         {
-//           item: "Application Fee",
-//           amount: "₹1,000",
-//           description: "Non-refundable, payable with application submission",
-//           show: true
-//         },
-//         {
-//           item: "Admission Fee",
-//           amount: "₹25,000",
-//           description: "One-time payment upon admission confirmation",
-//           show: true
-//         },
-//         {
-//           item: "Annual Charges",
-//           amount: "₹15,000",
-//           description: "Payable at the beginning of each academic year",
-//           show: true
-//         },
-//         {
-//           item: "Tuition Fee (Monthly)",
-//           amount: "₹8,000 - ₹12,000",
-//           description: "Varies by grade level, payable quarterly in advance",
-//           show: true
-//         },
-//         {
-//           item: "Development Fee",
-//           amount: "₹10,000",
-//           description: "Annual charge for infrastructure development",
-//           show: true
-//         }
-//       ]
-//     },
-//     scholarships: {
-//       show: true,
-//       title: "Scholarships & Financial Aid",
-//       description: "We believe in rewarding excellence and supporting deserving students",
-//       scholarships: [
-//         {
-//           name: "Academic Excellence Scholarship",
-//           eligibility: "95%+ in previous class & excellent assessment performance",
-//           coverage: "Up to 25% tuition fee waiver",
-//           show: true
-//         },
-//         {
-//           name: "Sports Scholarship",
-//           eligibility: "State/National level sports achievement",
-//           coverage: "Up to 50% tuition fee waiver",
-//           show: true
-//         },
-//         {
-//           name: "Sibling Scholarship",
-//           eligibility: "Second child from the same family",
-//           coverage: "5% discount on tuition fees",
-//           show: true
-//         },
-//         {
-//           name: "Alumni Scholarship",
-//           eligibility: "Children of St. Columba's alumni",
-//           coverage: "10% discount on tuition fees",
-//           show: true
-//         }
-//       ]
-//     },
-//     faqs: {
-//       show: true,
-//       title: "Frequently Asked Questions",
-//       description: "Find answers to common questions about our admission process",
-//       items: [
-//         {
-//           question: "What is the age criteria for admission to Nursery?",
-//           answer: "The child should have completed 3 years of age as of March 31, 2025 for admission to Nursery. For KG, the child should have completed 4 years of age by the same date.",
-//           show: true
-//         },
-//         {
-//           question: "Is there any sibling preference in admission?",
-//           answer: "Yes, we offer sibling preference subject to availability of seats and the child meeting the admission criteria. A 5% discount on tuition fees is also offered for the second child.",
-//           show: true
-//         },
-//         {
-//           question: "What is the student-teacher ratio in classrooms?",
-//           answer: "We maintain an optimal student-teacher ratio of 25:1 in primary classes and 30:1 in middle and secondary classes to ensure personalized attention.",
-//           show: true
-//         },
-//         {
-//           question: "Are transportation facilities available?",
-//           answer: "Yes, we provide safe and reliable transportation services covering most areas in the city. The bus fee is additional and varies based on distance.",
-//           show: true
-//         },
-//         {
-//           question: "What is the school's policy on transfers?",
-//           answer: "Transfer certificates from recognized schools are accepted. Students may need to take an entrance test for admission to classes II and above based on seat availability.",
-//           show: true
-//         }
-//       ]
-//     },
-//     contact: {
-//       show: true,
-//       title: "Ready to Begin Your Journey?",
-//       description: "Start your application today or contact our admission team for personalized assistance",
-//       info: [
-//         {
-//           icon: Mail,
-//           content: "admissions@stcolumbas.edu.in",
-//           show: true
-//         },
-//         {
-//           icon: Phone,
-//           content: "011-2336-3462 (Ext. 110)",
-//           show: true
-//         },
-//         {
-//           icon: Clock,
-//           content: "Monday-Friday: 9:00 AM - 4:00 PM",
-//           show: true
-//         },
-//         {
-//           icon: MapPin,
-//           content: "1, Ashok Place, New Delhi - 110001",
-//           show: true
-//         }
-//       ],
-//       buttons: [
-//         { label: "Apply Now", icon: FileText, link: "#", show: true },
-//         { label: "Schedule Campus Tour", icon: MapPin, link: "#", show: true }
-//       ]
-//     },
-//     showHero: true,
-//     showStats: true,
-//     showAdmissionSteps: true,
-//     showGradeLevels: true,
-//     showImportantDates: true,
-//     showRequiredDocuments: true,
-//     showFeeStructure: true,
-//     showScholarships: true,
-//     showFaqs: true,
-//     showContact: true
-//   };
-
-//   // Merge provided data with defaults
-//   const data = { ...defaultData, ...schoolData };
-
-//   // Filter functions
-//   const filteredStats = data.stats.items.filter(item => item.show !== false);
-//   const filteredSteps = data.admissionSteps.steps.filter(step => step.show !== false);
-//   const filteredGradeLevels = data.gradeLevels.levels.filter(level => level.show !== false);
-//   const filteredImportantDates = data.importantDates.dates.filter(date => date.show !== false);
-//   const filteredDocumentCategories = data.requiredDocuments.categories.filter(category => category.show !== false);
-//   const filteredFeeItems = data.feeStructure.items.filter(item => item.show !== false);
-//   const filteredScholarships = data.scholarships.scholarships.filter(scholarship => scholarship.show !== false);
-//   const filteredFaqs = data.faqs.items.filter(faq => faq.show !== false);
-//   const filteredContactInfo = data.contact.info.filter(info => info.show !== false);
-//   const filteredContactButtons = data.contact.buttons.filter(button => button.show !== false);
-
-//   // Slider configuration
-//   const cardsPerSlide = 1; // Slide one card at a time
-//   const totalSlides = filteredGradeLevels.length; // One slide per card
-//   // Duplicate cards for infinite scroll (3 full sets for smooth looping)
-//   const extendedGradeLevels = [
-//     ...filteredGradeLevels,
-//     ...filteredGradeLevels,
-//     ...filteredGradeLevels
-//   ];
-//   const initialSlide = totalSlides; // Start in the middle set for seamless looping
-
-//   // Slider navigation functions
-//   const nextSlide = () => {
-//     setCurrentSlide((prev) => {
-//       const next = prev + 1;
-//       if (next >= totalSlides * 2) {
-//         setTimeout(() => {
-//           setCurrentSlide(totalSlides);
-//           sliderRef.current.style.transition = 'none';
-//           sliderRef.current.style.transform = `translateX(-${totalSlides * (100 / 3)}%)`;
-//           // Force reflow to reset transition
-//           sliderRef.current.offsetHeight;
-//           sliderRef.current.style.transition = 'transform 0.5s ease-in-out';
-//         }, 500);
-//       }
-//       return next;
-//     });
-//   };
-
-//   const prevSlide = () => {
-//     setCurrentSlide((prev) => {
-//       const next = prev - 1;
-//       if (next < totalSlides) {
-//         setTimeout(() => {
-//           setCurrentSlide(totalSlides * 2 - 1);
-//           sliderRef.current.style.transition = 'none';
-//           sliderRef.current.style.transform = `translateX(-${(totalSlides * 2 - 1) * (100 / 3)}%)`;
-//           // Force reflow to reset transition
-//           sliderRef.current.offsetHeight;
-//           sliderRef.current.style.transition = 'transform 0.5s ease-in-out';
-//         }, 500);
-//       }
-//       return next;
-//     });
-//   };
-
-//   const goToSlide = (index) => {
-//     setCurrentSlide(totalSlides + index); // Map to middle set
-//   };
-
-//   // Auto-slide functionality
-//   useEffect(() => {
-//     setCurrentSlide(initialSlide); // Initialize to middle set
-//   }, []);
-
-//   useEffect(() => {
-//     if (!isPaused) {
-//       const timer = setInterval(() => {
-//         nextSlide();
-//       }, 5000); // Change slide every 5 seconds
-//       return () => clearInterval(timer);
-//     }
-//   }, [isPaused]);
-
-//   return (
-//     <div className="min-h-screen bg-white">
-//       {/* Hero Section - Consistent with other pages */}
-//       {data.showHero && data.hero.show && (
-//         <section className={`relative ${data.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
-//           <div className="absolute inset-0 bg-black/20"></div>
-//           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
-//             <div className="max-w-3xl">
-//               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
-//               <p className="text-xl text-green-100 leading-relaxed">
-//                 {data.hero.subtitle}
-//               </p>
-//               {data.hero.cta && (
-//                 <a 
-//                   href={data.hero.ctaLink} 
-//                   className="mt-6 bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center hover:scale-105"
-//                 >
-//                   {data.hero.cta}
-//                   <ArrowRight className="ml-2 h-4 w-4" />
-//                 </a>
-//               )}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Stats Section */}
-//       {data.showStats && data.stats.show && (
-//         <section className="py-12 bg-green-700 text-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-//               {filteredStats.map((stat, index) => (
-//                 <div key={index} className="text-center">
-//                   <div className="text-2xl font-bold mb-1">{stat.number}</div>
-//                   <div className="text-sm text-green-100">{stat.label}</div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Admission Process Steps - Stepper Version */}
-//       {data.showAdmissionSteps && data.admissionSteps.show && (
-//         <section className="py-16 bg-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.admissionSteps.title}</h2>
-//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-//                 {data.admissionSteps.description}
-//               </p>
-//             </div>
-
-//             {/* Stepper Navigation */}
-//             <div className="flex justify-center mb-12">
-//               <div className="flex items-center w-full max-w-4xl">
-//                 {filteredSteps.map((step, index) => (
-//                   <React.Fragment key={step.step}>
-//                     <div className="flex flex-col items-center">
-//                       <button
-//                         onClick={() => setActiveStep(step.step)}
-//                         className={`flex items-center justify-center w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
-//                           activeStep === step.step
-//                             ? 'bg-green-600 text-white scale-110'
-//                             : activeStep > step.step
-//                             ? 'bg-green-500 text-white'
-//                             : 'bg-gray-200 text-gray-700'
-//                         }`}
-//                       >
-//                         {activeStep > step.step ? (
-//                           <CheckCircle className="h-6 w-6" />
-//                         ) : (
-//                           step.step
-//                         )}
-//                       </button>
-//                       <div className="mt-2 text-xs font-medium text-gray-500 text-center max-w-20">
-//                         {step.title.split(' ')[0]}
-//                       </div>
-//                     </div>
-//                     {index < filteredSteps.length - 1 && (
-//                       <div
-//                         className={`flex-1 h-1 mx-2 ${
-//                           activeStep > step.step ? 'bg-green-500' : 'bg-gray-200'
-//                         }`}
-//                       ></div>
-//                     )}
-//                   </React.Fragment>
-//                 ))}
-//               </div>
-//             </div>
-
-//             {/* Step Content */}
-//             <div className="max-w-4xl mx-auto">
-//               {filteredSteps.map((step) => {
-//                 if (activeStep !== step.step) return null;
-//                 const IconComponent = step.icon;
-//                 return (
-//                   <div key={step.step} className="bg-gray-50 rounded-lg p-8">
-//                     <div className="flex items-center mb-6">
-//                       <div className="bg-green-100 p-3 rounded-lg mr-4">
-//                         <IconComponent className="h-8 w-8 text-green-600" />
-//                       </div>
-//                       <div>
-//                         <h3 className="text-2xl font-semibold text-gray-800">{step.title}</h3>
-//                         <p className="text-gray-600">{step.description}</p>
-//                       </div>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-//                       {step.details.map((detail, index) => (
-//                         <div key={index} className="flex items-start">
-//                           <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-//                           <span className="text-gray-700">{detail}</span>
-//                         </div>
-//                       ))}
-//                     </div>
-
-//                     <div className="flex justify-between mt-8">
-//                       <button
-//                         onClick={() => setActiveStep(activeStep - 1)}
-//                         disabled={activeStep === 1}
-//                         className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
-//                           activeStep === 1
-//                             ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-//                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105'
-//                         }`}
-//                       >
-//                         Previous
-//                       </button>
-//                       <button
-//                         onClick={() => setActiveStep(activeStep + 1)}
-//                         disabled={activeStep === filteredSteps.length}
-//                         className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
-//                           activeStep === filteredSteps.length
-//                             ? 'bg-green-400 text-white cursor-not-allowed'
-//                             : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
-//                         }`}
-//                       >
-//                         Next Step
-//                       </button>
-//                     </div>
-//                   </div>
-//                 );
-//               })}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Grade Level Information - Single Card Slider */}
-//       {data.showGradeLevels && data.gradeLevels.show && (
-//         <section className="py-16 bg-gray-50">
-//           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//             <div className="relative">
-//               <div className="text-center mb-12">
-//                 <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.gradeLevels.title}</h2>
-//                 <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-//                   {data.gradeLevels.description}
-//                 </p>
-//               </div>
-
-//               {/* Navigation Arrows - Top Right */}
-//               {filteredGradeLevels.length > 1 && (
-//                 <div className="absolute top-0 right-0 flex gap-2 z-10">
-//                   <button
-//                     onClick={prevSlide}
-//                     className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-//                     aria-label="Previous slide"
-//                   >
-//                     <ChevronLeft className="h-5 w-5" />
-//                   </button>
-//                   <button
-//                     onClick={nextSlide}
-//                     className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-//                     aria-label="Next slide"
-//                   >
-//                     <ChevronRightIcon className="h-5 w-5" />
-//                   </button>
-//                 </div>
-//               )}
-
-//               {/* Cards Container */}
-//               <div 
-//                 className="overflow-hidden"
-//                 onMouseEnter={() => setIsPaused(true)}
-//                 onMouseLeave={() => setIsPaused(false)}
-//                 role="region"
-//                 aria-label="Grade levels carousel"
-//               >
-//                 <div 
-//                   ref={sliderRef}
-//                   className="flex transition-transform duration-500 ease-in-out"
-//                   style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
-//                 >
-//                   {extendedGradeLevels.map((level, index) => (
-//                     <div 
-//                       key={`${level.id}-${index}`} 
-//                       className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-4"
-//                     >
-//                       <div className="bg-white rounded-xl shadow-lg p-6 h-full transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-//                         <div className="text-center mb-6">
-//                           <div className="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
-//                             <GraduationCap className="h-7 w-7 text-green-600" />
-//                           </div>
-//                           <h3 className="text-xl font-bold text-gray-800 mb-2">{level.name}</h3>
-//                           <div className="w-12 h-1 bg-green-500 mx-auto"></div>
-//                         </div>
-                        
-//                         <div className="space-y-4 mb-6">
-//                           <div className="flex items-center justify-between py-2 border-b border-gray-100">
-//                             <span className="text-gray-600 font-medium">Age Range:</span>
-//                             <span className="text-gray-800 font-semibold">{level.age}</span>
-//                           </div>
-                          
-//                           <div className="flex items-center justify-between py-2 border-b border-gray-100">
-//                             <span className="text-gray-600 font-medium">Available Seats:</span>
-//                             <span className="text-green-600 font-bold">{level.seats}</span>
-//                           </div>
-                          
-//                           <div className="py-2">
-//                             <span className="text-gray-600 font-medium block mb-2">Assessment Process:</span>
-//                             <p className="text-gray-700 text-sm leading-relaxed">{level.assessment}</p>
-//                           </div>
-//                         </div>
-                        
-//                         <button 
-//                           className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
-//                           aria-label={`Learn more about ${level.name}`}
-//                         >
-//                           Learn More
-//                           <ArrowRight className="ml-2 h-4 w-4 inline" />
-//                         </button>
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-
-//               {/* Dots Indicator */}
-//               {totalSlides > 1 && (
-//                 <div className="flex justify-center mt-8">
-//                   {Array.from({ length: totalSlides }).map((_, index) => (
-//                     <button
-//                       key={index}
-//                       onClick={() => goToSlide(index)}
-//                       className={`w-3 h-3 rounded-full mx-1 transition-all duration-200 ${
-//                         index === (currentSlide % totalSlides) ? 'bg-green-600 scale-125' : 'bg-gray-300'
-//                       }`}
-//                       aria-label={`Go to slide ${index + 1}`}
-//                     />
-//                   ))}
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Important Dates */}
-//       {data.showImportantDates && data.importantDates.show && (
-//         <section className="py-16 bg-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.importantDates.title}</h2>
-//             </div>
-
-//             <div className="max-w-4xl mx-auto">
-//               {filteredImportantDates.map((date, index) => (
-//                 <div key={index} className="flex mb-8">
-//                   <div className="flex-shrink-0 w-24">
-//                     <div className="bg-green-100 text-green-800 font-bold text-center py-2 px-4 rounded-lg">
-//                       {date.date.split(' ')[0]}
-//                     </div>
-//                     <div className="text-center text-sm text-gray-500 mt-1">
-//                       {date.date.split(' ').slice(1).join(' ')}
-//                     </div>
-//                   </div>
-//                   <div className="ml-6 flex-1">
-//                     <h3 className="text-xl font-semibold text-gray-800 mb-1">{date.event}</h3>
-//                     <p className="text-gray-600">{date.description}</p>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Required Documents */}
-//       {data.showRequiredDocuments && data.requiredDocuments.show && (
-//         <section className="py-16 bg-gray-50">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.requiredDocuments.title}</h2>
-//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-//                 {data.requiredDocuments.description}
-//               </p>
-//             </div>
-
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//               {filteredDocumentCategories.map((category, index) => (
-//                 <div key={index} className="bg-white rounded-lg shadow-md p-6">
-//                   <h3 className="text-xl font-semibold text-gray-800 mb-4">{category.category}</h3>
-//                   <ul className="space-y-3">
-//                     {category.items.map((item, itemIndex) => (
-//                       <li key={itemIndex} className="flex items-start">
-//                         <FileCheck className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-//                         <span className="text-gray-700">{item}</span>
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Fee Structure */}
-//       {data.showFeeStructure && data.feeStructure.show && (
-//         <section className="py-16 bg-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.feeStructure.title}</h2>
-//             </div>
-
-//             <div className="max-w-4xl mx-auto">
-//               {filteredFeeItems.map((item, index) => (
-//                 <div key={index} className="flex justify-between items-center py-4 border-b border-gray-200">
-//                   <div>
-//                     <h3 className="text-lg font-semibold text-gray-800">{item.item}</h3>
-//                     <p className="text-gray-600 text-sm">{item.description}</p>
-//                   </div>
-//                   <div className="text-lg font-bold text-green-700">{item.amount}</div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Scholarships */}
-//       {data.showScholarships && data.scholarships.show && (
-//         <section className="py-16 bg-gray-50">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.scholarships.title}</h2>
-//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-//                 {data.scholarships.description}
-//               </p>
-//             </div>
-
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//               {filteredScholarships.map((scholarship, index) => (
-//                 <div key={index} className="bg-white rounded-lg shadow-md p-6">
-//                   <h3 className="text-xl font-semibold text-gray-800 mb-3">{scholarship.name}</h3>
-//                   <div className="space-y-3">
-//                     <div className="flex items-start">
-//                       <Award className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-//                       <span className="text-gray-700"><strong>Eligibility:</strong> {scholarship.eligibility}</span>
-//                     </div>
-//                     <div className="flex items-start">
-//                       <CreditCard className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-//                       <span className="text-gray-700"><strong>Coverage:</strong> {scholarship.coverage}</span>
-//                     </div>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* FAQs */}
-//       {data.showFaqs && data.faqs.show && (
-//         <section className="py-16 bg-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold text-gray-800 mb-4">{data.faqs.title}</h2>
-//               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-//                 {data.faqs.description}
-//               </p>
-//             </div>
-
-//             <div className="max-w-4xl mx-auto">
-//               {filteredFaqs.map((faq, index) => (
-//                 <div key={index} className="border-b border-gray-200 py-6">
-//                   <button
-//                     className="flex justify-between items-center w-full text-left font-semibold text-lg text-gray-800"
-//                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-//                   >
-//                     {faq.question}
-//                     {openFaq === index ? (
-//                       <ChevronDown className="h-5 w-5 text-green-600" />
-//                     ) : (
-//                       <ChevronRight className="h-5 w-5 text-green-600" />
-//                     )}
-//                   </button>
-//                   {openFaq === index && (
-//                     <div className="mt-4 text-gray-600 leading-relaxed">
-//                       {faq.answer}
-//                     </div>
-//                   )}
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-//       )}
-
-//       {/* Contact Section */}
-//       {data.showContact && data.contact.show && (
-//         <section className="py-16 bg-green-700 text-white">
-//           <div className="max-w-7xl mx-auto px-4">
-//             <div className="text-center mb-12">
-//               <h2 className="text-3xl font-bold mb-4">{data.contact.title}</h2>
-//               <p className="text-lg text-green-100 max-w-3xl mx-auto">
-//                 {data.contact.description}
-//               </p>
-//             </div>
-
-//             <div className="max-w-4xl mx-auto">
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-//                 {filteredContactInfo.map((info, index) => {
-//                   const IconComponent = info.icon;
-//                   return (
-//                     <div key={index} className="flex items-center">
-//                       <div className="bg-green-600 p-3 rounded-lg mr-4">
-//                         <IconComponent className="h-6 w-6" />
-//                       </div>
-//                       <span>{info.content}</span>
-//                     </div>
-//                   );
-//                 })}
-//               </div>
-
-//               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-//                 {filteredContactButtons.map((button, index) => {
-//                   const IconComponent = button.icon;
-//                   return (
-//                     <a
-//                       key={index}
-//                       href={button.link}
-//                       className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center justify-center hover:scale-105"
-//                     >
-//                       {button.label}
-//                       <IconComponent className="ml-2 h-4 w-4" />
-//                     </a>
-//                   );
-//                 })}
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default AdmissionProcessPage;
