@@ -46,6 +46,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [slideWidth, setSlideWidth] = useState(100 / 3);
   const role = 'admin'; // Should come from auth context
   const sliderRef = useRef(null);
 
@@ -98,10 +99,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           description: "Learn about our school and admission process",
           icon: "Users",
           details: [
-            "Attend virtual information session",
-            "Download prospectus and fee structure",
-            "Schedule campus tour (optional)",
-            "Meet with admission counselor"
+            { text: "Attend virtual information session", show: true },
+            { text: "Download prospectus and fee structure", show: true },
+            { text: "Schedule campus tour (optional)", show: true },
+            { text: "Meet with admission counselor", show: true }
           ],
           show: true
         },
@@ -111,10 +112,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           description: "Complete and submit the application form",
           icon: "FileText",
           details: [
-            "Fill online application form",
-            "Upload required documents",
-            "Pay application fee (₹1,000)",
-            "Receive application confirmation"
+            { text: "Fill online application form", show: true },
+            { text: "Upload required documents", show: true },
+            { text: "Pay application fee (₹1,000)", show: true },
+            { text: "Receive application confirmation", show: true }
           ],
           show: true
         },
@@ -124,10 +125,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           description: "Student assessment and parent interaction",
           icon: "UserCheck",
           details: [
-            "Age-appropriate assessment for student",
-            "Parent interaction with admission committee",
-            "Observation of student in group setting",
-            "Review of previous school records"
+            { text: "Age-appropriate assessment for student", show: true },
+            { text: "Parent interaction with admission committee", show: true },
+            { text: "Observation of student in group setting", show: true },
+            { text: "Review of previous school records", show: true }
           ],
           show: true
         },
@@ -137,10 +138,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           description: "Receive and review admission offer",
           icon: "Award",
           details: [
-            "Admission committee review",
-            "Decision communicated via email",
-            "Offer letter with fee details",
-            "Next steps information"
+            { text: "Admission committee review", show: true },
+            { text: "Decision communicated via email", show: true },
+            { text: "Offer letter with fee details", show: true },
+            { text: "Next steps information", show: true }
           ],
           show: true
         },
@@ -150,10 +151,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           description: "Complete enrollment formalities",
           icon: "CheckCircle",
           details: [
-            "Submit acceptance form",
-            "Pay admission fee and first installment",
-            "Complete documentation",
-            "Receive welcome package"
+            { text: "Submit acceptance form", show: true },
+            { text: "Pay admission fee and first installment", show: true },
+            { text: "Complete documentation", show: true },
+            { text: "Receive welcome package", show: true }
           ],
           show: true
         }
@@ -208,42 +209,42 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     },
     importantDates: {
       show: true,
-      title: "Important Dates for 2025-26 Admissions",
+      title: "Important Dates for 2026-27 Admissions",
       dates: [
         {
           event: "Admission Process Begins",
-          date: "December 1, 2024",
+          date: "December 1, 2025",
           description: "Online applications open for all classes",
           show: true
         },
         {
           event: "Last Date for Applications",
-          date: "January 15, 2025",
+          date: "January 15, 2026",
           description: "Deadline for submission of complete application forms",
           show: true
         },
         {
           event: "Assessments & Interactions",
-          date: "January 20-30, 2025",
+          date: "January 20-30, 2026",
           description: "Grade-wise scheduled assessments and parent meetings",
           show: true
         },
         {
           event: "First Round of Offers",
-          date: "February 5, 2025",
+          date: "February 5, 2026",
           description: "First batch of admission offers communicated",
           show: true
         },
         {
           event: "Fee Payment Deadline",
-          date: "February 20, 2025",
+          date: "February 20, 2026",
           description: "Last date for fee payment to secure admission",
           show: true
         },
         {
           event: "Academic Year Begins",
-          date: "April 1, 2025",
-          description: "New academic session 2025-26 commences",
+          date: "April 1, 2026",
+          description: "New academic session 2026-27 commences",
           show: true
         }
       ]
@@ -256,34 +257,34 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
         {
           category: "Application Documents",
           items: [
-            "Completed application form",
-            "2 recent passport-size photographs of student",
-            "Photograph of parents/guardians"
+            { text: "Completed application form", show: true },
+            { text: "2 recent passport-size photographs of student", show: true },
+            { text: "Photograph of parents/guardians", show: true }
           ],
           show: true
         },
         {
           category: "Birth & Identity Proof",
           items: [
-            "Birth certificate (original for verification)",
-            "Aadhaar card of student (if available)"
+            { text: "Birth certificate (original for verification)", show: true },
+            { text: "Aadhaar card of student (if available)", show: true }
           ],
           show: true
         },
         {
           category: "Academic Records",
           items: [
-            "Report card of previous academic year",
-            "Transfer certificate from previous school (if applicable)",
-            "Achievement records (academic and co-curricular)"
+            { text: "Report card of previous academic year", show: true },
+            { text: "Transfer certificate from previous school (if applicable)", show: true },
+            { text: "Achievement records (academic and co-curricular)", show: true }
           ],
           show: true
         },
         {
           category: "Parent Documents",
           items: [
-            "Aadhaar card of both parents",
-            "Address proof (electricity bill, rent agreement, etc.)"
+            { text: "Aadhaar card of both parents", show: true },
+            { text: "Address proof (electricity bill, rent agreement, etc.)", show: true }
           ],
           show: true
         }
@@ -291,7 +292,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     },
     feeStructure: {
       show: true,
-      title: "Fee Structure 2025-26",
+      title: "Fee Structure 2026-27",
       items: [
         {
           item: "Application Fee",
@@ -363,7 +364,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
       items: [
         {
           question: "What is the age criteria for admission to Nursery?",
-          answer: "The child should have completed 3 years of age as of March 31, 2025 for admission to Nursery. For KG, the child should have completed 4 years of age by the same date.",
+          answer: "The child should have completed 3 years of age as of March 31, 2026 for admission to Nursery. For KG, the child should have completed 4 years of age by the same date.",
           show: true
         },
         {
@@ -484,6 +485,37 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     fetchData();
   }, []);
 
+  // Responsive slide width
+  useEffect(() => {
+    const handleResize = () => {
+      setSlideWidth(window.innerWidth >= 768 ? 100 / 3 : 100);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Filter functions
+  const filteredStats = (data.stats?.items || []).filter(item => item.show !== false);
+  const filteredSteps = (data.admissionSteps?.steps || []).filter(step => step.show !== false);
+  const filteredGradeLevels = (data.gradeLevels?.levels || []).filter(level => level.show !== false);
+  const filteredImportantDates = (data.importantDates?.dates || []).filter(date => date.show !== false);
+  const filteredDocumentCategories = (data.requiredDocuments?.categories || []).filter(category => category.show !== false);
+  const filteredFeeItems = (data.feeStructure?.items || []).filter(item => item.show !== false);
+  const filteredScholarships = (data.scholarships?.scholarships || []).filter(scholarship => scholarship.show !== false);
+  const filteredFaqs = (data.faqs?.items || []).filter(faq => faq.show !== false);
+  const filteredContactInfo = (data.contact?.info || []).filter(info => info.show !== false);
+  const filteredContactButtons = (data.contact?.buttons || []).filter(button => button.show !== false);
+
+  const totalSlides = filteredGradeLevels.length;
+  const visibleCards = slideWidth === 100 ? 1 : 3;
+  const maxSlide = Math.max(0, totalSlides - visibleCards);
+
+  // Reset current slide when totalSlides or maxSlide changes
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [totalSlides, maxSlide]);
+
   // IntersectionObserver for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -545,26 +577,22 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     });
   };
 
-  // Handle change for string arrays (e.g., categories.items in requiredDocuments)
-  const handleStringListChange = (arrayKey, index, value) => {
+  // Handle change for string arrays now objects with text and show
+  const handleTextItemChange = (arrayKey, index, field, value) => {
     setEditData(prev => {
       const updated = { ...prev };
       if (!updated[arrayKey]) updated[arrayKey] = [];
-      const list = [...updated[arrayKey]];
-      list[index] = value;
-      updated[arrayKey] = list;
+      updated[arrayKey][index] = { ...updated[arrayKey][index], [field]: value };
       return updated;
     });
   };
 
-  // Handle change for steps details (array of strings)
-  const handleStepDetailsChange = (stepIndex, detailIndex, value) => {
+  // Handle change for steps details now array of objects
+  const handleStepDetailsChange = (stepIndex, detailIndex, field, value) => {
     setEditData(prev => {
       const updated = { ...prev };
       if (!updated.steps) updated.steps = [];
-      const details = [...updated.steps[stepIndex].details];
-      details[detailIndex] = value;
-      updated.steps[stepIndex].details = details;
+      updated.steps[stepIndex].details[detailIndex] = { ...updated.steps[stepIndex].details[detailIndex], [field]: value };
       return updated;
     });
   };
@@ -579,14 +607,12 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     });
   };
 
-  // Handle change for items in categories
-  const handleCategoryItemChange = (categoryIndex, itemIndex, value) => {
+  // Handle change for items in categories now objects
+  const handleCategoryItemChange = (categoryIndex, itemIndex, field, value) => {
     setEditData(prev => {
       const updated = { ...prev };
       if (!updated.categories) updated.categories = [];
-      const items = [...updated.categories[categoryIndex].items];
-      items[itemIndex] = value;
-      updated.categories[categoryIndex].items = items;
+      updated.categories[categoryIndex].items[itemIndex] = { ...updated.categories[categoryIndex].items[itemIndex], [field]: value };
       return updated;
     });
   };
@@ -653,78 +679,28 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     return data[section] ?? {};
   };
 
-  // Filter functions
-  const filteredStats = (data.stats?.items || []).filter(item => item.show !== false);
-  const filteredSteps = (data.admissionSteps?.steps || []).filter(step => step.show !== false);
-  const filteredGradeLevels = (data.gradeLevels?.levels || []).filter(level => level.show !== false);
-  const filteredImportantDates = (data.importantDates?.dates || []).filter(date => date.show !== false);
-  const filteredDocumentCategories = (data.requiredDocuments?.categories || []).filter(category => category.show !== false);
-  const filteredFeeItems = (data.feeStructure?.items || []).filter(item => item.show !== false);
-  const filteredScholarships = (data.scholarships?.scholarships || []).filter(scholarship => scholarship.show !== false);
-  const filteredFaqs = (data.faqs?.items || []).filter(faq => faq.show !== false);
-  const filteredContactInfo = (data.contact?.info || []).filter(info => info.show !== false);
-  const filteredContactButtons = (data.contact?.buttons || []).filter(button => button.show !== false);
-
-  // Slider configuration
-  const cardsPerSlide = 1;
-  const totalSlides = filteredGradeLevels.length;
-  const extendedGradeLevels = [
-    ...filteredGradeLevels,
-    ...filteredGradeLevels,
-    ...filteredGradeLevels
-  ];
-  const initialSlide = totalSlides;
-
   // Slider navigation functions
   const nextSlide = () => {
-    setCurrentSlide((prev) => {
-      const next = prev + 1;
-      if (next >= totalSlides * 2) {
-        setTimeout(() => {
-          setCurrentSlide(totalSlides);
-          sliderRef.current.style.transition = 'none';
-          sliderRef.current.style.transform = `translateX(-${totalSlides * (100 / 3)}%)`;
-          sliderRef.current.offsetHeight;
-          sliderRef.current.style.transition = 'transform 0.5s ease-in-out';
-        }, 500);
-      }
-      return next;
-    });
+    setCurrentSlide((prev) => Math.min(prev + 1, maxSlide));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => {
-      const next = prev - 1;
-      if (next < totalSlides) {
-        setTimeout(() => {
-          setCurrentSlide(totalSlides * 2 - 1);
-          sliderRef.current.style.transition = 'none';
-          sliderRef.current.style.transform = `translateX(-${(totalSlides * 2 - 1) * (100 / 3)}%)`;
-          sliderRef.current.offsetHeight;
-          sliderRef.current.style.transition = 'transform 0.5s ease-in-out';
-        }, 500);
-      }
-      return next;
-    });
+    setCurrentSlide((prev) => Math.max(prev - 1, 0));
   };
 
   const goToSlide = (index) => {
-    setCurrentSlide(totalSlides + index);
+    setCurrentSlide(Math.min(index, maxSlide));
   };
 
   // Auto-slide functionality
   useEffect(() => {
-    setCurrentSlide(initialSlide);
-  }, []);
-
-  useEffect(() => {
-    if (!isPaused) {
+    if (!isPaused && totalSlides > visibleCards) {
       const timer = setInterval(() => {
         nextSlide();
       }, 5000);
       return () => clearInterval(timer);
     }
-  }, [isPaused]);
+  }, [isPaused, maxSlide]);
 
   // Modal Footer Component
   const ModalFooter = () => (
@@ -836,21 +812,31 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                 {editSection === 'stats' && (
                   <div>
                     {(editData.items || []).map((item, index) => (
-                      <div key={index} className="flex space-x-2 mt-2">
-                        <input
-                          type="text"
-                          value={item.number || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'number', e.target.value)}
-                          placeholder="Number"
-                          className="w-1/2 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={item.label || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'label', e.target.value)}
-                          placeholder="Label"
-                          className="w-1/2 p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={item.show || false}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this stat</span>
+                        </label>
+                        <div className="flex space-x-2 mt-2">
+                          <input
+                            type="text"
+                            value={item.number || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'number', e.target.value)}
+                            placeholder="Number"
+                            className="w-1/2 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={item.label || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'label', e.target.value)}
+                            placeholder="Label"
+                            className="w-1/2 p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -878,6 +864,14 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     </div>
                     {(editData.steps || []).map((step, stepIndex) => (
                       <div key={stepIndex} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={step.show || false}
+                            onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'show', e.target.checked)}
+                          />
+                          <span>Show this step</span>
+                        </label>
                         <input
                           type="text"
                           value={step.title || ''}
@@ -892,22 +886,24 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                           placeholder="Step Description"
                           className="w-full p-2 border rounded mb-2"
                         />
-                        <input
-                          type="text"
-                          value={step.icon || ''}
-                          onChange={(e) => handleNestedArrayChange('steps', stepIndex, 'icon', e.target.value)}
-                          placeholder="Icon Name"
-                          className="w-full p-2 border rounded mb-2"
-                        />
                         {(step.details || []).map((detail, detailIndex) => (
-                          <input
-                            key={detailIndex}
-                            type="text"
-                            value={detail || ''}
-                            onChange={(e) => handleStepDetailsChange(stepIndex, detailIndex, e.target.value)}
-                            placeholder="Detail"
-                            className="w-full p-2 border rounded mb-2"
-                          />
+                          <div key={detailIndex} className="border p-3 rounded mt-2">
+                            <label className="flex items-center space-x-2 mb-2">
+                              <input
+                                type="checkbox"
+                                checked={detail.show || false}
+                                onChange={(e) => handleStepDetailsChange(stepIndex, detailIndex, 'show', e.target.checked)}
+                              />
+                              <span>Show this detail</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={detail.text || ''}
+                              onChange={(e) => handleStepDetailsChange(stepIndex, detailIndex, 'text', e.target.value)}
+                              placeholder="Detail"
+                              className="w-full p-2 border rounded"
+                            />
+                          </div>
                         ))}
                       </div>
                     ))}
@@ -936,6 +932,14 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     </div>
                     {(editData.levels || []).map((level, index) => (
                       <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={level.show || false}
+                            onChange={(e) => handleNestedArrayChange('levels', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this level</span>
+                        </label>
                         <input
                           type="text"
                           value={level.name || ''}
@@ -981,28 +985,38 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       />
                     </div>
                     {(editData.dates || []).map((date, index) => (
-                      <div key={index} className="flex space-x-2 mt-2">
-                        <input
-                          type="text"
-                          value={date.event || ''}
-                          onChange={(e) => handleNestedArrayChange('dates', index, 'event', e.target.value)}
-                          placeholder="Event"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={date.date || ''}
-                          onChange={(e) => handleNestedArrayChange('dates', index, 'date', e.target.value)}
-                          placeholder="Date"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={date.description || ''}
-                          onChange={(e) => handleNestedArrayChange('dates', index, 'description', e.target.value)}
-                          placeholder="Description"
-                          className="w-1/3 p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={date.show || false}
+                            onChange={(e) => handleNestedArrayChange('dates', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this date</span>
+                        </label>
+                        <div className="flex space-x-2 mt-2">
+                          <input
+                            type="text"
+                            value={date.event || ''}
+                            onChange={(e) => handleNestedArrayChange('dates', index, 'event', e.target.value)}
+                            placeholder="Event"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={date.date || ''}
+                            onChange={(e) => handleNestedArrayChange('dates', index, 'date', e.target.value)}
+                            placeholder="Date"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={date.description || ''}
+                            onChange={(e) => handleNestedArrayChange('dates', index, 'description', e.target.value)}
+                            placeholder="Description"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1030,6 +1044,14 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     </div>
                     {(editData.categories || []).map((category, catIndex) => (
                       <div key={catIndex} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={category.show || false}
+                            onChange={(e) => handleCategoryChange(catIndex, 'show', e.target.checked)}
+                          />
+                          <span>Show this category</span>
+                        </label>
                         <input
                           type="text"
                           value={category.category || ''}
@@ -1038,14 +1060,23 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                           className="w-full p-2 border rounded mb-2"
                         />
                         {(category.items || []).map((item, itemIndex) => (
-                          <input
-                            key={itemIndex}
-                            type="text"
-                            value={item || ''}
-                            onChange={(e) => handleCategoryItemChange(catIndex, itemIndex, e.target.value)}
-                            placeholder="Item"
-                            className="w-full p-2 border rounded mb-2"
-                          />
+                          <div key={itemIndex} className="border p-3 rounded mt-2">
+                            <label className="flex items-center space-x-2 mb-2">
+                              <input
+                                type="checkbox"
+                                checked={item.show || false}
+                                onChange={(e) => handleCategoryItemChange(catIndex, itemIndex, 'show', e.target.checked)}
+                              />
+                              <span>Show this item</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={item.text || ''}
+                              onChange={(e) => handleCategoryItemChange(catIndex, itemIndex, 'text', e.target.value)}
+                              placeholder="Item"
+                              className="w-full p-2 border rounded"
+                            />
+                          </div>
                         ))}
                       </div>
                     ))}
@@ -1064,28 +1095,38 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       />
                     </div>
                     {(editData.items || []).map((item, index) => (
-                      <div key={index} className="flex space-x-2 mt-2">
-                        <input
-                          type="text"
-                          value={item.item || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'item', e.target.value)}
-                          placeholder="Item"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={item.amount || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'amount', e.target.value)}
-                          placeholder="Amount"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={item.description || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'description', e.target.value)}
-                          placeholder="Description"
-                          className="w-1/3 p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={item.show || false}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this fee item</span>
+                        </label>
+                        <div className="flex space-x-2 mt-2">
+                          <input
+                            type="text"
+                            value={item.item || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'item', e.target.value)}
+                            placeholder="Item"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={item.amount || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'amount', e.target.value)}
+                            placeholder="Amount"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={item.description || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'description', e.target.value)}
+                            placeholder="Description"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1112,28 +1153,38 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       />
                     </div>
                     {(editData.scholarships || []).map((sch, index) => (
-                      <div key={index} className="flex space-x-2 mt-2">
-                        <input
-                          type="text"
-                          value={sch.name || ''}
-                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'name', e.target.value)}
-                          placeholder="Name"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={sch.eligibility || ''}
-                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'eligibility', e.target.value)}
-                          placeholder="Eligibility"
-                          className="w-1/3 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={sch.coverage || ''}
-                          onChange={(e) => handleNestedArrayChange('scholarships', index, 'coverage', e.target.value)}
-                          placeholder="Coverage"
-                          className="w-1/3 p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={sch.show || false}
+                            onChange={(e) => handleNestedArrayChange('scholarships', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this scholarship</span>
+                        </label>
+                        <div className="flex space-x-2 mt-2">
+                          <input
+                            type="text"
+                            value={sch.name || ''}
+                            onChange={(e) => handleNestedArrayChange('scholarships', index, 'name', e.target.value)}
+                            placeholder="Name"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={sch.eligibility || ''}
+                            onChange={(e) => handleNestedArrayChange('scholarships', index, 'eligibility', e.target.value)}
+                            placeholder="Eligibility"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={sch.coverage || ''}
+                            onChange={(e) => handleNestedArrayChange('scholarships', index, 'coverage', e.target.value)}
+                            placeholder="Coverage"
+                            className="w-1/3 p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1160,21 +1211,31 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                       />
                     </div>
                     {(editData.items || []).map((faq, index) => (
-                      <div key={index} className="space-y-2 mt-2">
-                        <input
-                          type="text"
-                          value={faq.question || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'question', e.target.value)}
-                          placeholder="Question"
-                          className="w-full p-2 border rounded"
-                        />
-                        <textarea
-                          value={faq.answer || ''}
-                          onChange={(e) => handleSimpleArrayChange('items', index, 'answer', e.target.value)}
-                          placeholder="Answer"
-                          className="w-full p-2 border rounded"
-                          rows="3"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={faq.show || false}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this FAQ</span>
+                        </label>
+                        <div className="space-y-2 mt-2">
+                          <input
+                            type="text"
+                            value={faq.question || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'question', e.target.value)}
+                            placeholder="Question"
+                            className="w-full p-2 border rounded"
+                          />
+                          <textarea
+                            value={faq.answer || ''}
+                            onChange={(e) => handleSimpleArrayChange('items', index, 'answer', e.target.value)}
+                            placeholder="Answer"
+                            className="w-full p-2 border rounded"
+                            rows="3"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1202,47 +1263,53 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     </div>
                     <h3 className="text-lg font-semibold mt-4 mb-2">Contact Info</h3>
                     {(editData.info || []).map((info, index) => (
-                      <div key={index} className="space-y-2 mt-2">
-                        <input
-                          type="text"
-                          value={info.icon || ''}
-                          onChange={(e) => handleNestedArrayChange('info', index, 'icon', e.target.value)}
-                          placeholder="Icon Name"
-                          className="w-full p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={info.content || ''}
-                          onChange={(e) => handleNestedArrayChange('info', index, 'content', e.target.value)}
-                          placeholder="Content"
-                          className="w-full p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={info.show || false}
+                            onChange={(e) => handleNestedArrayChange('info', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this info</span>
+                        </label>
+                        <div className="space-y-2 mt-2">
+                          <input
+                            type="text"
+                            value={info.content || ''}
+                            onChange={(e) => handleNestedArrayChange('info', index, 'content', e.target.value)}
+                            placeholder="Content"
+                            className="w-full p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                     <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
                     {(editData.buttons || []).map((button, index) => (
-                      <div key={index} className="space-y-2 mt-2">
-                        <input
-                          type="text"
-                          value={button.icon || ''}
-                          onChange={(e) => handleNestedArrayChange('buttons', index, 'icon', e.target.value)}
-                          placeholder="Icon Name"
-                          className="w-full p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={button.label || ''}
-                          onChange={(e) => handleNestedArrayChange('buttons', index, 'label', e.target.value)}
-                          placeholder="Label"
-                          className="w-1/2 p-2 border rounded"
-                        />
-                        <input
-                          type="text"
-                          value={button.link || ''}
-                          onChange={(e) => handleNestedArrayChange('buttons', index, 'link', e.target.value)}
-                          placeholder="Link"
-                          className="w-1/2 p-2 border rounded"
-                        />
+                      <div key={index} className="border p-4 rounded mt-4">
+                        <label className="flex items-center space-x-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={button.show || false}
+                            onChange={(e) => handleNestedArrayChange('buttons', index, 'show', e.target.checked)}
+                          />
+                          <span>Show this button</span>
+                        </label>
+                        <div className="space-y-2 mt-2">
+                          <input
+                            type="text"
+                            value={button.label || ''}
+                            onChange={(e) => handleNestedArrayChange('buttons', index, 'label', e.target.value)}
+                            placeholder="Label"
+                            className="w-1/2 p-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={button.link || ''}
+                            onChange={(e) => handleNestedArrayChange('buttons', index, 'link', e.target.value)}
+                            placeholder="Link"
+                            className="w-1/2 p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1358,6 +1425,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
             <div className="max-w-4xl mx-auto">
               {filteredSteps.map((step) => {
                 if (activeStep !== step.step) return null;
+                const filteredDetails = (step.details || []).filter(detail => detail.show !== false);
                 return (
                   <div key={step.step} className="bg-gray-50 rounded-lg p-8">
                     <div className="flex items-center mb-6">
@@ -1371,10 +1439,10 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      {step.details.map((detail, index) => (
+                      {filteredDetails.map((detail, index) => (
                         <div key={index} className="flex items-start">
                           <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700">{detail}</span>
+                          <span className="text-gray-700">{detail.text}</span>
                         </div>
                       ))}
                     </div>
@@ -1426,15 +1494,19 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                 {safeData('gradeLevels').description}
               </p>
             </div>
-            <div className="relative">
+            <div 
+              ref={sliderRef}
+              className="relative overflow-hidden"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
               <div 
-                ref={sliderRef}
                 className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
+                style={{ transform: `translateX(-${currentSlide * slideWidth}%)` }}
               >
-                {extendedGradeLevels.map((level, index) => (
-                  <div key={index} className="w-full md:w-1/3 px-4">
-                    <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                {filteredGradeLevels.map((level, index) => (
+                  <div key={index} className="w-full md:w-1/3 px-4 flex-shrink-0">
+                    <div className="bg-white rounded-lg shadow-lg p-6 text-center h-full">
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{level.name}</h3>
                       <p className="text-green-600 font-semibold mb-4">{level.age}</p>
                       <p className="text-gray-600 mb-4">Seats: <span className="font-bold">{level.seats}</span></p>
@@ -1445,27 +1517,31 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
               </div>
               <button
                 onClick={prevSlide}
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg"
+                disabled={currentSlide === 0}
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-6 w-6 text-gray-600" />
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg"
+                disabled={currentSlide === maxSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:shadow-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRightIcon className="h-6 w-6 text-gray-600" />
               </button>
-              <div className="flex justify-center mt-8 space-x-2">
-                {Array.from({ length: totalSlides }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      Math.floor(currentSlide % totalSlides) === index ? 'bg-green-600' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
+              {totalSlides > visibleCards && (
+                <div className="flex justify-center mt-8 space-x-2">
+                  {Array.from({ length: maxSlide + 1 }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`w-3 h-3 rounded-full transition-colors ${
+                        currentSlide === index ? 'bg-green-600' : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           {editMode && (
@@ -1513,19 +1589,22 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredDocumentCategories.map((category, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">{category.category}</h3>
-                  <ul className="space-y-3">
-                    {category.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="flex items-start">
-                        <FileCheck className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {filteredDocumentCategories.map((category, index) => {
+                const filteredItems = (category.items || []).filter(item => item.show !== false);
+                return (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">{category.category}</h3>
+                    <ul className="space-y-3">
+                      {filteredItems.map((item, itemIndex) => (
+                        <li key={itemIndex} className="flex items-start">
+                          <FileCheck className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-700">{item.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
           </div>
           {editMode && (
@@ -1648,6 +1727,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
         <section className="py-16 bg-green-700 text-white relative animate-on-scroll" id="contact">
           <div className="max-w-7xl mx-auto px-4 relative">
             <div className="text-center mb-12">
+              <GraduationCap className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
               <h2 className="text-3xl font-bold mb-4">{safeData('contact').title}</h2>
               <p className="text-lg text-green-100 max-w-3xl mx-auto">
                 {safeData('contact').description}
@@ -1659,7 +1739,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                 {filteredContactInfo.map((info, index) => (
                   <div key={index} className="flex items-center">
                     <div className="bg-green-600 p-3 rounded-lg mr-4">
-                      {renderIcon(info.icon, "h-6 w-6")}
+                      {renderIcon(info.icon, "h-6 w-6 text-white")}
                     </div>
                     <span>{info.content}</span>
                   </div>
@@ -1674,7 +1754,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
                     className="bg-yellow-400 hover:bg-yellow-500 text-green-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center justify-center hover:scale-105"
                   >
                     {button.label}
-                    {renderIcon(button.icon, "ml-2 h-4 w-4")}
+                    {renderIcon(button.icon, "ml-2 h-4 w-4 text-green-800")}
                   </a>
                 ))}
               </div>

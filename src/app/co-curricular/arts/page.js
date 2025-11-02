@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Palette,
   Music,
@@ -19,7 +19,6 @@ import {
   Heart,
   BookOpen,
   Theater,
-  Dance,
   Brush,
   Mic,
   Phone,
@@ -30,16 +29,31 @@ import {
   GraduationCap,
   Building,
   Globe,
-  Lightbulb
+  Lightbulb,
+  Edit,
+  X,
+  Settings,
+  Ban,
+  Send
 } from 'lucide-react';
+import { apiRequest } from '@/utils/apiRequest';
+import FileUpload from '@/utils/fileUpload';
 
-const ArtsCulturePage = ({ artsData }) => {
+const ArtsCulturePage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeProgram, setActiveProgram] = useState('visual-arts');
   const [openEvent, setOpenEvent] = useState(null);
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [editSection, setEditSection] = useState(null);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [originalData, setOriginalData] = useState(null);
+  const role = 'admin'; // Should come from auth context
 
-  // JSON data to drive all content (will later come from a database)
-  const jsonData = {
+  // Default data structure
+  const defaultData = {
     hero: {
       show: true,
       title: "Arts & Culture",
@@ -55,11 +69,11 @@ const ArtsCulturePage = ({ artsData }) => {
       show: true,
       title: "Arts Programs",
       items: [
-        { id: 'all', name: 'All Programs', icon: Palette, show: true },
-        { id: 'visual-arts', name: 'Visual Arts', icon: Brush, show: true },
-        { id: 'performing-arts', name: 'Performing Arts', icon: Theater, show: true },
-        { id: 'literary-arts', name: 'Literary Arts', icon: BookOpen, show: true },
-        { id: 'media-arts', name: 'Media Arts', icon: Camera, show: true }
+        { id: 'all', name: 'All Programs', icon: "Palette", show: true },
+        { id: 'visual-arts', name: 'Visual Arts', icon: "Brush", show: true },
+        { id: 'performing-arts', name: 'Performing Arts', icon: "Theater", show: true },
+        { id: 'literary-arts', name: 'Literary Arts', icon: "BookOpen", show: true },
+        { id: 'media-arts', name: 'Media Arts', icon: "Camera", show: true }
       ]
     },
     programs: {
@@ -67,7 +81,7 @@ const ArtsCulturePage = ({ artsData }) => {
       title: "Program Details",
       offeringsTitle: "Program Offerings",
       achievementsTitle: "Recent Achievements",
-      joinButtonLabel: "Join This Program",
+      joinButton: { label: "Join This Program", link: "#", show: true },
       items: {
         'visual-arts': {
           title: 'Visual Arts Program',
@@ -264,7 +278,7 @@ const ArtsCulturePage = ({ artsData }) => {
     upcomingEvents: {
       show: true,
       title: "Upcoming Events",
-      registerButtonLabel: "Register",
+      registerButton: { label: "Register", link: "#", show: true },
       items: [
         {
           date: '2024-04-20',
@@ -390,17 +404,25 @@ const ArtsCulturePage = ({ artsData }) => {
     gallery: {
       show: true,
       title: "Student Gallery",
-      items: [1, 2, 3, 4, 5, 6, 7, 8],
-      showFullGalleryButton: true,
-      fullGalleryButtonLabel: "View Full Gallery"
+      items: [
+        { image: 'https://via.placeholder.com/300?text=Art+1', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+2', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+3', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+4', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+5', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+6', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+7', show: true },
+        { image: 'https://via.placeholder.com/300?text=Art+8', show: true }
+      ],
+      fullGalleryButton: { label: "View Full Gallery", link: "#", show: true }
     },
     cta: {
       show: true,
       title: "Join Our Creative Community",
       description: "Discover your artistic potential and be part of our vibrant arts community. Whether you're a beginner or advanced artist, we have programs to nurture your talent.",
       buttons: [
-        { label: "Apply for Arts Program", show: true },
-        { label: "Schedule Audition", show: true }
+        { label: "Apply for Arts Program", link: "#", show: true },
+        { label: "Schedule Audition", link: "#", show: true }
       ]
     },
     contact: {
@@ -408,41 +430,252 @@ const ArtsCulturePage = ({ artsData }) => {
       title: "Arts Department Contact",
       items: [
         {
-          icon: Phone,
+          icon: "Phone",
           label: "Phone",
           value: "011-2336-3462 (Ext. 330)",
           show: true
         },
         {
-          icon: Mail,
+          icon: "Mail",
           label: "Email",
           value: "arts@stcolumbas.edu.in",
           show: true
         },
         {
-          icon: Clock,
+          icon: "Clock",
           label: "Office Hours",
           value: "Mon-Fri: 9:00 AM - 5:00 PM",
           show: true
         }
       ]
     },
-    showHero: true,
-    showCategories: true,
-    showPrograms: true,
-    showFacilities: true,
-    showUpcomingEvents: true,
-    showAchievements: true,
-    showFaculty: true,
-    showGallery: true,
-    showCta: true,
-    showContact: true
+    layout: {
+      showHero: true,
+      showCategories: true,
+      showPrograms: true,
+      showFacilities: true,
+      showUpcomingEvents: true,
+      showAchievements: true,
+      showFaculty: true,
+      showGallery: true,
+      showCta: true,
+      showContact: true
+    }
   };
 
-  // Use artsData if provided (e.g., from a database), otherwise fall back to jsonData
-  const data = artsData || jsonData;
+  // Icon mapping
+  const iconMap = {
+    Palette, Music, Camera, Video, Users, Calendar, MapPin, Clock, Award, Star, ChevronDown, ChevronRight,
+    Play, Download, ExternalLink, Heart, BookOpen, Theater, Brush, Mic, Phone, Mail, Piano,
+    ArrowRight, Trophy, GraduationCap, Building, Globe, Lightbulb
+  };
 
-  // Filter functions to respect show properties
+  // Layout key mapping
+  const layoutMap = {
+    hero: 'showHero',
+    categories: 'showCategories',
+    programs: 'showPrograms',
+    facilities: 'showFacilities',
+    upcomingEvents: 'showUpcomingEvents',
+    achievements: 'showAchievements',
+    faculty: 'showFaculty',
+    gallery: 'showGallery',
+    cta: 'showCta',
+    contact: 'showContact'
+  };
+
+  // Check role
+  useEffect(() => {
+    if (role === 'admin') {
+      setEditMode(true);
+    } else {
+      setEditMode(false);
+      setEditFormOpen(false);
+    }
+  }, [role]);
+
+  // Fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await apiRequest('save_data/get_all_arts_data', {});
+        console.log('API Response:', res);
+        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+          const fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data:', fetchedData);
+          setData({ ...defaultData, ...fetchedData });
+        } else {
+          console.log('No data or invalid response, using default');
+          setData(defaultData);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setData(defaultData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Open edit modal
+  const openEditModal = (section) => {
+    setEditSection(section);
+    setEditFormOpen(true);
+    const layoutKey = layoutMap[section];
+    let sectionData = { 
+      showSection: data.layout[layoutKey],
+      ...data[section]
+    };
+    setEditData(sectionData);
+    setOriginalData(JSON.parse(JSON.stringify(sectionData)));
+  };
+
+  // Handle changes
+  const handleObjectChange = (field, value) => {
+    setEditData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleArrayChange = (arrayKey, index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      updated[arrayKey][index] = { ...updated[arrayKey][index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleListChange = (arrayKey, index, listField, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      updated[arrayKey][index][listField] = value;
+      return updated;
+    });
+  };
+
+  const handleNestedObjectChange = (arrayKey, index, nestedKey, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      const currentItem = { ...updated[arrayKey][index] };
+      if (!currentItem[nestedKey]) currentItem[nestedKey] = {};
+      currentItem[nestedKey][field] = value;
+      updated[arrayKey][index] = currentItem;
+      return updated;
+    });
+  };
+
+  const handleObjectNestedChange = (objKey, nestedKey, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[objKey]) updated[objKey] = {};
+      const currentObj = { ...updated[objKey] };
+      currentObj[nestedKey] = field === 'show' ? value : { ...currentObj[nestedKey], [field]: value };
+      updated[objKey] = currentObj;
+      return updated;
+    });
+  };
+
+  const handleProgramChange = (programId, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.items) updated.items = {};
+      if (!updated.items[programId]) updated.items[programId] = {};
+      updated.items[programId] = { ...updated.items[programId], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleProgramArrayChange = (programId, arrayKey, index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.items) updated.items = {};
+      if (!updated.items[programId]) updated.items[programId] = {};
+      if (!updated.items[programId][arrayKey]) updated.items[programId][arrayKey] = [];
+      updated.items[programId][arrayKey][index] = { ...updated.items[programId][arrayKey][index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleProgramListChange = (programId, arrayKey, index, listField, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.items) updated.items = {};
+      if (!updated.items[programId]) updated.items[programId] = {};
+      if (!updated.items[programId][arrayKey]) updated.items[programId][arrayKey] = [];
+      updated.items[programId][arrayKey][index][listField] = value;
+      return updated;
+    });
+  };
+
+  const handleImageChange = (field, url, arrayKey = null, index = null, programId = null) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (programId && arrayKey && index !== null) {
+        if (!updated.items) updated.items = {};
+        if (!updated.items[programId]) updated.items[programId] = {};
+        if (!updated.items[programId][arrayKey]) updated.items[programId][arrayKey] = [];
+        updated.items[programId][arrayKey][index][field] = url;
+      } else if (arrayKey && index !== null) {
+        if (!updated[arrayKey]) updated[arrayKey] = [];
+        updated[arrayKey][index][field] = url;
+      } else {
+        updated[field] = url;
+      }
+      return updated;
+    });
+  };
+
+  // Toggle section
+  const handleToggleSection = (value) => {
+    setEditData({ ...editData, showSection: value });
+  };
+
+  // Save
+  const saveChanges = async () => {
+    try {
+      const layoutKey = layoutMap[editSection];
+      let updatedData = { ...data };
+      if (layoutKey && 'showSection' in editData) {
+        updatedData.layout[layoutKey] = editData.showSection;
+      }
+      const { showSection, ...sectionUpdates } = editData;
+      updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+
+      const payload = {
+        ...updatedData,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+
+      console.log('Payload:', JSON.stringify(payload, null, 2));
+      const save_data = await apiRequest('save_data/save_arts_data', { payload });
+      console.log(save_data);
+      
+      if (save_data.status === 200) {
+        setData(updatedData);
+      } else {
+        console.error('Save failed:', save_data);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+    setEditFormOpen(false);
+    setOriginalData(null);
+  };
+
+  // Cancel
+  const cancelChanges = () => {
+    if (originalData) {
+      setEditData(originalData);
+    }
+    setEditFormOpen(false);
+    setOriginalData(null);
+  };
+
+  // Filters
   const filteredHeroStats = data.hero?.stats?.filter(stat => stat.show !== false) || [];
   const filteredCategories = data.categories?.items?.filter(cat => cat.show !== false) || [];
   const filteredPrograms = data.programs?.items ? 
@@ -455,18 +688,613 @@ const ArtsCulturePage = ({ artsData }) => {
   const filteredFaculty = data.faculty?.items?.filter(teacher => teacher.show !== false) || [];
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
   const filteredContactItems = data.contact?.items?.filter(item => item.show !== false) || [];
+  const filteredGalleryItems = data.gallery?.items?.filter(item => item.show !== false) || [];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading arts data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal Footer
+  const ModalFooter = () => (
+    <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-t border-gray-200">
+      <div className="flex space-x-2">
+        <button
+          onClick={cancelChanges}
+          className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center space-x-1"
+        >
+          <Ban className="h-4 w-4" />
+          <span>Cancel</span>
+        </button>
+      </div>
+      <div className="flex space-x-2">
+        <button
+          onClick={saveChanges}
+          className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded hover:bg-green-700 transition-colors flex items-center space-x-1"
+        >
+          <Send className="h-4 w-4" />
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Edit Modal */}
+      {editMode && editFormOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[90vh]">
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-5 text-green-600" />
+                <h2 className="text-xl font-bold">Edit {editSection.replace(/([A-Z])/g, ' $1').trim()}</h2>
+              </div>
+              <button onClick={cancelChanges} className="p-2 text-gray-600 hover:text-gray-800">
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              {editSection === 'hero' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Hero</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Subtitle</label>
+                    <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Height</label>
+                    <input type="text" value={editData.height || ''} onChange={(e) => handleObjectChange('height', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Stats</h3>
+                  {(editData.stats || []).map((stat, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Stat {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Value</label>
+                          <input type="text" value={stat.value || ''} onChange={(e) => handleArrayChange('stats', index, 'value', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Label</label>
+                          <input type="text" value={stat.label || ''} onChange={(e) => handleArrayChange('stats', index, 'label', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={stat.show !== false} onChange={(e) => handleArrayChange('stats', index, 'show', e.target.checked)} />
+                            <span>Show Stat</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'categories' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Categories</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">ID</label>
+                          <input type="text" value={item.id || ''} onChange={(e) => handleArrayChange('items', index, 'id', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Name</label>
+                          <input type="text" value={item.name || ''} onChange={(e) => handleArrayChange('items', index, 'name', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Icon</label>
+                          <input type="text" value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'programs' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Programs</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Offerings Title</label>
+                    <input type="text" value={editData.offeringsTitle || ''} onChange={(e) => handleObjectChange('offeringsTitle', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Achievements Title</label>
+                    <input type="text" value={editData.achievementsTitle || ''} onChange={(e) => handleObjectChange('achievementsTitle', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Join Button</h3>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" checked={editData.joinButton?.show !== false} onChange={(e) => handleObjectNestedChange('joinButton', 'show', e.target.checked)} />
+                        <span>Show Button</span>
+                      </label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Label</label>
+                      <input type="text" value={editData.joinButton?.label || ''} onChange={(e) => handleObjectNestedChange('joinButton', 'label', e.target.value)} className="w-full p-2 border rounded" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Link</label>
+                      <input type="text" value={editData.joinButton?.link || ''} onChange={(e) => handleObjectNestedChange('joinButton', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., # or /apply" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Programs</h3>
+                  {Object.keys(editData.items || {}).map(programId => (
+                    <div key={programId} className="mb-8 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Program: {programId}</h4>
+                      <div className="space-y-2 mb-4">
+                        <div>
+                          <label className="block text-sm font-medium">Title</label>
+                          <input type="text" value={editData.items[programId]?.title || ''} onChange={(e) => handleProgramChange(programId, 'title', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Description</label>
+                          <textarea value={editData.items[programId]?.description || ''} onChange={(e) => handleProgramChange(programId, 'description', e.target.value)} className="w-full p-2 border rounded" rows="2" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={editData.items[programId]?.show !== false} onChange={(e) => handleProgramChange(programId, 'show', e.target.checked)} />
+                            <span>Show Program</span>
+                          </label>
+                        </div>
+                      </div>
+                      <h5 className="text-sm font-medium mb-2">Activities</h5>
+                      {(editData.items[programId]?.activities || []).map((activity, index) => (
+                        <div key={index} className="mb-4 p-3 border rounded bg-white">
+                          <div className="space-y-2">
+                            <div>
+                              <label className="block text-sm font-medium">Name</label>
+                              <input type="text" value={activity.name || ''} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'name', e.target.value)} className="w-full p-2 border rounded" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium">Description</label>
+                              <textarea value={activity.description || ''} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'description', e.target.value)} className="w-full p-2 border rounded" rows="2" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium">Schedule</label>
+                              <input type="text" value={activity.schedule || ''} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'schedule', e.target.value)} className="w-full p-2 border rounded" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium">Instructor</label>
+                              <input type="text" value={activity.instructor || ''} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'instructor', e.target.value)} className="w-full p-2 border rounded" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium">Level</label>
+                              <input type="text" value={activity.level || ''} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'level', e.target.value)} className="w-full p-2 border rounded" />
+                            </div>
+                            <div>
+                              <label className="flex items-center space-x-2">
+                                <input type="checkbox" checked={activity.show !== false} onChange={(e) => handleProgramArrayChange(programId, 'activities', index, 'show', e.target.checked)} />
+                                <span>Show Activity</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <h5 className="text-sm font-medium mb-2">Achievements</h5>
+                      {(editData.items[programId]?.achievements || []).map((ach, achIndex) => (
+                        <input
+                          key={achIndex}
+                          type="text"
+                          value={ach || ''}
+                          onChange={(e) => handleProgramListChange(programId, 'achievements', achIndex, e.target.value)}
+                          className="w-full p-1 border rounded mb-1 text-sm"
+                          placeholder={`Achievement ${achIndex + 1}`}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'facilities' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Facilities</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Name</label>
+                          <input type="text" value={item.name || ''} onChange={(e) => handleArrayChange('items', index, 'name', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Description</label>
+                          <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} className="w-full p-2 border rounded" rows="2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">Image</label>
+                          <FileUpload currentUrl={item.image || ''} onUploadSuccess={(url) => handleImageChange('image', url, 'items', index)} label="Upload Facility Image" />
+                        </div>
+                        <h5 className="text-sm font-medium mt-3 mb-1">Features</h5>
+                        {(item.features || []).map((feat, featIndex) => (
+                          <input
+                            key={featIndex}
+                            type="text"
+                            value={feat || ''}
+                            onChange={(e) => handleListChange('items', index, 'features', item.features.map((f, i) => i === featIndex ? e.target.value : f))}
+                            className="w-full p-1 border rounded mb-1 text-sm"
+                            placeholder={`Feature ${featIndex + 1}`}
+                          />
+                        ))}
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'upcomingEvents' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Upcoming Events</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Register Button</h3>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" checked={editData.registerButton?.show !== false} onChange={(e) => handleObjectNestedChange('registerButton', 'show', e.target.checked)} />
+                        <span>Show Button</span>
+                      </label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Label</label>
+                      <input type="text" value={editData.registerButton?.label || ''} onChange={(e) => handleObjectNestedChange('registerButton', 'label', e.target.value)} className="w-full p-2 border rounded" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Link</label>
+                      <input type="text" value={editData.registerButton?.link || ''} onChange={(e) => handleObjectNestedChange('registerButton', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., # or /register" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Date</label>
+                          <input type="date" value={item.date || ''} onChange={(e) => handleArrayChange('items', index, 'date', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Title</label>
+                          <input type="text" value={item.title || ''} onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Time</label>
+                          <input type="text" value={item.time || ''} onChange={(e) => handleArrayChange('items', index, 'time', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Venue</label>
+                          <input type="text" value={item.venue || ''} onChange={(e) => handleArrayChange('items', index, 'venue', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Description</label>
+                          <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} className="w-full p-2 border rounded" rows="2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Category</label>
+                          <input type="text" value={item.category || ''} onChange={(e) => handleArrayChange('items', index, 'category', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'achievements' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Achievements</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Year {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Year</label>
+                          <input type="text" value={item.year || ''} onChange={(e) => handleArrayChange('items', index, 'year', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <h5 className="text-sm font-medium mt-3 mb-1">Achievements</h5>
+                        {(item.items || []).map((ach, achIndex) => (
+                          <input
+                            key={achIndex}
+                            type="text"
+                            value={ach || ''}
+                            onChange={(e) => handleListChange('items', index, 'items', item.items.map((a, i) => i === achIndex ? e.target.value : a))}
+                            className="w-full p-1 border rounded mb-1 text-sm"
+                            placeholder={`Achievement ${achIndex + 1}`}
+                          />
+                        ))}
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'faculty' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Faculty</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Name</label>
+                          <input type="text" value={item.name || ''} onChange={(e) => handleArrayChange('items', index, 'name', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Role</label>
+                          <input type="text" value={item.role || ''} onChange={(e) => handleArrayChange('items', index, 'role', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Qualification</label>
+                          <input type="text" value={item.qualification || ''} onChange={(e) => handleArrayChange('items', index, 'qualification', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Specialty</label>
+                          <input type="text" value={item.specialty || ''} onChange={(e) => handleArrayChange('items', index, 'specialty', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Experience</label>
+                          <input type="text" value={item.experience || ''} onChange={(e) => handleArrayChange('items', index, 'experience', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'gallery' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Gallery</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Full Gallery Button</h3>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="flex items-center space-x-2">
+                        <input type="checkbox" checked={editData.fullGalleryButton?.show !== false} onChange={(e) => handleObjectNestedChange('fullGalleryButton', 'show', e.target.checked)} />
+                        <span>Show Button</span>
+                      </label>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Label</label>
+                      <input type="text" value={editData.fullGalleryButton?.label || ''} onChange={(e) => handleObjectNestedChange('fullGalleryButton', 'label', e.target.value)} className="w-full p-2 border rounded" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Button Link</label>
+                      <input type="text" value={editData.fullGalleryButton?.link || ''} onChange={(e) => handleObjectNestedChange('fullGalleryButton', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., # or /gallery" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">Image</label>
+                          <FileUpload currentUrl={item.image || ''} onUploadSuccess={(url) => handleImageChange('image', url, 'items', index)} label="Upload Gallery Image" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'cta' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show CTA</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
+                  {(editData.buttons || []).map((button, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Button {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Label</label>
+                          <input type="text" value={button.label || ''} onChange={(e) => handleArrayChange('buttons', index, 'label', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Link</label>
+                          <input type="text" value={button.link || ''} onChange={(e) => handleArrayChange('buttons', index, 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="Button link (e.g., # or /apply)" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={button.show !== false} onChange={(e) => handleArrayChange('buttons', index, 'show', e.target.checked)} />
+                            <span>Show Button</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'contact' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleToggleSection(e.target.checked)} />
+                      <span>Show Contact</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input type="text" value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-sm font-medium">Icon</label>
+                          <input type="text" value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Label</label>
+                          <input type="text" value={item.label || ''} onChange={(e) => handleArrayChange('items', index, 'label', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium">Value</label>
+                          <input type="text" value={item.value || ''} onChange={(e) => handleArrayChange('items', index, 'value', e.target.value)} className="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                            <span>Show Item</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <ModalFooter />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      {data.showHero && data.hero?.show && (
-        <section className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+      {data.layout?.showHero && data.hero?.show && (
+        <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
               <p className="text-xl text-green-100 leading-relaxed">
-                {data.hero?.subtitle}
+                {data.hero.subtitle}
               </p>
               {filteredHeroStats.length > 0 && (
                 <div className="flex flex-wrap gap-6 mt-8">
@@ -480,18 +1308,19 @@ const ArtsCulturePage = ({ artsData }) => {
               )}
             </div>
           </div>
+          {editMode && <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
         </section>
       )}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Categories Navigation */}
-        {data.showCategories && data.categories?.show && filteredCategories.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.categories?.title}</h2>
+        {data.layout?.showCategories && data.categories?.show && filteredCategories.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.categories.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {filteredCategories.map(category => {
-                const IconComponent = category.icon || Palette; // Fallback to Palette if icon is missing
+                const IconComponent = iconMap[category.icon] || Palette;
                 return (
                   <button
                     key={category.id}
@@ -511,19 +1340,20 @@ const ArtsCulturePage = ({ artsData }) => {
                 );
               })}
             </div>
+            {editMode && <button onClick={() => openEditModal('categories')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Program Details */}
-        {data.showPrograms && data.programs?.show && filteredPrograms[activeProgram] && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        {data.layout?.showPrograms && data.programs?.show && filteredPrograms[activeProgram] && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{filteredPrograms[activeProgram].title}</h2>
             <p className="text-gray-600 mb-8">{filteredPrograms[activeProgram].description}</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Activities */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs?.offeringsTitle}</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs.offeringsTitle}</h3>
                 <div className="space-y-4">
                   {filteredPrograms[activeProgram].activities
                     ?.filter(activity => activity.show !== false)
@@ -552,7 +1382,7 @@ const ArtsCulturePage = ({ artsData }) => {
 
               {/* Achievements */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs?.achievementsTitle}</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{data.programs.achievementsTitle}</h3>
                 <div className="bg-green-50 rounded-lg p-6">
                   <ul className="space-y-3">
                     {filteredPrograms[activeProgram].achievements?.map((achievement, index) => (
@@ -562,19 +1392,22 @@ const ArtsCulturePage = ({ artsData }) => {
                       </li>
                     ))}
                   </ul>
-                  <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    {data.programs?.joinButtonLabel}
-                  </button>
+                  {data.programs.joinButton?.show !== false && (
+                    <a href={data.programs.joinButton?.link || '#'} className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium inline-block">
+                      {data.programs.joinButton?.label || 'Join This Program'}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
+            {editMode && <button onClick={() => openEditModal('programs')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Facilities */}
-        {data.showFacilities && data.facilities?.show && filteredFacilities.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.facilities?.title}</h2>
+        {data.layout?.showFacilities && data.facilities?.show && filteredFacilities.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.facilities.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredFacilities.map((facility, index) => (
                 <div key={index} className="group cursor-pointer">
@@ -600,13 +1433,14 @@ const ArtsCulturePage = ({ artsData }) => {
                 </div>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('facilities')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Upcoming Events */}
-        {data.showUpcomingEvents && data.upcomingEvents?.show && filteredEvents.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents?.title}</h2>
+        {data.layout?.showUpcomingEvents && data.upcomingEvents?.show && filteredEvents.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.upcomingEvents.title}</h2>
             <div className="space-y-4">
               {filteredEvents.map((event, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
@@ -637,20 +1471,23 @@ const ArtsCulturePage = ({ artsData }) => {
                         <p className="text-sm text-gray-700 mt-2">{event.description}</p>
                       </div>
                     </div>
-                    <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex-shrink-0">
-                      {data.upcomingEvents?.registerButtonLabel}
-                    </button>
+                    {data.upcomingEvents.registerButton?.show !== false && (
+                      <a href={data.upcomingEvents.registerButton?.link || '#'} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex-shrink-0">
+                        {data.upcomingEvents.registerButton?.label || 'Register'}
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('upcomingEvents')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Achievements */}
-        {data.showAchievements && data.achievements?.show && filteredAchievements.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements?.title}</h2>
+        {data.layout?.showAchievements && data.achievements?.show && filteredAchievements.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.achievements.title}</h2>
             <div className="space-y-6">
               {filteredAchievements.map((year, index) => (
                 <div key={index}>
@@ -666,13 +1503,14 @@ const ArtsCulturePage = ({ artsData }) => {
                 </div>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('achievements')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Faculty */}
-        {data.showFaculty && data.faculty?.show && filteredFaculty.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty?.title}</h2>
+        {data.layout?.showFaculty && data.faculty?.show && filteredFaculty.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.faculty.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredFaculty.map((teacher, index) => (
                 <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
@@ -691,54 +1529,55 @@ const ArtsCulturePage = ({ artsData }) => {
                 </div>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('faculty')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Gallery Preview */}
-        {data.showGallery && data.gallery?.show && data.gallery?.items?.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.gallery?.title}</h2>
+        {data.layout?.showGallery && data.gallery?.show && filteredGalleryItems.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.gallery.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {data.gallery.items.map((item) => (
-                <div key={item} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
-                    <Palette className="h-8 w-8 text-gray-500" />
-                  </div>
+              {filteredGalleryItems.map((item, index) => (
+                <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                  <img src={item.image} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
-            {data.gallery?.showFullGalleryButton && (
-              <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
-                {data.gallery?.fullGalleryButtonLabel}
-              </button>
+            {data.gallery.fullGalleryButton?.show !== false && (
+              <a href={data.gallery.fullGalleryButton?.link || '#'} className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium inline-block">
+                {data.gallery.fullGalleryButton?.label || 'View Full Gallery'}
+              </a>
             )}
+            {editMode && <button onClick={() => openEditModal('gallery')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* CTA Section */}
-        {data.showCta && data.cta?.show && (
-          <div className="bg-green-800 text-white rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">{data.cta?.title}</h2>
+        {data.layout?.showCta && data.cta?.show && (
+          <div className="bg-green-800 text-white rounded-lg p-8 text-center relative">
+            <h2 className="text-2xl font-bold mb-4">{data.cta.title}</h2>
             <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-              {data.cta?.description}
+              {data.cta.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {filteredCtaButtons.map((button, index) => (
-                <button key={index} className="bg-white text-green-800 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold">
+                <a key={index} href={button.link || '#'} className="bg-white text-green-800 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold">
                   {button.label}
-                </button>
+                </a>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Contact Information */}
-        {data.showContact && data.contact?.show && filteredContactItems.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact?.title}</h2>
+        {data.layout?.showContact && data.contact?.show && filteredContactItems.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-8 relative">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">{data.contact.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredContactItems.map((item, index) => {
-                const IconComponent = item.icon || Phone; // Fallback to Phone if icon is missing
+                const IconComponent = iconMap[item.icon] || Phone;
                 return (
                   <div key={index} className="flex items-center">
                     <IconComponent className="h-5 w-5 text-green-600 mr-3" />
@@ -750,6 +1589,7 @@ const ArtsCulturePage = ({ artsData }) => {
                 );
               })}
             </div>
+            {editMode && <button onClick={() => openEditModal('contact')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
       </div>

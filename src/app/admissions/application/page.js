@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   User,
@@ -15,21 +15,83 @@ import {
   CheckCircle,
   ChevronRight,
   ChevronLeft,
-  Download,
   Upload,
   X,
   AlertCircle,
-  Bookmark,
   GraduationCap,
   School,
   BookKey,
   Eye,
   EyeOff,
-  ArrowRight
+  ArrowRight,
+  Settings,
+  Edit,
+  Ban,
+  Send
 } from 'lucide-react';
+import { apiRequest } from '@/utils/apiRequest';
 
 const ApplicationFormPage = ({ schoolData = {} }) => {
+  // All useState calls FIRST, unconditionally
   const [currentStep, setCurrentStep] = useState(1);
+  const [editMode, setEditMode] = useState(false);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [originalData, setOriginalData] = useState(null);
+  const [config, setConfig] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    // Student Information
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    nationality: '',
+    bloodGroup: '',
+    
+    // Contact Information
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    phone: '',
+    email: '',
+    
+    // Parent Information
+    fatherName: '',
+    fatherOccupation: '',
+    fatherQualification: '',
+    fatherPhone: '',
+    fatherEmail: '',
+    
+    motherName: '',
+    motherOccupation: '',
+    motherQualification: '',
+    motherPhone: '',
+    motherEmail: '',
+    
+    // Academic Information
+    applyingForClass: '',
+    currentSchool: '',
+    lastClass: '',
+    lastPercentage: '',
+    board: '',
+    
+    // Documents
+    birthCertificate: null,
+    aadhaarCard: null,
+    photograph: null,
+    previousMarksheet: null,
+    transferCertificate: null,
+    
+    // Declaration
+    termsAccepted: false
+  });
+
+  const [errors, setErrors] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState({});
+
+  const role = 'admin'; // Should come from auth context
   
   // Default configuration with all fields enabled
   const defaultConfig = {
@@ -42,6 +104,44 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       cta: "Start Application",
       ctaIcon: ArrowRight,
       ctaLink: "#"
+    },
+    // Help Section
+    helpSection: {
+      show: true,
+      title: {
+        show: true,
+        value: "Need Help?"
+      },
+      contact: {
+        show: true,
+        title: {
+          show: true,
+          value: "Contact Admission Office"
+        },
+        email: {
+          show: true,
+          value: "admissions@stcolumbas.edu.in"
+        },
+        phone: {
+          show: true,
+          value: "011-2336-3462 (Ext. 110)"
+        }
+      },
+      officeHours: {
+        show: true,
+        title: {
+          show: true,
+          value: "Office Hours"
+        },
+        mondayFriday: {
+          show: true,
+          value: "Monday-Friday: 9:00 AM - 4:00 PM"
+        },
+        saturday: {
+          show: true,
+          value: "Saturday: 9:00 AM - 12:00 PM"
+        }
+      }
     },
     // Student Information
     firstName: { show: true, required: true, label: 'First Name' },
@@ -105,59 +205,206 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     }
   };
 
-  // Merge with provided configuration
-  const config = { ...defaultConfig, ...schoolData };
+  // Field groups for editing
+  const fieldGroups = {
+    student: {
+      title: 'Student Information Fields',
+      fields: ['firstName', 'lastName', 'dateOfBirth', 'gender', 'nationality', 'bloodGroup']
+    },
+    contact: {
+      title: 'Contact Details Fields',
+      fields: ['address', 'city', 'state', 'pincode', 'phone', 'email']
+    },
+    parent: {
+      title: 'Parent Information Fields',
+      fields: ['fatherName', 'fatherOccupation', 'fatherQualification', 'fatherPhone', 'fatherEmail', 'motherName', 'motherOccupation', 'motherQualification', 'motherPhone', 'motherEmail']
+    },
+    academic: {
+      title: 'Academic Information Fields',
+      fields: ['applyingForClass', 'currentSchool', 'lastClass', 'lastPercentage', 'board']
+    },
+    documents: {
+      title: 'Document Upload Fields',
+      fields: ['birthCertificate', 'aadhaarCard', 'photograph', 'previousMarksheet', 'transferCertificate']
+    }
+  };
 
-  const [formData, setFormData] = useState({
-    // Student Information
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    gender: '',
-    nationality: '',
-    bloodGroup: '',
-    
-    // Contact Information
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
-    phone: '',
-    email: '',
-    
-    // Parent Information
-    fatherName: '',
-    fatherOccupation: '',
-    fatherQualification: '',
-    fatherPhone: '',
-    fatherEmail: '',
-    
-    motherName: '',
-    motherOccupation: '',
-    motherQualification: '',
-    motherPhone: '',
-    motherEmail: '',
-    
-    // Academic Information
-    applyingForClass: '',
-    currentSchool: '',
-    lastClass: '',
-    lastPercentage: '',
-    board: '',
-    
-    // Documents
-    birthCertificate: null,
-    aadhaarCard: null,
-    photograph: null,
-    previousMarksheet: null,
-    transferCertificate: null,
-    
-    // Declaration
-    termsAccepted: false
-  });
+  const stepKeys = ['showStudentInfo', 'showContactDetails', 'showParentInfo', 'showAcademicInfo', 'showDocuments', 'showReview'];
 
-  const [errors, setErrors] = useState({});
-  const [uploadedFiles, setUploadedFiles] = useState({});
+  // Check role to enable edit mode
+  useEffect(() => {
+    if (role === 'admin') {
+      setEditMode(true);
+    } else {
+      setEditMode(false);
+      setEditFormOpen(false);
+    }
+  }, [role]);
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await apiRequest('save_data/get_all_application_forms', {});
+        console.log('API Response:', res);
+        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+          const fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data:', fetchedData);
+          setConfig({ ...defaultConfig, ...fetchedData, ...schoolData });
+        } else {
+          console.log('No data or invalid response, using default');
+          setConfig({ ...defaultConfig, ...schoolData });
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setConfig({ ...defaultConfig, ...schoolData });
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Early return AFTER all hooks
+  if (!config) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading application form...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Open edit modal
+  const openEdit = () => {
+    if (!config) return;
+    setEditData({ ...config });
+    setOriginalData(JSON.parse(JSON.stringify(config)));
+    setEditFormOpen(true);
+  };
+
+  // Handle field change
+  const handleFieldChange = (field, prop, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [field]: {
+        ...prev[field],
+        [prop]: value
+      }
+    }));
+  };
+
+  // Handle step visibility change
+  const handleStepChange = (key, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  // Handle step title change
+  const handleStepTitleChange = (key, value) => {
+    setEditData(prev => ({
+      ...prev,
+      stepTitles: {
+        ...prev.stepTitles,
+        [key]: value
+      }
+    }));
+  };
+
+  // Handle hero change
+  const handleHeroChange = (prop, value) => {
+    setEditData(prev => ({
+      ...prev,
+      hero: {
+        ...prev.hero,
+        [prop]: value
+      }
+    }));
+  };
+
+  // Helper to update help section nested values
+  const updateHelpSection = (path, value, isShow = false) => {
+    setEditData(prev => {
+      const newHelp = { ...prev.helpSection || {} };
+      let current = newHelp;
+      for (let i = 0; i < path.length - 1; i++) {
+        const key = path[i];
+        if (current[key] === undefined) {
+          current[key] = {};
+        }
+        current = current[key];
+      }
+      const lastKey = path[path.length - 1];
+      current[lastKey] = value;
+      return {
+        ...prev,
+        helpSection: newHelp
+      };
+    });
+  };
+
+  // Cancel changes
+  const cancelChanges = () => {
+    if (originalData) {
+      setEditData(originalData);
+    }
+    setEditFormOpen(false);
+    setOriginalData(null);
+  };
+
+  // Save changes
+  const saveChanges = async () => {
+    try {
+      const payload = {
+        ...editData,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+
+      console.log('Payload:', JSON.stringify(payload, null, 2));
+      const save_data = await apiRequest('save_data/save_application_form', { payload });
+      console.log(save_data);
+      
+      if (save_data.status === 200) {
+        setConfig(editData);
+      } else {
+        console.error('Save failed:', save_data);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+    setEditFormOpen(false);
+    setOriginalData(null);
+  };
+
+  // Modal Footer Component
+  const ModalFooter = () => (
+    <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-t border-gray-200">
+      <div className="flex space-x-2">
+        <button
+          onClick={cancelChanges}
+          className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center space-x-1"
+        >
+          <Ban className="h-4 w-4" />
+          <span>Cancel</span>
+        </button>
+      </div>
+
+      <div className="flex space-x-2">
+        <button
+          onClick={saveChanges}
+          className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded hover:bg-green-700 transition-colors flex items-center space-x-1"
+        >
+          <Send className="h-4 w-4" />
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+  );
 
   const steps = [
     { number: 1, title: config.stepTitles.studentInfo, icon: User, show: config.showStudentInfo },
@@ -190,6 +437,13 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value
     }));
 
+    if (type === 'file' && files[0]) {
+      setUploadedFiles(prev => ({
+        ...prev,
+        [name]: files[0]
+      }));
+    }
+
     // Clear error when field is updated
     if (errors[name]) {
       setErrors(prev => ({
@@ -199,14 +453,11 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     }
   };
 
-  const handleFileUpload = (name, file) => {
-    setUploadedFiles(prev => ({
-      ...prev,
-      [name]: file
-    }));
-  };
-
   const removeFile = (name) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: null
+    }));
     setUploadedFiles(prev => {
       const newFiles = { ...prev };
       delete newFiles[name];
@@ -307,24 +558,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     }
   };
 
-  // Download form as JSON
-  const handleDownload = () => {
-    const dataStr = JSON.stringify({ ...formData, uploadedFiles }, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `admission-application-${new Date().toISOString().split('T')[0]}.json`;
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
-
-  // Save to localStorage and exit
-  const handleSaveExit = () => {
-    localStorage.setItem('admissionForm', JSON.stringify({ ...formData, uploadedFiles, currentStep }));
-    alert('Form saved! You can continue later.');
-    // Redirect to dashboard or home
-    window.location.href = '/'; // Example redirect
-  };
+  // Form validation and submission functions will be here
 
   const renderStep = () => {
     switch (currentStep) {
@@ -579,11 +813,10 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.parentInfo}</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Father's Information */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">Father's Details</h4>
-                
+            {/* Father Information */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-medium text-gray-800">Father's Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {config.fatherName.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -605,7 +838,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.fatherOccupation.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.fatherOccupation.label} {config.fatherOccupation.required && '*'}
+                      {config.fatherOccupation.label}
                     </label>
                     <input
                       type="text"
@@ -620,7 +853,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.fatherQualification.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.fatherQualification.label} {config.fatherQualification.required && '*'}
+                      {config.fatherQualification.label}
                     </label>
                     <input
                       type="text"
@@ -635,7 +868,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.fatherPhone.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.fatherPhone.label} {config.fatherPhone.required && '*'}
+                      {config.fatherPhone.label}
                     </label>
                     <input
                       type="tel"
@@ -650,7 +883,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.fatherEmail.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.fatherEmail.label} {config.fatherEmail.required && '*'}
+                      {config.fatherEmail.label}
                     </label>
                     <input
                       type="email"
@@ -662,11 +895,12 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Mother's Information */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">Mother's Details</h4>
-                
+            {/* Mother Information */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-medium text-gray-800">Mother's Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {config.motherName.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -688,7 +922,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.motherOccupation.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.motherOccupation.label} {config.motherOccupation.required && '*'}
+                      {config.motherOccupation.label}
                     </label>
                     <input
                       type="text"
@@ -703,7 +937,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.motherQualification.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.motherQualification.label} {config.motherQualification.required && '*'}
+                      {config.motherQualification.label}
                     </label>
                     <input
                       type="text"
@@ -718,7 +952,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.motherPhone.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.motherPhone.label} {config.motherPhone.required && '*'}
+                      {config.motherPhone.label}
                     </label>
                     <input
                       type="tel"
@@ -733,7 +967,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 {config.motherEmail.show && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {config.motherEmail.label} {config.motherEmail.required && '*'}
+                      {config.motherEmail.label}
                     </label>
                     <input
                       type="email"
@@ -799,7 +1033,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
               {config.lastClass.show && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {config.lastClass.label} {config.lastClass.required && '*'}
+                    {config.lastClass.label}
                   </label>
                   <input
                     type="text"
@@ -814,7 +1048,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
               {config.lastPercentage.show && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {config.lastPercentage.label} {config.lastPercentage.required && '*'}
+                    {config.lastPercentage.label}
                   </label>
                   <input
                     type="text"
@@ -829,7 +1063,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
               {config.board.show && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {config.board.label} {config.board.required && '*'}
+                    {config.board.label}
                   </label>
                   <select
                     name="board"
@@ -897,7 +1131,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
         );
 
       case 6:
-        if (!config.showReview) return handleSubmit;
+        if (!config.showReview) return handleSubmit();
         return (
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">{config.stepTitles.review}</h3>
@@ -999,6 +1233,290 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Edit Modal */}
+      {editMode && editFormOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-6xl m-4 flex flex-col max-h-[90vh]">
+            {/* Fixed Modal Header */}
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-5 text-green-600" />
+                <h2 className="text-xl font-bold">Edit Application Form Configuration</h2>
+              </div>
+              <button
+                onClick={cancelChanges}
+                className="p-2 text-gray-600 hover:text-gray-800"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            {/* Scrollable Modal Content */}
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-6">
+                {/* Hero Section */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Hero Section</h3>
+                  <div className="space-y-3">
+                    <input
+                      value={editData.hero?.title || ''}
+                      onChange={(e) => handleHeroChange('title', e.target.value)}
+                      placeholder="Hero Title"
+                      className="w-full p-2 border rounded"
+                    />
+                    <textarea
+                      value={editData.hero?.subtitle || ''}
+                      onChange={(e) => handleHeroChange('subtitle', e.target.value)}
+                      placeholder="Hero Subtitle"
+                      rows="3"
+                      className="w-full p-2 border rounded"
+                    />
+                    <input
+                      value={editData.hero?.cta || ''}
+                      onChange={(e) => handleHeroChange('cta', e.target.value)}
+                      placeholder="CTA Text"
+                      className="w-full p-2 border rounded"
+                    />
+                    <input
+                      value={editData.hero?.ctaLink || ''}
+                      onChange={(e) => handleHeroChange('ctaLink', e.target.value)}
+                      placeholder="CTA Link"
+                      className="w-full p-2 border rounded"
+                    />
+                    <input
+                      value={editData.hero?.height || ''}
+                      onChange={(e) => handleHeroChange('height', e.target.value)}
+                      placeholder="Height (e.g., h-96)"
+                      className="w-full p-2 border rounded"
+                    />
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.hero?.show || false}
+                        onChange={(e) => handleHeroChange('show', e.target.checked)}
+                      />
+                      <span>Show Hero Section</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Steps Visibility */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Steps Visibility</h3>
+                  {stepKeys.map((key) => (
+                    <label key={key} className="flex items-center space-x-2 mb-2 block">
+                      <input
+                        type="checkbox"
+                        checked={editData[key] || false}
+                        onChange={(e) => handleStepChange(key, e.target.checked)}
+                      />
+                      <span>{key.replace('show', '').replace(/([A-Z])/g, ' $1').trim()}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Step Titles */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Step Titles</h3>
+                  {Object.keys(defaultConfig.stepTitles).map((key) => (
+                    <div key={key} className="flex items-center space-x-2 mb-2">
+                      <span className="w-32 text-sm font-medium">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                      <input
+                        value={editData.stepTitles?.[key] || ''}
+                        onChange={(e) => handleStepTitleChange(key, e.target.value)}
+                        className="flex-1 p-2 border rounded"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Field Groups */}
+                {Object.entries(fieldGroups).map(([groupKey, group]) => (
+                  <div key={groupKey} className="border border-gray-200 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold mb-4">{group.title}</h3>
+                    {group.fields.map((field) => (
+                      <div key={field} className="flex items-center p-3 border rounded mb-2 space-x-4">
+                        <span className="w-40 font-medium text-sm">{field.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        <input
+                          value={editData[field]?.label || ''}
+                          onChange={(e) => handleFieldChange(field, 'label', e.target.value)}
+                          placeholder="Label"
+                          className="flex-1 p-2 border rounded"
+                        />
+                        <label className="flex items-center space-x-1 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={editData[field]?.show || false}
+                            onChange={(e) => handleFieldChange(field, 'show', e.target.checked)}
+                          />
+                          <span>Show</span>
+                        </label>
+                        <label className="flex items-center space-x-1 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={editData[field]?.required || false}
+                            onChange={(e) => handleFieldChange(field, 'required', e.target.checked)}
+                          />
+                          <span>Required</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {/* Help Section */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Help Section</h3>
+                  <label className="flex items-center space-x-2 mb-4">
+                    <input
+                      type="checkbox"
+                      checked={editData.helpSection?.show || false}
+                      onChange={(e) => updateHelpSection(['show'], e.target.checked, true)}
+                    />
+                    <span>Show Help Section</span>
+                  </label>
+                  {editData.helpSection?.show && (
+                    <div className="space-y-4 ml-4">
+                      {/* Main Title */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={editData.helpSection?.title?.show || false}
+                          onChange={(e) => updateHelpSection(['title', 'show'], e.target.checked, true)}
+                        />
+                        <input
+                          value={editData.helpSection?.title?.value || ''}
+                          onChange={(e) => updateHelpSection(['title', 'value'], e.target.value)}
+                          placeholder="Help Title (e.g., Need Help?)"
+                          className="flex-1 p-2 border rounded"
+                        />
+                      </div>
+
+                      {/* Contact Section */}
+                      <div className="p-4 border rounded">
+                        <label className="flex items-center space-x-2 mb-2 block">
+                          <input
+                            type="checkbox"
+                            checked={editData.helpSection?.contact?.show || false}
+                            onChange={(e) => updateHelpSection(['contact', 'show'], e.target.checked, true)}
+                          />
+                          <span>Show Contact Section</span>
+                        </label>
+                        {editData.helpSection?.contact?.show && (
+                          <div className="space-y-2 ml-4">
+                            {/* Contact Title */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.contact?.title?.show || false}
+                                onChange={(e) => updateHelpSection(['contact', 'title', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.contact?.title?.value || ''}
+                                onChange={(e) => updateHelpSection(['contact', 'title', 'value'], e.target.value)}
+                                placeholder="Contact Title (e.g., Contact Admission Office)"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                            {/* Email */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.contact?.email?.show || false}
+                                onChange={(e) => updateHelpSection(['contact', 'email', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.contact?.email?.value || ''}
+                                onChange={(e) => updateHelpSection(['contact', 'email', 'value'], e.target.value)}
+                                placeholder="Email (e.g., admissions@stcolumbas.edu.in)"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                            {/* Phone */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.contact?.phone?.show || false}
+                                onChange={(e) => updateHelpSection(['contact', 'phone', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.contact?.phone?.value || ''}
+                                onChange={(e) => updateHelpSection(['contact', 'phone', 'value'], e.target.value)}
+                                placeholder="Phone (e.g., 011-2336-3462 (Ext. 110))"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Office Hours Section */}
+                      <div className="p-4 border rounded">
+                        <label className="flex items-center space-x-2 mb-2 block">
+                          <input
+                            type="checkbox"
+                            checked={editData.helpSection?.officeHours?.show || false}
+                            onChange={(e) => updateHelpSection(['officeHours', 'show'], e.target.checked, true)}
+                          />
+                          <span>Show Office Hours Section</span>
+                        </label>
+                        {editData.helpSection?.officeHours?.show && (
+                          <div className="space-y-2 ml-4">
+                            {/* Office Hours Title */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.officeHours?.title?.show || false}
+                                onChange={(e) => updateHelpSection(['officeHours', 'title', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.officeHours?.title?.value || ''}
+                                onChange={(e) => updateHelpSection(['officeHours', 'title', 'value'], e.target.value)}
+                                placeholder="Office Hours Title (e.g., Office Hours)"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                            {/* Monday-Friday */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.officeHours?.mondayFriday?.show || false}
+                                onChange={(e) => updateHelpSection(['officeHours', 'mondayFriday', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.officeHours?.mondayFriday?.value || ''}
+                                onChange={(e) => updateHelpSection(['officeHours', 'mondayFriday', 'value'], e.target.value)}
+                                placeholder="Monday-Friday Hours (e.g., Monday-Friday: 9:00 AM - 4:00 PM)"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                            {/* Saturday */}
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={editData.helpSection?.officeHours?.saturday?.show || false}
+                                onChange={(e) => updateHelpSection(['officeHours', 'saturday', 'show'], e.target.checked, true)}
+                              />
+                              <input
+                                value={editData.helpSection?.officeHours?.saturday?.value || ''}
+                                onChange={(e) => updateHelpSection(['officeHours', 'saturday', 'value'], e.target.value)}
+                                placeholder="Saturday Hours (e.g., Saturday: 9:00 AM - 12:00 PM)"
+                                className="flex-1 p-2 border rounded"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Modal Footer */}
+            <ModalFooter />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       {config.hero.show && (
         <section className={`relative ${config.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
@@ -1021,22 +1539,17 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
             </div>
             {/* Header Buttons */}
             <div className="absolute top-4 right-4 flex items-center space-x-4">
-              <button 
-                className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-                onClick={handleDownload}
-                title="Download form"
-                aria-label="Download form"
-              >
-                <Download className="h-5 w-5" />
-              </button>
-              <button 
-                className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
-                onClick={handleSaveExit}
-                title="Save and exit"
-                aria-label="Save and exit"
-              >
-                <Bookmark className="h-5 w-5" />
-              </button>
+              {editMode && (
+                <button 
+                  className="bg-white text-green-600 rounded-full p-2 shadow-md hover:bg-green-50 transition-all duration-200 border border-green-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  onClick={openEdit}
+                  title="Edit form configuration"
+                  aria-label="Edit form configuration"
+                >
+                  <Edit className="h-5 w-5" />
+                </button>
+              )}
+
             </div>
           </div>
         </section>
@@ -1127,21 +1640,41 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
         </form>
 
         {/* Help Section */}
-        <div className="mt-8 bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Need Help?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Contact Admission Office</h4>
-              <p className="text-gray-600 text-sm">Email: admissions@stcolumbas.edu.in</p>
-              <p className="text-gray-600 text-sm">Phone: 011-2336-3462 (Ext. 110)</p>
-            </div>
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Office Hours</h4>
-              <p className="text-gray-600 text-sm">Monday-Friday: 9:00 AM - 4:00 PM</p>
-              <p className="text-gray-600 text-sm">Saturday: 9:00 AM - 12:00 PM</p>
+        {config.helpSection?.show && (
+          <div className="mt-8 bg-blue-50 rounded-lg p-6">
+            {config.helpSection.title?.show && (
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">{config.helpSection.title.value}</h3>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {config.helpSection.contact?.show && (
+                <div>
+                  {config.helpSection.contact.title?.show && (
+                    <h4 className="font-medium text-gray-800 mb-2">{config.helpSection.contact.title.value}</h4>
+                  )}
+                  {config.helpSection.contact.email?.show && (
+                    <p className="text-gray-600 text-sm">Email: {config.helpSection.contact.email.value}</p>
+                  )}
+                  {config.helpSection.contact.phone?.show && (
+                    <p className="text-gray-600 text-sm">Phone: {config.helpSection.contact.phone.value}</p>
+                  )}
+                </div>
+              )}
+              {config.helpSection.officeHours?.show && (
+                <div>
+                  {config.helpSection.officeHours.title?.show && (
+                    <h4 className="font-medium text-gray-800 mb-2">{config.helpSection.officeHours.title.value}</h4>
+                  )}
+                  {config.helpSection.officeHours.mondayFriday?.show && (
+                    <p className="text-gray-600 text-sm">{config.helpSection.officeHours.mondayFriday.value}</p>
+                  )}
+                  {config.helpSection.officeHours.saturday?.show && (
+                    <p className="text-gray-600 text-sm">{config.helpSection.officeHours.saturday.value}</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
