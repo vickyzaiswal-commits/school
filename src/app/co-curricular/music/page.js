@@ -1219,43 +1219,7 @@ const MusicPage = () => {
                     ))}
                   </div>
 
-                  {/* General Form */}
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-2">General Links</h3>
-                    <h4 className="text-md font-semibold mb-2">Learn More</h4>
-                    <div className="space-y-2 mb-6">
-                      <label className="flex items-center space-x-2">
-                        <input type="checkbox" checked={editData.general?.learnMore?.show !== false} onChange={(e) => handleGeneralNestedChange('learnMore', 'show', e.target.checked)} />
-                        <span>Show Learn More</span>
-                      </label>
-                      <label className="block text-sm font-medium">Text</label>
-                      <input type="text" value={editData.general?.learnMore?.text || ''} onChange={(e) => handleGeneralNestedChange('learnMore', 'text', e.target.value)} className="w-full p-2 border rounded" />
-                      <label className="block text-sm font-medium">Path/Link</label>
-                      <input type="text" value={editData.general?.learnMore?.link || ''} onChange={(e) => handleGeneralNestedChange('learnMore', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., /music-programs/details" />
-                    </div>
-                    <h4 className="text-md font-semibold mb-2">Download</h4>
-                    <div className="space-y-2 mb-6">
-                      <label className="flex items-center space-x-2">
-                        <input type="checkbox" checked={editData.general?.download?.show !== false} onChange={(e) => handleGeneralNestedChange('download', 'show', e.target.checked)} />
-                        <span>Show Download</span>
-                      </label>
-                      <label className="block text-sm font-medium">Text</label>
-                      <input type="text" value={editData.general?.download?.text || ''} onChange={(e) => handleGeneralNestedChange('download', 'text', e.target.value)} className="w-full p-2 border rounded" />
-                      <label className="block text-sm font-medium">Path/Link</label>
-                      <input type="text" value={editData.general?.download?.link || ''} onChange={(e) => handleGeneralNestedChange('download', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., /download/handbook.pdf" />
-                    </div>
-                    <h4 className="text-md font-semibold mb-2">View Details</h4>
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2">
-                        <input type="checkbox" checked={editData.general?.viewDetails?.show !== false} onChange={(e) => handleGeneralNestedChange('viewDetails', 'show', e.target.checked)} />
-                        <span>Show View Details</span>
-                      </label>
-                      <label className="block text-sm font-medium">Text</label>
-                      <input type="text" value={editData.general?.viewDetails?.text || ''} onChange={(e) => handleGeneralNestedChange('viewDetails', 'text', e.target.value)} className="w-full p-2 border rounded" />
-                      <label className="block text-sm font-medium">Path/Link</label>
-                      <input type="text" value={editData.general?.viewDetails?.link || ''} onChange={(e) => handleGeneralNestedChange('viewDetails', 'link', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g., /events/details" />
-                    </div>
-                  </div>
+                  
                 </div>
               )}
               {editSection === 'hero' && (

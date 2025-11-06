@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Clock,
   Calendar,
@@ -22,22 +22,87 @@ import {
   BookOpen,
   Coffee,
   Bus,
-  Home
+  Home,
+  Edit,
+  X,
+  Plus,
+  Trash2
 } from 'lucide-react';
+import { apiRequest } from '@/utils/apiRequest';
+import FileUpload from '@/utils/fileUpload';
 
 const SchoolTimingsPage = ({ schoolTimingsData }) => {
   const [activeTab, setActiveTab] = useState('daily');
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [editSection, setEditSection] = useState(null);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [originalData, setOriginalData] = useState(null);
+  const role = 'admin'; // Should come from auth context
 
-  // JSON data to drive all content (will later come from a database)
-  const jsonData = {
+  // Icon mapping (string-based for consistency)
+  const iconMap = {
+    Clock,
+    Calendar,
+    Bell,
+    Download,
+    ChevronRight,
+    ExternalLink,
+    MapPin,
+    Users,
+    Book,
+    Calculator,
+    Microscope,
+    Languages,
+    Palette,
+    Music,
+    Heart,
+    Shield,
+    Code,
+    Globe,
+    BookOpen,
+    Coffee,
+    Bus,
+    Home
+  };
+
+  // Layout key mapping
+  const layoutMap = {
+    hero: 'showHero',
+    benefits: 'showBenefits',
+    tabs: 'showTabs',
+    dailySchedules: 'showDailySchedules',
+    academicCalendar: 'showAcademicCalendar',
+    bellSchedule: 'showBellSchedule',
+    transport: 'showTransport',
+    resources: 'showResources',
+    cta: 'showCta'
+  };
+
+  // Default data structure for School Timings
+  const defaultData = {
+    showHero: true,
+    showBenefits: true,
+    showTabs: true,
+    showDailySchedules: true,
+    showAcademicCalendar: true,
+    showBellSchedule: true,
+    showTransport: true,
+    showResources: true,
+    showCta: true,
     hero: {
       show: true,
       title: "School Timings & Schedules",
       subtitle: "Discover our structured daily routines, academic calendar, and transportation schedules designed for optimal learning",
       height: "h-96",
       backgroundImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      // whether to render the <img> element for the hero background
+      showImage: true,
       ctaButton: {
         label: "Download School Schedule",
+        link: "#",
         show: true
       }
     },
@@ -47,25 +112,25 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
       description: "Our carefully designed timings ensure a balanced and productive school day",
       items: [
         {
-          icon: Clock,
+          icon: "Clock",
           title: "Structured Learning",
           description: "Consistent daily routine optimized for effective learning and development",
           show: true
         },
         {
-          icon: Calendar,
+          icon: "Calendar",
           title: "Academic Planning",
           description: "Well-planned academic calendar with balanced instructional days and breaks",
           show: true
         },
         {
-          icon: Users,
+          icon: "Users",
           title: "Community Coordination",
           description: "Synchronized schedules for students, teachers, and parents",
           show: true
         },
         {
-          icon: Bell,
+          icon: "Bell",
           title: "Time Management",
           description: "Teaches students valuable time management and organizational skills",
           show: true
@@ -77,14 +142,16 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
       title: "Timing Information",
       description: "Explore our school schedules and timings",
       items: [
-        { id: 'daily', name: 'Daily Schedule', icon: Clock, description: 'Class timings', show: true },
-        { id: 'calendar', name: 'Academic Calendar', icon: Calendar, description: 'Yearly events', show: true },
-        { id: 'bell', name: 'Bell Schedule', icon: Bell, description: 'Period changes', show: true },
-        { id: 'transport', name: 'Transport Timings', icon: Bus, description: 'Bus schedules', show: true }
+        { id: 'daily', name: 'Daily Schedule', icon: "Clock", description: 'Class timings', show: true },
+        { id: 'calendar', name: 'Academic Calendar', icon: "Calendar", description: 'Yearly events', show: true },
+        { id: 'bell', name: 'Bell Schedule', icon: "Bell", description: 'Period changes', show: true },
+        { id: 'transport', name: 'Transport Timings', icon: "Bus", description: 'Bus schedules', show: true }
       ]
     },
     dailySchedules: {
       show: true,
+      title: "Daily School Schedules",
+      description: "Structured daily routines for optimal learning across all grade levels",
       labels: {
         period: "Period",
         time: "Time",
@@ -342,7 +409,8 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
           description: "Full academic year schedule with holidays",
           format: "PDF",
           size: "1.2 MB",
-          icon: Calendar,
+          icon: "Calendar",
+          link: "#",
           show: true
         },
         {
@@ -350,7 +418,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
           description: "Detailed daily timings for all grades",
           format: "PDF",
           size: "0.8 MB",
-          icon: Book,
+          icon: "Book",
           show: true
         },
         {
@@ -358,7 +426,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
           description: "Detailed map of all bus routes",
           format: "PDF",
           size: "2.1 MB",
-          icon: MapPin,
+          icon: "MapPin",
           show: true
         },
         {
@@ -366,87 +434,820 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
           description: "Visual representation of daily bell timings",
           format: "PDF",
           size: "0.5 MB",
-          icon: Bell,
+          icon: "Bell",
           show: true
         }
       ]
     },
     cta: {
       show: true,
-      title: "Need Schedule Assistance?",
-      description: "Contact our administration office for any questions about school timings or schedule changes",
+      title: "Stay Organized with Our Schedules",
+      description: "Download our comprehensive schedules and plan your academic year effectively",
       buttons: [
         { 
-          label: "Email Administration", 
+          label: "View Full Calendar", 
           variant: "primary",
+          link: "#",
           show: true 
         },
         { 
-          label: "Request Schedule Change", 
+          label: "Contact Transport Office", 
           variant: "secondary",
+          link: "#",
           show: true 
         }
       ]
-    },
-    general: {
-      learnMore: "Learn More",
-      viewDetails: "View Details"
-    },
-    // Section visibility controls
-    showHero: true,
-    showBenefits: true,
-    showTabs: true,
-    showDailySchedules: true,
-    showAcademicCalendar: true,
-    showBellSchedule: true,
-    showTransport: true,
-    showResources: true,
-    showCta: true
+    }
   };
 
-  // Use schoolTimingsData if provided (e.g., from a database), otherwise fall back to jsonData
-  const data = schoolTimingsData || jsonData;
+  // Download file function
+  const downloadFile = async (url, filename) => {
+    if (!url || url === '#') return;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename || 'download';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      window.open(url, '_blank');
+    }
+  };
+
+  // Check role
+  useEffect(() => {
+    if (role === 'admin') {
+      setEditMode(true);
+    } else {
+      setEditMode(false);
+      setEditFormOpen(false);
+    }
+  }, [role]);
+
+  // Fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await apiRequest('save_data/get_all_school_timings_data', {});
+        console.log('API Response:', res);
+        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+          const fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data:', fetchedData);
+          setData({ ...defaultData, ...fetchedData });
+        } else {
+          console.log('No data or invalid response, using default');
+          setData(defaultData);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setData(defaultData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Open edit modal
+  const openEditModal = (section) => {
+    setEditSection(section);
+    setEditFormOpen(true);
+    if (section === 'tabs') {
+      const tabsData = {
+        showTabs: data.showTabs,
+        tabs: data.tabs,
+        showDailySchedules: data.showDailySchedules,
+        dailySchedules: data.dailySchedules,
+        showAcademicCalendar: data.showAcademicCalendar,
+        academicCalendar: data.academicCalendar,
+        showBellSchedule: data.showBellSchedule,
+        bellSchedule: data.bellSchedule,
+        showTransport: data.showTransport,
+        transport: data.transport
+      };
+      setEditData(tabsData);
+      setOriginalData(JSON.parse(JSON.stringify(tabsData)));
+    } else {
+      const layoutKey = layoutMap[section];
+      let sectionData = { 
+        showSection: data[layoutKey],
+        ...data[section]
+      };
+      setEditData(sectionData);
+      setOriginalData(JSON.parse(JSON.stringify(sectionData)));
+    }
+  };
+
+  // Save section
+  const saveSection = async () => {
+    let newData = { ...data };
+    const updatedData = editData;
+    if (editSection === 'tabs') {
+      newData.showTabs = updatedData.showTabs;
+      newData.showDailySchedules = updatedData.showDailySchedules;
+      newData.dailySchedules = updatedData.dailySchedules;
+      newData.showAcademicCalendar = updatedData.showAcademicCalendar;
+      newData.academicCalendar = updatedData.academicCalendar;
+      newData.showBellSchedule = updatedData.showBellSchedule;
+      newData.bellSchedule = updatedData.bellSchedule;
+      newData.showTransport = updatedData.showTransport;
+      newData.transport = updatedData.transport;
+      newData.tabs = updatedData.tabs;
+    } else {
+      const layoutKey = layoutMap[editSection];
+      newData[layoutKey] = updatedData.showSection;
+      const sectionContent = { ...updatedData };
+      delete sectionContent.showSection;
+      newData[editSection] = { ...newData[editSection], ...sectionContent };
+    }
+    setData(newData);
+    try {
+      await apiRequest('save_data/save_school_timings_data', { payload: newData });
+    } catch (error) {
+      console.error('Save failed', error);
+    }
+    setEditFormOpen(false);
+  };
+
+  // Cancel edit
+  const cancelEdit = () => {
+    setEditData(originalData);
+    setEditFormOpen(false);
+  };
+
+  // General handlers
+  const handleObjectChange = (field, value) => {
+    setEditData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleArrayChange = (arrayKey, index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated[arrayKey]) updated[arrayKey] = [];
+      updated[arrayKey][index] = { ...updated[arrayKey][index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleNestedChange = (parentKey, childKey, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [parentKey]: {
+        ...prev[parentKey],
+        [childKey]: value
+      }
+    }));
+  };
+
+  const handleCategoriesItemChange = (index, field, value) => {
+    setEditData(prev => ({
+      ...prev,
+      tabs: {
+        ...prev.tabs,
+        items: prev.tabs.items.map((item, i) => i === index ? { ...item, [field]: value } : item)
+      }
+    }));
+  };
+
+  const handleLabelsChange = (sectionKey, labelKey, field, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [sectionKey]: {
+        ...prev[sectionKey],
+        labels: {
+          ...prev[sectionKey].labels,
+          [labelKey]: value
+        }
+      }
+    }));
+  };
+
+  const handleScheduleItemChange = (level, index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.dailySchedules.items[level]) updated.dailySchedules.items[level] = { schedule: [] };
+      updated.dailySchedules.items[level].schedule[index] = { ...updated.dailySchedules.items[level].schedule[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleMonthEventChange = (monthIndex, eventIndex, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.academicCalendar.items[monthIndex].events[eventIndex] = { ...updated.academicCalendar.items[monthIndex].events[eventIndex], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleTransportItemChange = (index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport.items[index] = { ...updated.transport.items[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handlePolicySafetyChange = (type, index, field, value) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport[type][index] = { ...updated.transport[type][index], [field]: value };
+      return updated;
+    });
+  };
+
+  // Handlers for adding/removing
+  const addScheduleItem = (level) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      if (!updated.dailySchedules.items[level]) updated.dailySchedules.items[level] = { schedule: [] };
+      updated.dailySchedules.items[level].schedule.push({
+        period: "",
+        time: "",
+        description: "",
+        subject: "",
+        show: true
+      });
+      return updated;
+    });
+  };
+
+  const removeScheduleItem = (level, index) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.dailySchedules.items[level].schedule.splice(index, 1);
+      return updated;
+    });
+  };
+
+  const addMonthEvent = (monthIndex) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.academicCalendar.items[monthIndex].events.push({
+        date: "",
+        description: "",
+        highlight: false,
+        show: true
+      });
+      return updated;
+    });
+  };
+
+  const removeMonthEvent = (monthIndex, eventIndex) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.academicCalendar.items[monthIndex].events.splice(eventIndex, 1);
+      return updated;
+    });
+  };
+
+  const addTransportItem = () => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport.items.push({
+        route: "",
+        morningPickup: "",
+        afternoonDropoff: "",
+        stops: "",
+        show: true
+      });
+      return updated;
+    });
+  };
+
+  const removeTransportItem = (index) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport.items.splice(index, 1);
+      return updated;
+    });
+  };
+
+  const addPolicySafety = (type) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport[type].push({ text: "", show: true });
+      return updated;
+    });
+  };
+
+  const removePolicySafety = (type, index) => {
+    setEditData(prev => {
+      const updated = { ...prev };
+      updated.transport[type].splice(index, 1);
+      return updated;
+    });
+  };
 
   // Filter functions
-  const filteredBenefits = data.benefits?.items?.filter(benefit => benefit.show !== false) || [];
+  const filteredBenefits = data.benefits?.items?.filter(item => item.show !== false) || [];
   const filteredTabs = data.tabs?.items?.filter(tab => tab.show !== false) || [];
   const filteredDailySchedules = data.dailySchedules?.items ? 
     Object.fromEntries(
-      Object.entries(data.dailySchedules.items).filter(([key, item]) => item.show !== false)
+      Object.entries(data.dailySchedules.items).map(([key, item]) => [
+        key, item.show !== false ? item : null
+      ]).filter(([_, item]) => item !== null)
     ) : {};
   const filteredAcademicCalendar = data.academicCalendar?.items?.filter(month => month.show !== false) || [];
   const filteredBellSchedule = data.bellSchedule?.items?.filter(item => item.show !== false) || [];
-  const filteredTransport = data.transport?.items?.filter(route => route.show !== false) || [];
-  const filteredTransportPolicies = data.transport?.policies?.filter(policy => policy.show !== false) || [];
-  const filteredTransportSafety = data.transport?.safety?.filter(safety => safety.show !== false) || [];
-  const filteredResources = data.resources?.items?.filter(resource => resource.show !== false) || [];
+  const filteredTransport = data.transport?.items?.filter(item => item.show !== false) || [];
+  const filteredTransportPolicies = data.transport?.policies?.filter(item => item.show !== false) || [];
+  const filteredTransportSafety = data.transport?.safety?.filter(item => item.show !== false) || [];
+  const filteredResources = data.resources?.items?.filter(item => item.show !== false) || [];
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Modal Header Component
+  const ModalHeader = ({ title, onClose }) => (
+    <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+      <button
+        onClick={onClose}
+        className="text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <X className="h-5 w-5" />
+      </button>
+    </div>
+  );
+
+  // Modal Footer Component
+  const ModalFooter = ({ onCancel, onSave }) => (
+    <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end space-x-3 sticky bottom-0 z-10">
+      <button
+        onClick={onCancel}
+        className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={onSave}
+        className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
+      >
+        Save Changes
+      </button>
+    </div>
+  );
+
+  // Schedule Editor Component
+  const ScheduleEditor = ({ level, levelTitle }) => {
+    const schedule = editData.dailySchedules?.items?.[level]?.schedule || [];
+    return (
+      <div className="mb-6 border border-gray-200 rounded-lg">
+        <div className="bg-gray-50 px-4 py-3 font-semibold text-gray-800 rounded-t-lg">
+          {levelTitle} Schedule ({schedule.length} items)
+        </div>
+        <div className="p-4 space-y-4">
+          {schedule.map((item, index) => (
+            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold">Item {index + 1}</h4>
+                <button
+                  onClick={() => removeScheduleItem(level, index)}
+                  className="text-red-600 hover:text-red-800 p-1 rounded"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input value={item.period || ''} onChange={(e) => handleScheduleItemChange(level, index, 'period', e.target.value)} placeholder="Period" className="w-full p-2 border rounded mb-2" />
+                <input value={item.time || ''} onChange={(e) => handleScheduleItemChange(level, index, 'time', e.target.value)} placeholder="Time" className="w-full p-2 border rounded mb-2" />
+                <input value={item.subject || ''} onChange={(e) => handleScheduleItemChange(level, index, 'subject', e.target.value)} placeholder="Subject (optional)" className="w-full p-2 border rounded mb-2" />
+                <textarea value={item.description || ''} onChange={(e) => handleScheduleItemChange(level, index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded mb-2" rows="2" />
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handleScheduleItemChange(level, index, 'show', e.target.checked)} />
+                  <span>Show Item</span>
+                </label>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => addScheduleItem(level)}
+            className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New {levelTitle} Schedule Item
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Month Events Editor
+  const MonthEventsEditor = ({ monthIndex, month }) => {
+    const events = month.events || [];
+    return (
+      <div className="mb-6 border border-gray-200 rounded-lg">
+        <div className="bg-gray-50 px-4 py-3 font-semibold text-gray-800 rounded-t-lg">
+          {month.month} Events ({events.length} items)
+        </div>
+        <div className="p-4 space-y-4">
+          {events.map((event, index) => (
+            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold">Event {index + 1}</h4>
+                <button
+                  onClick={() => removeMonthEvent(monthIndex, index)}
+                  className="text-red-600 hover:text-red-800 p-1 rounded"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input value={event.date || ''} onChange={(e) => handleMonthEventChange(monthIndex, index, 'date', e.target.value)} placeholder="Date" className="w-full p-2 border rounded mb-2" />
+                <input value={event.description || ''} onChange={(e) => handleMonthEventChange(monthIndex, index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded mb-2" />
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" checked={event.highlight || false} onChange={(e) => handleMonthEventChange(monthIndex, index, 'highlight', e.target.checked)} />
+                  <span>Highlight</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" checked={event.show !== false} onChange={(e) => handleMonthEventChange(monthIndex, index, 'show', e.target.checked)} />
+                  <span>Show Event</span>
+                </label>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => addMonthEvent(monthIndex)}
+            className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Event
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Transport Editor
+  const TransportEditor = () => {
+    return (
+      <div className="space-y-6">
+        <div className="border border-gray-200 rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-2">Routes</h3>
+          {editData.transport?.items?.map((item, index) => (
+            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold">Route {index + 1}</h4>
+                <button onClick={() => removeTransportItem(index)} className="text-red-600 hover:text-red-800 p-1 rounded">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <input value={item.route || ''} onChange={(e) => handleTransportItemChange(index, 'route', e.target.value)} placeholder="Route" className="p-2 border rounded" />
+                <input value={item.morningPickup || ''} onChange={(e) => handleTransportItemChange(index, 'morningPickup', e.target.value)} placeholder="Morning Pickup" className="p-2 border rounded" />
+                <input value={item.afternoonDropoff || ''} onChange={(e) => handleTransportItemChange(index, 'afternoonDropoff', e.target.value)} placeholder="Afternoon Dropoff" className="p-2 border rounded" />
+                <textarea value={item.stops || ''} onChange={(e) => handleTransportItemChange(index, 'stops', e.target.value)} placeholder="Stops" className="p-2 border rounded col-span-2" rows="2" />
+              </div>
+              <label className="flex items-center space-x-2 mt-2">
+                <input type="checkbox" checked={item.show !== false} onChange={(e) => handleTransportItemChange(index, 'show', e.target.checked)} />
+                <span>Show Route</span>
+              </label>
+            </div>
+          ))}
+          <button onClick={addTransportItem} className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200">
+            <Plus className="h-4 w-4 mr-2" /> Add New Route
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-2">Policies</h3>
+            {editData.transport?.policies?.map((item, index) => (
+              <div key={index} className="mb-2 p-2 border rounded bg-gray-50 relative">
+                <textarea value={item.text || ''} onChange={(e) => handlePolicySafetyChange('policies', index, 'text', e.target.value)} placeholder="Policy text" className="w-full p-1 border-0 bg-transparent" rows="2" />
+                <button onClick={() => removePolicySafety('policies', index)} className="absolute top-1 right-1 text-red-600">
+                  <Trash2 className="h-3 w-3" />
+                </button>
+                <label className="flex items-center space-x-2 mt-1">
+                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handlePolicySafetyChange('policies', index, 'show', e.target.checked)} />
+                  <span className="text-xs">Show</span>
+                </label>
+              </div>
+            ))}
+            <button onClick={() => addPolicySafety('policies')} className="flex items-center text-green-600 text-sm">
+              <Plus className="h-4 w-4 mr-1" /> Add Policy
+            </button>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-2">Safety</h3>
+            {editData.transport?.safety?.map((item, index) => (
+              <div key={index} className="mb-2 p-2 border rounded bg-gray-50 relative">
+                <textarea value={item.text || ''} onChange={(e) => handlePolicySafetyChange('safety', index, 'text', e.target.value)} placeholder="Safety info" className="w-full p-1 border-0 bg-transparent" rows="2" />
+                <button onClick={() => removePolicySafety('safety', index)} className="absolute top-1 right-1 text-red-600">
+                  <Trash2 className="h-3 w-3" />
+                </button>
+                <label className="flex items-center space-x-2 mt-1">
+                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handlePolicySafetyChange('safety', index, 'show', e.target.checked)} />
+                  <span className="text-xs">Show</span>
+                </label>
+              </div>
+            ))}
+            <button onClick={() => addPolicySafety('safety')} className="flex items-center text-green-600 text-sm">
+              <Plus className="h-4 w-4 mr-1" /> Add Safety Info
+            </button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <input value={editData.transport?.policiesTitle || ''} onChange={(e) => handleObjectChange('policiesTitle', e.target.value)} placeholder="Policies Title" className="w-full p-2 border rounded" />
+          <input value={editData.transport?.safetyTitle || ''} onChange={(e) => handleObjectChange('safetyTitle', e.target.value)} placeholder="Safety Title" className="w-full p-2 border rounded" />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Edit Modal */}
+      {editFormOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <ModalHeader title={`Edit ${editSection}`} onClose={cancelEdit} />
+            <div className="flex-1 overflow-y-auto p-6">
+              {editSection === 'hero' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleObjectChange('showSection', e.target.checked)} />
+                      <span>Show Hero</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Subtitle</label>
+                    <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Background Image</label>
+                    <FileUpload 
+                      initialValue={editData.backgroundImage || ''} 
+                      onUpload={(url) => handleObjectChange('backgroundImage', url)} 
+                      className="w-full" 
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showImage !== false} onChange={(e) => handleObjectChange('showImage', e.target.checked)} />
+                      <span>Show Image</span>
+                    </label>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">CTA Button</h3>
+                  <div className="space-y-2">
+                    <input value={editData.ctaButton?.label || ''} onChange={(e) => handleNestedChange('ctaButton', 'label', e.target.value)} placeholder="Label" className="w-full p-2 border rounded" />
+                    <input value={editData.ctaButton?.link || ''} onChange={(e) => handleNestedChange('ctaButton', 'link', e.target.value)} placeholder="Link" className="w-full p-2 border rounded" />
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.ctaButton?.show !== false} onChange={(e) => handleNestedChange('ctaButton', 'show', e.target.checked)} />
+                      <span>Show Button</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+              {editSection === 'benefits' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleObjectChange('showSection', e.target.checked)} />
+                      <span>Show Benefits</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <select value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                          <option value="">Select Icon</option>
+                          {Object.keys(iconMap).map(key => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                        <input value={item.title || ''} onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
+                        <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" rows="3" />
+                        <label className="flex items-center space-x-2">
+                          <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                          <span>Show Item</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'tabs' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showTabs || false} onChange={(e) => handleObjectChange('showTabs', e.target.checked)} />
+                      <span>Show Tabs</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Tabs Title</label>
+                    <input value={editData.tabs?.title || ''} onChange={(e) => handleNestedChange('tabs', 'title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Tabs Description</label>
+                    <textarea value={editData.tabs?.description || ''} onChange={(e) => handleNestedChange('tabs', 'description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Tabs Items</h3>
+                  {(editData.tabs?.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Tab {index + 1}</h4>
+                      <div className="space-y-2">
+                        <input value={item.name || ''} onChange={(e) => handleCategoriesItemChange(index, 'name', e.target.value)} placeholder="Name" className="w-full p-2 border rounded" />
+                        <select value={item.icon || ''} onChange={(e) => handleCategoriesItemChange(index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                          <option value="">Select Icon</option>
+                          {Object.keys(iconMap).map(key => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                        <input value={item.description || ''} onChange={(e) => handleCategoriesItemChange(index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" />
+                        <label className="flex items-center space-x-2">
+                          <input type="checkbox" checked={item.show !== false} onChange={(e) => handleCategoriesItemChange(index, 'show', e.target.checked)} />
+                          <span>Show Tab</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Daily Schedules Labels</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.keys(editData.dailySchedules?.labels || {}).map((key) => (
+                      <div key={key} className="space-y-2">
+                        <label className="block text-sm font-medium">{key}</label>
+                        <input value={editData.dailySchedules?.labels?.[key] || ''} onChange={(e) => handleLabelsChange('dailySchedules', key, 'labels', e.target.value)} className="w-full p-2 border rounded" />
+                      </div>
+                    ))}
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Daily Schedules</h3>
+                  <ScheduleEditor level="primary" levelTitle="Primary" />
+                  <ScheduleEditor level="middle" levelTitle="Middle" />
+                  <ScheduleEditor level="high" levelTitle="High" />
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Academic Calendar</h3>
+                  {(editData.academicCalendar?.items || []).map((month, index) => (
+                    <div key={index} className="mb-6">
+                      <h4 className="font-semibold mb-2">Month {index + 1}: {month.month}</h4>
+                      <MonthEventsEditor monthIndex={index} month={month} />
+                    </div>
+                  ))}
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Bell Schedule Labels</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.keys(editData.bellSchedule?.labels || {}).map((key) => (
+                      <div key={key} className="space-y-2">
+                        <label className="block text-sm font-medium">{key}</label>
+                        <input value={editData.bellSchedule?.labels?.[key] || ''} onChange={(e) => handleLabelsChange('bellSchedule', key, 'labels', e.target.value)} className="w-full p-2 border rounded" />
+                      </div>
+                    ))}
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Bell Schedule Items</h3>
+                  {(editData.bellSchedule?.items || []).map((item, index) => (
+                    <div key={index} className="mb-4 p-4 border rounded bg-gray-50">
+                      <div className="flex justify-between mb-2">
+                        <h4>Item {index + 1}</h4>
+                        <button className="text-red-600">Remove</button>
+                      </div>
+                      <input value={item.period || ''} onChange={(e) => handleArrayChange('items', index, 'period', e.target.value)} placeholder="Period" className="w-full p-2 border rounded mb-2" />
+                      <input value={item.time || ''} onChange={(e) => handleArrayChange('items', index, 'time', e.target.value)} placeholder="Time" className="w-full p-2 border rounded mb-2" />
+                      <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" rows="2" />
+                    </div>
+                  ))}
+                  <TransportEditor />
+                </div>
+              )}
+              {editSection === 'resources' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleObjectChange('showSection', e.target.checked)} />
+                      <span>Show Resources</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Download Label</label>
+                    <input value={editData.downloadLabel || ''} onChange={(e) => handleObjectChange('downloadLabel', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Items</h3>
+                  {(editData.items || []).map((item, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
+                      <div className="space-y-2">
+                        <select value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                          <option value="">Select Icon</option>
+                          {Object.keys(iconMap).map(key => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                        <input value={item.title || ''} onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
+                        <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" rows="3" />
+                        <input value={item.format || ''} onChange={(e) => handleArrayChange('items', index, 'format', e.target.value)} placeholder="Format" className="w-full p-2 border rounded" />
+                        <input value={item.size || ''} onChange={(e) => handleArrayChange('items', index, 'size', e.target.value)} placeholder="Size" className="w-full p-2 border rounded" />
+                        <div>
+                          <label className="block text-sm font-medium">Link (or Upload)</label>
+                          <input value={item.link || ''} onChange={(e) => handleArrayChange('items', index, 'link', e.target.value)} placeholder="URL" className="w-full p-2 border rounded mb-2" />
+                          <FileUpload 
+                            initialValue={item.link || ''} 
+                            onUpload={(url) => handleArrayChange('items', index, 'link', url)} 
+                            className="w-full" 
+                          />
+                        </div>
+                        <label className="flex items-center space-x-2">
+                          <input type="checkbox" checked={item.show !== false} onChange={(e) => handleArrayChange('items', index, 'show', e.target.checked)} />
+                          <span>Show Item</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editSection === 'cta' && (
+                <div className="space-y-4">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleObjectChange('showSection', e.target.checked)} />
+                      <span>Show CTA</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
+                  {(editData.buttons || []).map((button, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Button {index + 1}</h4>
+                      <div className="space-y-2">
+                        <input value={button.label || ''} onChange={(e) => handleArrayChange('buttons', index, 'label', e.target.value)} placeholder="Label" className="w-full p-2 border rounded" />
+                        <input value={button.link || ''} onChange={(e) => handleArrayChange('buttons', index, 'link', e.target.value)} placeholder="Link" className="w-full p-2 border rounded" />
+                        <label className="flex items-center space-x-2">
+                          <input type="checkbox" checked={button.show !== false} onChange={(e) => handleArrayChange('buttons', index, 'show', e.target.checked)} />
+                          <span>Show Button</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <ModalFooter onCancel={cancelEdit} onSave={saveSection} />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       {data.showHero && data.hero?.show && (
         <section className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
-          {/* <img
-            src={data.hero?.backgroundImage || 'https://via.placeholder.com/1920x400'}
-            alt={data.hero?.title}
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
-          /> */}
+          {data.hero?.showImage !== false && data.hero?.backgroundImage && (
+            <img
+              src={data.hero.backgroundImage}
+              alt={data.hero.title || ''}
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
+            />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>
               <p className="text-xl text-green-100 leading-relaxed">
                 {data.hero?.subtitle}
               </p>
-              {data.hero?.ctaButton?.show && (
-                <button className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                  {data.hero?.ctaButton?.label}
+              {data.hero?.ctaButton?.show !== false && (
+                <button onClick={() => downloadFile(data.hero.ctaButton?.link || '#', 'school-schedule.pdf')} className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                  {data.hero.ctaButton?.label}
                   <Download className="ml-2 h-4 w-4" />
                 </button>
               )}
             </div>
           </div>
+          {editMode && <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
         </section>
       )}
 
@@ -454,7 +1255,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Benefits Section */}
         {data.showBenefits && data.benefits?.show && filteredBenefits.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.benefits?.title}</h2>
               <p className="text-gray-600 max-w-3xl mx-auto">
@@ -464,7 +1265,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredBenefits.map((benefit, index) => {
-                const IconComponent = benefit.icon || Clock; // Fallback icon
+                const IconComponent = iconMap[benefit.icon] || Clock;
                 return (
                   <div key={index} className="bg-gray-50 rounded-lg p-6 hover:bg-green-50 transition-all duration-300 group text-center">
                     <div className="bg-green-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -476,12 +1277,13 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                 );
               })}
             </div>
+            {editMode && <button onClick={() => openEditModal('benefits')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Tabs Navigation */}
         {data.showTabs && data.tabs?.show && filteredTabs.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.tabs?.title}</h2>
               <p className="text-gray-600">
@@ -491,7 +1293,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {filteredTabs.map(tab => {
-                const IconComponent = tab.icon || Clock; // Fallback icon
+                const IconComponent = iconMap[tab.icon] || Clock;
                 return (
                   <button
                     key={tab.id}
@@ -517,7 +1319,8 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
               {/* Daily Schedule Tab */}
               {activeTab === 'daily' && data.showDailySchedules && data.dailySchedules?.show && (
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-6">Daily School Schedules</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-6">{data.dailySchedules?.title}</h3>
+                  {data.dailySchedules?.description && <p className="text-gray-600 mb-6">{data.dailySchedules?.description}</p>}
                   <div className="space-y-8">
                     {Object.entries(filteredDailySchedules).map(([key, schedule]) => (
                       <div key={key}>
@@ -662,17 +1465,19 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                 </div>
               )}
             </div>
+            {editMode && <button onClick={() => openEditModal('tabs')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* Resources */}
         {data.showResources && data.resources?.show && filteredResources.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.resources?.title}</h2>
             <p className="text-gray-600 mb-6">{data.resources?.description}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredResources.map((resource, index) => {
-                const IconComponent = resource.icon || FileText; // Fallback icon
+                const IconComponent = iconMap[resource.icon] || Book;
+                const downloadFilename = `${resource.title}.${resource.format?.toLowerCase() || 'pdf'}`;
                 return (
                   <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
                     <div className="flex items-start">
@@ -686,38 +1491,39 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                         </div>
                       </div>
                     </div>
-                    <button className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
-                      {data.resources?.downloadLabel}
-                      <Download className="ml-2 h-4 w-4" />
-                    </button>
+                    {data.resources?.downloadLabel && (
+                      <button onClick={() => downloadFile(resource.link, downloadFilename)} className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
+                        {data.resources.downloadLabel}
+                        <Download className="ml-2 h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
             </div>
+            {editMode && <button onClick={() => openEditModal('resources')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
 
         {/* CTA Section */}
         {data.showCta && data.cta?.show && (
-          <div className="bg-green-800 text-white rounded-lg p-8 text-center">
+          <div className="bg-green-800 text-white rounded-lg p-8 text-center relative">
             <h2 className="text-2xl font-bold mb-4">{data.cta?.title}</h2>
             <p className="text-green-100 mb-6 max-w-2xl mx-auto">
               {data.cta?.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {filteredCtaButtons.map((button, index) => (
-                <button 
-                  key={index} 
-                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                    button.variant === 'primary' 
-                      ? 'bg-white text-green-800 hover:bg-gray-100' 
-                      : 'bg-transparent border border-white text-white hover:bg-white/10'
-                  }`}
-                >
+                <a key={index} href={button.link || '#'} className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                  button.variant === 'primary' 
+                    ? 'bg-white text-green-800 hover:bg-gray-100' 
+                    : 'bg-transparent border border-white text-white hover:bg-white/10'
+                }`}>
                   {button.label}
-                </button>
+                </a>
               ))}
             </div>
+            {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
       </div>

@@ -3,8 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Upload, CheckCircle, FileText, X } from 'lucide-react';
 
 const FileUpload = ({ 
-  onUploadSuccess, 
-  currentUrl, 
+  onUploadSuccess, // new name
+  currentUrl, // new name
+  // legacy names supported for compatibility with other pages
+  initialValue, 
+  onUpload,
   accept = "image/*", 
   label = "Upload Image", 
   uploadPreset = "Upload_file", 
@@ -54,18 +57,21 @@ const FileUpload = ({
 
   const inputAccept = isDocument ? documentAccept : accept;
 
+  // Support both `currentUrl` (current prop) and `initialValue` (legacy)
+  const effectiveUrl = currentUrl || initialValue || null;
+
   useEffect(() => {
-    if (currentUrl) {
-      const type = getPreviewTypeFromUrl(currentUrl);
+    if (effectiveUrl) {
+      const type = getPreviewTypeFromUrl(effectiveUrl);
       setPreviewType(type);
-      setPreviewUrl(currentUrl);
-      setPreviewFileName(type === 'document' ? getFileNameFromUrl(currentUrl) : '');
+      setPreviewUrl(effectiveUrl);
+      setPreviewFileName(type === 'document' ? getFileNameFromUrl(effectiveUrl) : '');
     } else {
       setPreviewType('none');
       setPreviewUrl(null);
       setPreviewFileName('');
     }
-  }, [currentUrl, isDocument]);
+  }, [effectiveUrl, isDocument]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -147,8 +153,12 @@ const FileUpload = ({
           setPreviewUrl(newUrl);
         }
         // Call success callback with the URL
+        // Call both the new and legacy callbacks if provided
         if (onUploadSuccess) {
           onUploadSuccess(newUrl);
+        }
+        if (onUpload) {
+          try { onUpload(newUrl); } catch (e) { /* swallow */ }
         }
       } else {
         throw new Error(data.error?.message || 'Upload failed');
@@ -178,8 +188,12 @@ const FileUpload = ({
     setPreviewType('none');
     setPreviewUrl(null);
     setPreviewFileName('');
+    // Call both callbacks when removing
     if (onUploadSuccess) {
       onUploadSuccess(null);
+    }
+    if (onUpload) {
+      try { onUpload(null); } catch (e) { /* swallow */ }
     }
   };
 
