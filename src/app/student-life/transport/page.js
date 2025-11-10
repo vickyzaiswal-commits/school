@@ -393,11 +393,13 @@ const TransportPage = () => {
         { 
           label: "Apply for Transport", 
           variant: "primary",
+          link: "#",
           show: true 
         },
         { 
           label: "Contact Transport Office", 
           variant: "secondary",
+          link: "#",
           show: true 
         }
       ]
@@ -904,9 +906,36 @@ const TransportPage = () => {
               )}
               {editSection === 'cta' && (
                 <div className="space-y-4">
-                  <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
-                  <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" rows="3" />
-                  {ItemEditor('buttons', ['label', 'variant'])}
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.showSection || false} onChange={(e) => handleObjectChange('showSection', e.target.checked)} />
+                      <span>Show CTA</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.description || ''} onChange={(e) => handleObjectChange('description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Buttons</h3>
+                  {(editData.buttons || []).map((button, index) => (
+                    <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <h4 className="text-md font-semibold mb-2">Button {index + 1}</h4>
+                      <div className="space-y-2">
+                        <input value={button.label || ''} onChange={(e) => handleArrayChange('buttons', index, 'label', e.target.value)} placeholder="Label" className="w-full p-2 border rounded" />
+                        <input value={button.link || ''} onChange={(e) => handleArrayChange('buttons', index, 'link', e.target.value)} placeholder="Link" className="w-full p-2 border rounded" />
+                        
+                        <label className="flex items-center space-x-2">
+                          <input type="checkbox" checked={button.show !== false} onChange={(e) => handleArrayChange('buttons', index, 'show', e.target.checked)} />
+                          <span>Show Button</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -1321,22 +1350,19 @@ const TransportPage = () => {
         {/* CTA Section */}
         {data.cta?.show && (
           <div className="bg-green-800 text-white rounded-lg p-8 text-center relative">
-            <h2 className="text-2xl font-bold mb-4">{data.cta.title}</h2>
-            <p className="text-green-100 mb-6 max-w-3xl mx-auto">
-              {data.cta.description}
+            <h2 className="text-2xl font-bold mb-4">{data.cta?.title}</h2>
+            <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+              {data.cta?.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {filteredCtaButtons.map((button, index) => (
-                <button 
-                  key={index} 
-                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                    button.variant === 'primary' 
-                      ? 'bg-white text-green-800 hover:bg-gray-100' 
-                      : 'bg-transparent border border-white text-white hover:bg-white/10'
-                  }`}
-                >
+                <a key={index} href={button.link || '#'} className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                  button.variant === 'primary' 
+                    ? 'bg-white text-green-800 hover:bg-gray-100' 
+                    : 'bg-transparent border border-white text-white hover:bg-white/10'
+                }`}>
                   {button.label}
-                </button>
+                </a>
               ))}
             </div>
             {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}

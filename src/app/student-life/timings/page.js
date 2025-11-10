@@ -517,6 +517,20 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
     fetchData();
   }, []);
 
+  // Filter functions
+  const filteredBenefits = data.benefits?.items?.filter(item => item.show !== false) || [];
+  const filteredTabs = data.tabs?.items?.filter(tab => tab.show !== false) || [];
+  const filteredDailySchedules = Object.fromEntries(
+    Object.entries(data.dailySchedules?.items || {}).filter(([key, item]) => item.show !== false)
+  );
+  const filteredAcademicCalendar = data.academicCalendar?.items?.filter(item => item.show !== false) || [];
+  const filteredBellSchedule = data.bellSchedule?.items?.filter(item => item.show !== false) || [];
+  const filteredTransport = data.transport?.items?.filter(item => item.show !== false) || [];
+  const filteredTransportPolicies = data.transport?.policies?.filter(item => item.show !== false) || [];
+  const filteredTransportSafety = data.transport?.safety?.filter(item => item.show !== false) || [];
+  const filteredResources = data.resources?.items?.filter(item => item.show !== false) || [];
+  const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
+
   // Open edit modal
   const openEditModal = (section) => {
     setEditSection(section);
@@ -710,62 +724,53 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
   };
 
   const addTransportItem = () => {
-    setEditData(prev => {
-      const updated = { ...prev };
-      updated.transport.items.push({
-        route: "",
-        morningPickup: "",
-        afternoonDropoff: "",
-        stops: "",
-        show: true
-      });
-      return updated;
-    });
+    setEditData(prev => ({
+      ...prev,
+      transport: {
+        ...prev.transport,
+        items: [...(prev.transport?.items || []), {
+          route: "",
+          morningPickup: "",
+          afternoonDropoff: "",
+          stops: "",
+          show: true
+        }]
+      }
+    }));
   };
 
   const removeTransportItem = (index) => {
-    setEditData(prev => {
-      const updated = { ...prev };
-      updated.transport.items.splice(index, 1);
-      return updated;
-    });
+    setEditData(prev => ({
+      ...prev,
+      transport: {
+        ...prev.transport,
+        items: prev.transport.items.filter((_, i) => i !== index)
+      }
+    }));
   };
 
-  const addPolicySafety = (type) => {
-    setEditData(prev => {
-      const updated = { ...prev };
-      updated.transport[type].push({ text: "", show: true });
-      return updated;
-    });
+  const addPolicySafetyItem = (type) => {
+    setEditData(prev => ({
+      ...prev,
+      transport: {
+        ...prev.transport,
+        [type]: [...(prev.transport?.[type] || []), { text: "", show: true }]
+      }
+    }));
   };
 
-  const removePolicySafety = (type, index) => {
-    setEditData(prev => {
-      const updated = { ...prev };
-      updated.transport[type].splice(index, 1);
-      return updated;
-    });
+  const removePolicySafetyItem = (type, index) => {
+    setEditData(prev => ({
+      ...prev,
+      transport: {
+        ...prev.transport,
+        [type]: prev.transport[type].filter((_, i) => i !== index)
+      }
+    }));
   };
-
-  // Filter functions
-  const filteredBenefits = data.benefits?.items?.filter(item => item.show !== false) || [];
-  const filteredTabs = data.tabs?.items?.filter(tab => tab.show !== false) || [];
-  const filteredDailySchedules = data.dailySchedules?.items ? 
-    Object.fromEntries(
-      Object.entries(data.dailySchedules.items).map(([key, item]) => [
-        key, item.show !== false ? item : null
-      ]).filter(([_, item]) => item !== null)
-    ) : {};
-  const filteredAcademicCalendar = data.academicCalendar?.items?.filter(month => month.show !== false) || [];
-  const filteredBellSchedule = data.bellSchedule?.items?.filter(item => item.show !== false) || [];
-  const filteredTransport = data.transport?.items?.filter(item => item.show !== false) || [];
-  const filteredTransportPolicies = data.transport?.policies?.filter(item => item.show !== false) || [];
-  const filteredTransportSafety = data.transport?.safety?.filter(item => item.show !== false) || [];
-  const filteredResources = data.resources?.items?.filter(item => item.show !== false) || [];
-  const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
 
   // Modal Header Component
@@ -799,178 +804,116 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
     </div>
   );
 
-  // Schedule Editor Component
-  const ScheduleEditor = ({ level, levelTitle }) => {
-    const schedule = editData.dailySchedules?.items?.[level]?.schedule || [];
-    return (
-      <div className="mb-6 border border-gray-200 rounded-lg">
-        <div className="bg-gray-50 px-4 py-3 font-semibold text-gray-800 rounded-t-lg">
-          {levelTitle} Schedule ({schedule.length} items)
-        </div>
-        <div className="p-4 space-y-4">
-          {schedule.map((item, index) => (
-            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold">Item {index + 1}</h4>
-                <button
-                  onClick={() => removeScheduleItem(level, index)}
-                  className="text-red-600 hover:text-red-800 p-1 rounded"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+  // Daily Schedule Editor
+  const DailyScheduleEditor = () => (
+    <div className="space-y-6">
+      {Object.entries(editData.dailySchedules?.items || {}).map(([level, item]) => (
+        <div key={level} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <h4 className="font-semibold mb-2">{item.title || level}</h4>
+          <div className="space-y-2">
+            <input value={item.title || ''} onChange={(e) => handleScheduleItemChange(level, 0, 'title', e.target.value)} placeholder="Section Title" className="w-full p-2 border rounded" />
+            {(item.schedule || []).map((scheduleItem, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <input value={scheduleItem.period || ''} onChange={(e) => handleScheduleItemChange(level, index, 'period', e.target.value)} placeholder="Period" className="flex-1 p-2 border rounded" />
+                <input value={scheduleItem.time || ''} onChange={(e) => handleScheduleItemChange(level, index, 'time', e.target.value)} placeholder="Time" className="flex-1 p-2 border rounded" />
+                <input value={scheduleItem.subject || ''} onChange={(e) => handleScheduleItemChange(level, index, 'subject', e.target.value)} placeholder="Subject" className="flex-1 p-2 border rounded" />
+                <input value={scheduleItem.description || ''} onChange={(e) => handleScheduleItemChange(level, index, 'description', e.target.value)} placeholder="Description" className="flex-1 p-2 border rounded" />
+                <button onClick={() => removeScheduleItem(level, index)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
               </div>
-              <div className="space-y-2">
-                <input value={item.period || ''} onChange={(e) => handleScheduleItemChange(level, index, 'period', e.target.value)} placeholder="Period" className="w-full p-2 border rounded mb-2" />
-                <input value={item.time || ''} onChange={(e) => handleScheduleItemChange(level, index, 'time', e.target.value)} placeholder="Time" className="w-full p-2 border rounded mb-2" />
-                <input value={item.subject || ''} onChange={(e) => handleScheduleItemChange(level, index, 'subject', e.target.value)} placeholder="Subject (optional)" className="w-full p-2 border rounded mb-2" />
-                <textarea value={item.description || ''} onChange={(e) => handleScheduleItemChange(level, index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded mb-2" rows="2" />
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handleScheduleItemChange(level, index, 'show', e.target.checked)} />
-                  <span>Show Item</span>
-                </label>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={() => addScheduleItem(level)}
-            className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New {levelTitle} Schedule Item
-          </button>
+            ))}
+            <button onClick={() => addScheduleItem(level)} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Schedule Item</button>
+          </div>
         </div>
-      </div>
-    );
-  };
+      ))}
+    </div>
+  );
 
-  // Month Events Editor
-  const MonthEventsEditor = ({ monthIndex, month }) => {
-    const events = month.events || [];
-    return (
-      <div className="mb-6 border border-gray-200 rounded-lg">
-        <div className="bg-gray-50 px-4 py-3 font-semibold text-gray-800 rounded-t-lg">
-          {month.month} Events ({events.length} items)
-        </div>
-        <div className="p-4 space-y-4">
-          {events.map((event, index) => (
-            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold">Event {index + 1}</h4>
-                <button
-                  onClick={() => removeMonthEvent(monthIndex, index)}
-                  className="text-red-600 hover:text-red-800 p-1 rounded"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="space-y-2">
-                <input value={event.date || ''} onChange={(e) => handleMonthEventChange(monthIndex, index, 'date', e.target.value)} placeholder="Date" className="w-full p-2 border rounded mb-2" />
-                <input value={event.description || ''} onChange={(e) => handleMonthEventChange(monthIndex, index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded mb-2" />
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" checked={event.highlight || false} onChange={(e) => handleMonthEventChange(monthIndex, index, 'highlight', e.target.checked)} />
+  // Academic Calendar Editor
+  const AcademicCalendarEditor = () => (
+    <div className="space-y-6">
+      {(editData.academicCalendar?.items || []).map((month, monthIndex) => (
+        <div key={monthIndex} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <h4 className="font-semibold mb-2">{month.month}</h4>
+          <input value={month.month} onChange={(e) => handleArrayChange('items', monthIndex, 'month', e.target.value)} placeholder="Month" className="w-full p-2 border rounded mb-2" />
+          <div className="space-y-2">
+            {(month.events || []).map((event, eventIndex) => (
+              <div key={eventIndex} className="flex gap-2 items-center">
+                <input value={event.date} onChange={(e) => handleMonthEventChange(monthIndex, eventIndex, 'date', e.target.value)} placeholder="Date" className="flex-1 p-2 border rounded" />
+                <input value={event.description} onChange={(e) => handleMonthEventChange(monthIndex, eventIndex, 'description', e.target.value)} placeholder="Description" className="flex-2 p-2 border rounded" />
+                <label className="flex items-center">
+                  <input type="checkbox" checked={event.highlight || false} onChange={(e) => handleMonthEventChange(monthIndex, eventIndex, 'highlight', e.target.checked)} className="mr-1" />
                   <span>Highlight</span>
                 </label>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" checked={event.show !== false} onChange={(e) => handleMonthEventChange(monthIndex, index, 'show', e.target.checked)} />
-                  <span>Show Event</span>
-                </label>
+                <button onClick={() => removeMonthEvent(monthIndex, eventIndex)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
               </div>
-            </div>
-          ))}
-          <button
-            onClick={() => addMonthEvent(monthIndex)}
-            className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Event
-          </button>
+            ))}
+            <button onClick={() => addMonthEvent(monthIndex)} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Event</button>
+          </div>
         </div>
-      </div>
-    );
-  };
+      ))}
+    </div>
+  );
+
+  // Bell Schedule Editor
+  const BellScheduleEditor = () => (
+    <div className="space-y-4">
+      {(editData.bellSchedule?.items || []).map((item, index) => (
+        <div key={index} className="flex gap-2 items-center">
+          <input value={item.period} onChange={(e) => handleArrayChange('items', index, 'period', e.target.value)} placeholder="Period" className="flex-1 p-2 border rounded" />
+          <input value={item.time} onChange={(e) => handleArrayChange('items', index, 'time', e.target.value)} placeholder="Time" className="flex-1 p-2 border rounded" />
+          <input value={item.description} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} placeholder="Description" className="flex-2 p-2 border rounded" />
+          <button onClick={() => {/* remove logic */}} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
+        </div>
+      ))}
+    </div>
+  );
 
   // Transport Editor
-  const TransportEditor = () => {
-    return (
-      <div className="space-y-6">
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2">Routes</h3>
-          {editData.transport?.items?.map((item, index) => (
-            <div key={index} className="mb-4 p-4 border rounded bg-gray-50 relative">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold">Route {index + 1}</h4>
-                <button onClick={() => removeTransportItem(index)} className="text-red-600 hover:text-red-800 p-1 rounded">
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <input value={item.route || ''} onChange={(e) => handleTransportItemChange(index, 'route', e.target.value)} placeholder="Route" className="p-2 border rounded" />
-                <input value={item.morningPickup || ''} onChange={(e) => handleTransportItemChange(index, 'morningPickup', e.target.value)} placeholder="Morning Pickup" className="p-2 border rounded" />
-                <input value={item.afternoonDropoff || ''} onChange={(e) => handleTransportItemChange(index, 'afternoonDropoff', e.target.value)} placeholder="Afternoon Dropoff" className="p-2 border rounded" />
-                <textarea value={item.stops || ''} onChange={(e) => handleTransportItemChange(index, 'stops', e.target.value)} placeholder="Stops" className="p-2 border rounded col-span-2" rows="2" />
-              </div>
-              <label className="flex items-center space-x-2 mt-2">
-                <input type="checkbox" checked={item.show !== false} onChange={(e) => handleTransportItemChange(index, 'show', e.target.checked)} />
-                <span>Show Route</span>
-              </label>
-            </div>
-          ))}
-          <button onClick={addTransportItem} className="flex items-center text-green-600 hover:text-green-800 font-medium p-2 rounded border border-green-200">
-            <Plus className="h-4 w-4 mr-2" /> Add New Route
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold mb-2">Policies</h3>
-            {editData.transport?.policies?.map((item, index) => (
-              <div key={index} className="mb-2 p-2 border rounded bg-gray-50 relative">
-                <textarea value={item.text || ''} onChange={(e) => handlePolicySafetyChange('policies', index, 'text', e.target.value)} placeholder="Policy text" className="w-full p-1 border-0 bg-transparent" rows="2" />
-                <button onClick={() => removePolicySafety('policies', index)} className="absolute top-1 right-1 text-red-600">
-                  <Trash2 className="h-3 w-3" />
-                </button>
-                <label className="flex items-center space-x-2 mt-1">
-                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handlePolicySafetyChange('policies', index, 'show', e.target.checked)} />
-                  <span className="text-xs">Show</span>
-                </label>
-              </div>
-            ))}
-            <button onClick={() => addPolicySafety('policies')} className="flex items-center text-green-600 text-sm">
-              <Plus className="h-4 w-4 mr-1" /> Add Policy
-            </button>
+  const TransportEditor = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold">Routes</h3>
+      {(editData.transport?.items || []).map((item, index) => (
+        <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <div className="flex justify-between items-start mb-2">
+            <h4 className="font-semibold">Route {index + 1}</h4>
+            <button onClick={() => removeTransportItem(index)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
           </div>
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold mb-2">Safety</h3>
-            {editData.transport?.safety?.map((item, index) => (
-              <div key={index} className="mb-2 p-2 border rounded bg-gray-50 relative">
-                <textarea value={item.text || ''} onChange={(e) => handlePolicySafetyChange('safety', index, 'text', e.target.value)} placeholder="Safety info" className="w-full p-1 border-0 bg-transparent" rows="2" />
-                <button onClick={() => removePolicySafety('safety', index)} className="absolute top-1 right-1 text-red-600">
-                  <Trash2 className="h-3 w-3" />
-                </button>
-                <label className="flex items-center space-x-2 mt-1">
-                  <input type="checkbox" checked={item.show !== false} onChange={(e) => handlePolicySafetyChange('safety', index, 'show', e.target.checked)} />
-                  <span className="text-xs">Show</span>
-                </label>
-              </div>
-            ))}
-            <button onClick={() => addPolicySafety('safety')} className="flex items-center text-green-600 text-sm">
-              <Plus className="h-4 w-4 mr-1" /> Add Safety Info
-            </button>
+          <div className="space-y-2">
+            <input value={item.route} onChange={(e) => handleTransportItemChange(index, 'route', e.target.value)} placeholder="Route" className="w-full p-2 border rounded" />
+            <input value={item.morningPickup} onChange={(e) => handleTransportItemChange(index, 'morningPickup', e.target.value)} placeholder="Morning Pickup" className="w-full p-2 border rounded" />
+            <input value={item.afternoonDropoff} onChange={(e) => handleTransportItemChange(index, 'afternoonDropoff', e.target.value)} placeholder="Afternoon Dropoff" className="w-full p-2 border rounded" />
+            <textarea value={item.stops} onChange={(e) => handleTransportItemChange(index, 'stops', e.target.value)} placeholder="Stops" className="w-full p-2 border rounded" rows="2" />
           </div>
         </div>
-        <div className="space-y-2">
-          <input value={editData.transport?.policiesTitle || ''} onChange={(e) => handleObjectChange('policiesTitle', e.target.value)} placeholder="Policies Title" className="w-full p-2 border rounded" />
-          <input value={editData.transport?.safetyTitle || ''} onChange={(e) => handleObjectChange('safetyTitle', e.target.value)} placeholder="Safety Title" className="w-full p-2 border rounded" />
+      ))}
+      <button onClick={addTransportItem} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Route</button>
+
+      <h3 className="text-lg font-semibold">Policies</h3>
+      {(editData.transport?.policies || []).map((policy, index) => (
+        <div key={index} className="flex gap-2 items-center">
+          <textarea value={policy.text} onChange={(e) => handlePolicySafetyChange('policies', index, 'text', e.target.value)} placeholder="Policy Text" className="flex-1 p-2 border rounded" rows="2" />
+          <button onClick={() => removePolicySafetyItem('policies', index)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
         </div>
-      </div>
-    );
-  };
+      ))}
+      <button onClick={() => addPolicySafetyItem('policies')} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Policy</button>
+
+      <h3 className="text-lg font-semibold">Safety</h3>
+      {(editData.transport?.safety || []).map((safety, index) => (
+        <div key={index} className="flex gap-2 items-center">
+          <textarea value={safety.text} onChange={(e) => handlePolicySafetyChange('safety', index, 'text', e.target.value)} placeholder="Safety Text" className="flex-1 p-2 border rounded" rows="2" />
+          <button onClick={() => removePolicySafetyItem('safety', index)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
+        </div>
+      ))}
+      <button onClick={() => addPolicySafetyItem('safety')} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Safety Item</button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Edit Modal */}
       {editFormOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <ModalHeader title={`Edit ${editSection}`} onClose={cancelEdit} />
             <div className="flex-1 overflow-y-auto p-6">
               {editSection === 'hero' && (
@@ -998,18 +941,30 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                       className="w-full" 
                     />
                   </div>
-                  <div className="mt-2">
-                    <label className="flex items-center space-x-2">
-                      <input type="checkbox" checked={editData.showImage !== false} onChange={(e) => handleObjectChange('showImage', e.target.checked)} />
-                      <span>Show Image</span>
-                    </label>
-                  </div>
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" checked={editData.showImage !== false} onChange={(e) => handleObjectChange('showImage', e.target.checked)} />
+                    <span>Show Background Image</span>
+                  </label>
                   <h3 className="text-lg font-semibold mt-4 mb-2">CTA Button</h3>
                   <div className="space-y-2">
-                    <input value={editData.ctaButton?.label || ''} onChange={(e) => handleNestedChange('ctaButton', 'label', e.target.value)} placeholder="Label" className="w-full p-2 border rounded" />
-                    <input value={editData.ctaButton?.link || ''} onChange={(e) => handleNestedChange('ctaButton', 'link', e.target.value)} placeholder="Link" className="w-full p-2 border rounded" />
+                    <input
+                      value={editData.ctaButton?.label || ''}
+                      onChange={(e) => handleNestedChange('ctaButton', 'label', e.target.value)}
+                      placeholder="Label"
+                      className="w-full p-2 border rounded"
+                    />
+                    <input
+                      value={editData.ctaButton?.link || ''}
+                      onChange={(e) => handleNestedChange('ctaButton', 'link', e.target.value)}
+                      placeholder="Link"
+                      className="w-full p-2 border rounded"
+                    />
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" checked={editData.ctaButton?.show !== false} onChange={(e) => handleNestedChange('ctaButton', 'show', e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={editData.ctaButton?.show !== false}
+                        onChange={(e) => handleNestedChange('ctaButton', 'show', e.target.checked)}
+                      />
                       <span>Show Button</span>
                     </label>
                   </div>
@@ -1053,7 +1008,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                 </div>
               )}
               {editSection === 'tabs' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
                     <label className="flex items-center space-x-2">
@@ -1062,23 +1017,23 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                     </label>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">Tabs Title</label>
-                    <input value={editData.tabs?.title || ''} onChange={(e) => handleNestedChange('tabs', 'title', e.target.value)} className="w-full p-2 border rounded" />
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.tabs?.title || ''} onChange={(e) => handleObjectChange('tabs.title', e.target.value)} className="w-full p-2 border rounded" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">Tabs Description</label>
-                    <textarea value={editData.tabs?.description || ''} onChange={(e) => handleNestedChange('tabs', 'description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.tabs?.description || ''} onChange={(e) => handleObjectChange('tabs.description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Tabs Items</h3>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Tab Items</h3>
                   {(editData.tabs?.items || []).map((item, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <h4 className="text-md font-semibold mb-2">Tab {index + 1}</h4>
                       <div className="space-y-2">
-                        <input value={item.name || ''} onChange={(e) => handleCategoriesItemChange(index, 'name', e.target.value)} placeholder="Name" className="w-full p-2 border rounded" />
                         <select value={item.icon || ''} onChange={(e) => handleCategoriesItemChange(index, 'icon', e.target.value)} className="w-full p-2 border rounded">
                           <option value="">Select Icon</option>
                           {Object.keys(iconMap).map(key => <option key={key} value={key}>{key}</option>)}
                         </select>
+                        <input value={item.name || ''} onChange={(e) => handleCategoriesItemChange(index, 'name', e.target.value)} placeholder="Name" className="w-full p-2 border rounded" />
                         <input value={item.description || ''} onChange={(e) => handleCategoriesItemChange(index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" />
                         <label className="flex items-center space-x-2">
                           <input type="checkbox" checked={item.show !== false} onChange={(e) => handleCategoriesItemChange(index, 'show', e.target.checked)} />
@@ -1087,47 +1042,53 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                       </div>
                     </div>
                   ))}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Daily Schedules Labels</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {Object.keys(editData.dailySchedules?.labels || {}).map((key) => (
-                      <div key={key} className="space-y-2">
-                        <label className="block text-sm font-medium">{key}</label>
-                        <input value={editData.dailySchedules?.labels?.[key] || ''} onChange={(e) => handleLabelsChange('dailySchedules', key, 'labels', e.target.value)} className="w-full p-2 border rounded" />
-                      </div>
-                    ))}
-                  </div>
                   <h3 className="text-lg font-semibold mt-4 mb-2">Daily Schedules</h3>
-                  <ScheduleEditor level="primary" levelTitle="Primary" />
-                  <ScheduleEditor level="middle" levelTitle="Middle" />
-                  <ScheduleEditor level="high" levelTitle="High" />
+                  <label className="flex items-center space-x-2 mb-2">
+                    <input type="checkbox" checked={editData.showDailySchedules || false} onChange={(e) => handleObjectChange('showDailySchedules', e.target.checked)} />
+                    <span>Show Daily Schedules</span>
+                  </label>
+                  <DailyScheduleEditor />
                   <h3 className="text-lg font-semibold mt-4 mb-2">Academic Calendar</h3>
-                  {(editData.academicCalendar?.items || []).map((month, index) => (
-                    <div key={index} className="mb-6">
-                      <h4 className="font-semibold mb-2">Month {index + 1}: {month.month}</h4>
-                      <MonthEventsEditor monthIndex={index} month={month} />
-                    </div>
-                  ))}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Bell Schedule Labels</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {Object.keys(editData.bellSchedule?.labels || {}).map((key) => (
-                      <div key={key} className="space-y-2">
-                        <label className="block text-sm font-medium">{key}</label>
-                        <input value={editData.bellSchedule?.labels?.[key] || ''} onChange={(e) => handleLabelsChange('bellSchedule', key, 'labels', e.target.value)} className="w-full p-2 border rounded" />
-                      </div>
-                    ))}
+                  <label className="flex items-center space-x-2 mb-2">
+                    <input type="checkbox" checked={editData.showAcademicCalendar || false} onChange={(e) => handleObjectChange('showAcademicCalendar', e.target.checked)} />
+                    <span>Show Academic Calendar</span>
+                  </label>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.academicCalendar?.title || ''} onChange={(e) => handleObjectChange('academicCalendar.title', e.target.value)} className="w-full p-2 border rounded" />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Bell Schedule Items</h3>
-                  {(editData.bellSchedule?.items || []).map((item, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded bg-gray-50">
-                      <div className="flex justify-between mb-2">
-                        <h4>Item {index + 1}</h4>
-                        <button className="text-red-600">Remove</button>
-                      </div>
-                      <input value={item.period || ''} onChange={(e) => handleArrayChange('items', index, 'period', e.target.value)} placeholder="Period" className="w-full p-2 border rounded mb-2" />
-                      <input value={item.time || ''} onChange={(e) => handleArrayChange('items', index, 'time', e.target.value)} placeholder="Time" className="w-full p-2 border rounded mb-2" />
-                      <textarea value={item.description || ''} onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)} placeholder="Description" className="w-full p-2 border rounded" rows="2" />
-                    </div>
-                  ))}
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.academicCalendar?.description || ''} onChange={(e) => handleObjectChange('academicCalendar.description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <AcademicCalendarEditor />
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Bell Schedule</h3>
+                  <label className="flex items-center space-x-2 mb-2">
+                    <input type="checkbox" checked={editData.showBellSchedule || false} onChange={(e) => handleObjectChange('showBellSchedule', e.target.checked)} />
+                    <span>Show Bell Schedule</span>
+                  </label>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.bellSchedule?.title || ''} onChange={(e) => handleObjectChange('bellSchedule.title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.bellSchedule?.description || ''} onChange={(e) => handleObjectChange('bellSchedule.description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
+                  <BellScheduleEditor />
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Transport</h3>
+                  <label className="flex items-center space-x-2 mb-2">
+                    <input type="checkbox" checked={editData.showTransport || false} onChange={(e) => handleObjectChange('showTransport', e.target.checked)} />
+                    <span>Show Transport</span>
+                  </label>
+                  <div>
+                    <label className="block text-sm font-medium">Title</label>
+                    <input value={editData.transport?.title || ''} onChange={(e) => handleObjectChange('transport.title', e.target.value)} className="w-full p-2 border rounded" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Description</label>
+                    <textarea value={editData.transport?.description || ''} onChange={(e) => handleObjectChange('transport.description', e.target.value)} className="w-full p-2 border rounded" rows="3" />
+                  </div>
                   <TransportEditor />
                 </div>
               )}
@@ -1207,6 +1168,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                       <div className="space-y-2">
                         <input value={button.label || ''} onChange={(e) => handleArrayChange('buttons', index, 'label', e.target.value)} placeholder="Label" className="w-full p-2 border rounded" />
                         <input value={button.link || ''} onChange={(e) => handleArrayChange('buttons', index, 'link', e.target.value)} placeholder="Link" className="w-full p-2 border rounded" />
+                        <input value={button.variant || ''} onChange={(e) => handleArrayChange('buttons', index, 'variant', e.target.value)} placeholder="Variant" className="w-full p-2 border rounded" />
                         <label className="flex items-center space-x-2">
                           <input type="checkbox" checked={button.show !== false} onChange={(e) => handleArrayChange('buttons', index, 'show', e.target.checked)} />
                           <span>Show Button</span>
@@ -1251,7 +1213,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
         </section>
       )}
 
-      {/* Main Content */}
+      {/* Main Content Container */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Benefits Section */}
         {data.showBenefits && data.benefits?.show && filteredBenefits.length > 0 && (

@@ -479,7 +479,7 @@ const SchoolCalendarPage = ({ calendarData }) => {
   const sortedMonthEvents = [...currentMonthEvents].sort((a, b) => a.date - b.date);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
 
   // Modal Header Component
@@ -746,9 +746,6 @@ const SchoolCalendarPage = ({ calendarData }) => {
                   ))}
                 </div>
               )}
-              {editSection === 'calendar' && (
-                <EventEditor />
-              )}
               {editSection === 'academicOverview' && (
                 <div className="space-y-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
@@ -773,8 +770,8 @@ const SchoolCalendarPage = ({ calendarData }) => {
                       <div className="space-y-2">
                         <input value={term.period || ''} onChange={(e) => handleArrayChange('terms', index, 'period', e.target.value)} placeholder="Period" className="w-full p-2 border rounded" />
                         <input value={term.date || ''} onChange={(e) => handleArrayChange('terms', index, 'date', e.target.value)} placeholder="Date" className="w-full p-2 border rounded" />
+                        <input value={term.events || ''} onChange={(e) => handleArrayChange('terms', index, 'events', e.target.value)} placeholder="Events" className="w-full p-2 border rounded" />
                         <input value={term.color || ''} onChange={(e) => handleArrayChange('terms', index, 'color', e.target.value)} placeholder="Color (e.g., bg-blue-500)" className="w-full p-2 border rounded" />
-                        <input value={term.events || ''} onChange={(e) => handleArrayChange('terms', index, 'events', e.target.value)} placeholder="Number of Events" className="w-full p-2 border rounded" />
                         <label className="flex items-center space-x-2">
                           <input type="checkbox" checked={term.show !== false} onChange={(e) => handleArrayChange('terms', index, 'show', e.target.checked)} />
                           <span>Show Term</span>
@@ -889,6 +886,7 @@ const SchoolCalendarPage = ({ calendarData }) => {
                   ))}
                 </div>
               )}
+              {editSection === 'calendar' && <EventEditor />}
             </div>
             <ModalFooter onCancel={cancelEdit} onSave={saveSection} />
           </div>
@@ -922,350 +920,353 @@ const SchoolCalendarPage = ({ calendarData }) => {
         </section>
       )}
 
-      {/* Benefits Section */}
-      {data.benefits?.show && filteredBenefits.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.benefits.title}</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              {data.benefits.description}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredBenefits.map((benefit, index) => {
-              const IconComponent = iconMap[benefit.icon] || Calendar;
-              return (
-                <div key={index} className="text-center p-6 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors">
-                  <div className="bg-white rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-md">
-                    <IconComponent className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{benefit.title}</h3>
-                  <p className="text-gray-600 text-sm">{benefit.description}</p>
-                </div>
-              );
-            })}
-          </div>
-          {editMode && <button onClick={() => openEditModal('benefits')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
-        </div>
-      )}
-
-      {/* Calendar Navigation */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <div className="text-center md:text-left mb-4 md:mb-0">
-            <h1 className="text-3xl font-bold text-gray-800">{monthNames[currentMonth]} {currentYear}</h1>
-            <p className="text-gray-600">Click on dates to view events</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigateMonth('prev')} className="p-2 text-gray-600 hover:text-green-600 transition-colors">
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button onClick={goToToday} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-              Today
-            </button>
-            <button onClick={() => navigateMonth('next')} className="p-2 text-gray-600 hover:text-green-600 transition-colors">
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {filteredEventCategories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeCategory === category.id
-                  ? `${category.color} text-white`
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1 text-center">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-2 font-semibold text-gray-600 bg-gray-50 rounded-t-lg">
-              {day}
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Benefits Section */}
+        {data.benefits?.show && filteredBenefits.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.benefits.title}</h2>
+              <p className="text-gray-600 max-w-3xl mx-auto">
+                {data.benefits.description}
+              </p>
             </div>
-          ))}
-          {calendarDays.map((dayData, index) => (
-            <div key={index} className={`p-2 h-24 relative border rounded-lg transition-colors ${
-              dayData.day ? 'cursor-pointer hover:bg-gray-50' : 'bg-gray-100'
-            }`}>
-              {dayData.day && (
-                <>
-                  <div className="text-sm font-medium text-gray-800 mb-1">{dayData.day}</div>
-                  <div className="space-y-1">
-                    {dayData.events.slice(0, 2).map(event => {
-                      const IconComponent = event.icon;
-                      const category = filteredEventCategories.find(cat => cat.id === event.category);
-                      return (
-                        <div
-                          key={event.id}
-                          className={`text-xs p-1 rounded ${category?.color || 'bg-gray-200'} text-white truncate`}
-                          title={event.title}
-                        >
-                          <IconComponent className="inline h-3 w-3 mr-1" />
-                          {event.title}
-                        </div>
-                      );
-                    })}
-                    {dayData.events.length > 2 && (
-                      <div className="text-xs text-gray-500 text-center">
-                        +{dayData.events.length - 2} more
-                      </div>
-                    )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredBenefits.map((benefit, index) => {
+                const IconComponent = iconMap[benefit.icon] || Calendar;
+                return (
+                  <div key={index} className="text-center p-6 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors">
+                    <div className="bg-white rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-md">
+                      <IconComponent className="h-8 w-8 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{benefit.title}</h3>
+                    <p className="text-gray-600 text-sm">{benefit.description}</p>
                   </div>
-                </>
-              )}
+                );
+              })}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Upcoming Events */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Upcoming Events - {monthNames[currentMonth]} {currentYear}</h2>
-          <p className="text-gray-600">
-            {sortedMonthEvents.length} events scheduled this month • Filter by category above
-          </p>
-        </div>
-
-        {sortedMonthEvents.length > 0 ? (
-          <div className="space-y-6">
-            {sortedMonthEvents.map(event => {
-              const IconComponent = event.icon;
-              const category = filteredEventCategories.find(cat => cat.id === event.category);
-              const isMultiDay = event.endDate;
-              const isToday = event.date.toDateString() === new Date().toDateString();
-
-              return (
-                <div key={event.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-2 rounded-full ${category?.color} text-white`}>
-                          <IconComponent className="h-5 w-5" />
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${category?.color} text-white`}>
-                          {category?.name}
-                        </span>
-                        {isToday && (
-                          <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
-                            Today
-                          </span>
-                        )}
-                        {event.priority === 'high' && (
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                            Important
-                          </span>
-                        )}
-                      </div>
-
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">{event.title}</h3>
-                      <p className="text-gray-600 mb-4">{event.description}</p>
-
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-2 text-green-600" />
-                          {event.date.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                          {isMultiDay && (
-                            <>
-                              <span className="mx-2">→</span>
-                              {event.endDate.toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </>
-                          )}
-                        </div>
-
-                        {event.time && (
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-blue-600" />
-                            {event.time}
-                          </div>
-                        )}
-
-                        <div className="flex items-center">
-                          <MapPin className="h-4 w-4 mr-2 text-red-600" />
-                          {event.location}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Add to Calendar
-                      </button>
-                      <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No events scheduled for {monthNames[currentMonth]}</h3>
-            <p className="text-gray-600 mb-4">There are no events in the "{filteredEventCategories.find(cat => cat.id === activeCategory)?.name}" category for this month.</p>
-            <button
-              onClick={() => setActiveCategory('all')}
-              className="text-green-600 hover:text-green-700 font-medium"
-            >
-              View all events
-            </button>
+            {editMode && <button onClick={() => openEditModal('benefits')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
-        {editMode && <button onClick={() => openEditModal('calendar')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
-      </div>
 
-      {/* Academic Year Overview */}
-      {data.academicOverview?.show && (
+        {/* Calendar Navigation */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.academicOverview.title}</h2>
-            <p className="text-gray-600">
-              {data.academicOverview.subtitle}
-            </p>
-          </div>
-
-          <div className="relative mb-12">
-            <div className="absolute left-0 right-0 top-1/2 h-1 bg-gray-200 transform -translate-y-1/2"></div>
-
-            <div className="relative grid grid-cols-1 md:grid-cols-5 gap-4">
-              {filteredAcademicTerms.map((term, index) => (
-                <div key={index} className="relative text-center">
-                  <div className={`${term.color} w-6 h-6 rounded-full mx-auto mb-2`}></div>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <h3 className="font-semibold text-gray-800 mb-1">{term.period}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{term.date}</p>
-                    <p className="text-xs text-gray-500">{term.events} major events</p>
-                  </div>
-                </div>
-              ))}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h1 className="text-3xl font-bold text-gray-800">{monthNames[currentMonth]} {currentYear}</h1>
+              <p className="text-gray-600">Click on dates to view events</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigateMonth('prev')} className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button onClick={goToToday} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                Today
+              </button>
+              <button onClick={() => navigateMonth('next')} className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+                <ChevronRight className="h-6 w-6" />
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredAcademicStats.map((stat, index) => {
-              const IconComponent = iconMap[stat.icon];
-              return (
-                <div key={index} className="text-center p-6 bg-gray-50 rounded-lg">
-                  <div className={`bg-${stat.color}-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <IconComponent className={`h-8 w-8 text-${stat.color}-600`} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{stat.value}</h3>
-                  <p className="text-gray-600 font-medium">{stat.label}</p>
-                </div>
-              );
-            })}
-          </div>
-          {editMode && <button onClick={() => openEditModal('academicOverview')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
-        </div>
-      )}
-
-      {/* Resources */}
-      {data.resources?.show && filteredResources.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.resources.title}</h2>
-          <p className="text-gray-600 mb-6">{data.resources.description}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredResources.map((resource, index) => {
-              const IconComponent = iconMap[resource.icon] || FileText;
-              return (
-                <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
-                  <div className="flex items-start">
-                    <IconComponent className="h-6 w-6 text-green-600 mr-4 mt-1" />
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-800 mb-2">{resource.title}</h3>
-                      <p className="text-gray-600 text-sm mb-3">{resource.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-xs text-gray-500">
-                          <span className="bg-gray-100 px-2 py-1 rounded mr-2">{resource.format}</span>
-                          <span>{resource.size}</span>
-                        </div>
-                        <span className="text-xs text-gray-400">{resource.downloads} downloads</span>
-                      </div>
-                    </div>
-                  </div>
-                  <button className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
-                    {data.resources.downloadLabel}
-                    <Download className="ml-2 h-4 w-4" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          {editMode && <button onClick={() => openEditModal('resources')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
-        </div>
-      )}
-
-      {/* Subscription CTA */}
-      {data.subscription?.show && (
-        <div className="bg-green-800 text-white rounded-lg p-8 text-center mb-8">
-          <h2 className="text-2xl font-bold mb-4">{data.subscription.title}</h2>
-          <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-            {data.subscription.subtitle}
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-2xl mx-auto mb-4">
-            <input
-              type="email"
-              placeholder={data.subscription.placeholder}
-              className="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300"
-            />
-            <button className="bg-white text-green-800 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors">
-              {data.subscription.buttonText}
-            </button>
-          </div>
-          <p className="text-sm text-green-200 mb-4">
-            {data.subscription.note} • {data.subscription.subscribers}
-          </p>
-          <button className="text-green-200 hover:text-white font-medium text-sm flex items-center justify-center mx-auto">
-            <ExternalLink className="mr-2 h-4 w-4" />
-            {data.subscription.linkText}
-          </button>
-        </div>
-      )}
-
-      {/* CTA Section */}
-      {data.cta?.show && (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center relative">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.cta.title}</h2>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            {data.cta.description}
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            {filteredCtaButtons.map((button, index) => (
+          {/* Category Filter */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {filteredEventCategories.map(category => (
               <button
-                key={index}
-                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                  button.variant === 'primary'
-                    ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-transparent border border-green-600 text-green-600 hover:bg-green-50'
+                key={category.id}
+                onClick={() => setActiveCategory(category.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeCategory === category.id
+                    ? `${category.color} text-white`
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                {button.label}
+                {category.name}
               </button>
             ))}
           </div>
-          {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1 text-center">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="p-2 font-semibold text-gray-600 bg-gray-50 rounded-t-lg">
+                {day}
+              </div>
+            ))}
+            {calendarDays.map((dayData, index) => (
+              <div key={index} className={`p-2 h-24 relative border rounded-lg transition-colors ${
+                dayData.day ? 'cursor-pointer hover:bg-gray-50' : 'bg-gray-100'
+              }`}>
+                {dayData.day && (
+                  <>
+                    <div className="text-sm font-medium text-gray-800 mb-1">{dayData.day}</div>
+                    <div className="space-y-1">
+                      {dayData.events.slice(0, 2).map(event => {
+                        const IconComponent = event.icon;
+                        const category = filteredEventCategories.find(cat => cat.id === event.category);
+                        return (
+                          <div
+                            key={event.id}
+                            className={`text-xs p-1 rounded ${category?.color || 'bg-gray-200'} text-white truncate`}
+                            title={event.title}
+                          >
+                            <IconComponent className="inline h-3 w-3 mr-1" />
+                            {event.title}
+                          </div>
+                        );
+                      })}
+                      {dayData.events.length > 2 && (
+                        <div className="text-xs text-gray-500 text-center">
+                          +{dayData.events.length - 2} more
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      )}
+
+        {/* Upcoming Events */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Upcoming Events - {monthNames[currentMonth]} {currentYear}</h2>
+            <p className="text-gray-600">
+              {sortedMonthEvents.length} events scheduled this month • Filter by category above
+            </p>
+          </div>
+
+          {sortedMonthEvents.length > 0 ? (
+            <div className="space-y-6">
+              {sortedMonthEvents.map(event => {
+                const IconComponent = event.icon;
+                const category = filteredEventCategories.find(cat => cat.id === event.category);
+                const isMultiDay = event.endDate;
+                const isToday = event.date.toDateString() === new Date().toDateString();
+
+                return (
+                  <div key={event.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`p-2 rounded-full ${category?.color} text-white`}>
+                            <IconComponent className="h-5 w-5" />
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${category?.color} text-white`}>
+                            {category?.name}
+                          </span>
+                          {isToday && (
+                            <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                              Today
+                            </span>
+                          )}
+                          {event.priority === 'high' && (
+                            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                              Important
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{event.title}</h3>
+                        <p className="text-gray-600 mb-4">{event.description}</p>
+
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-green-600" />
+                            {event.date.toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                            {isMultiDay && (
+                              <>
+                                <span className="mx-2">→</span>
+                                {event.endDate.toLocaleDateString('en-US', {
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </>
+                            )}
+                          </div>
+
+                          {event.time && (
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-2 text-blue-600" />
+                              {event.time}
+                            </div>
+                          )}
+
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-2 text-red-600" />
+                            {event.location}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Add to Calendar
+                        </button>
+                        <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">No events scheduled for {monthNames[currentMonth]}</h3>
+              <p className="text-gray-600 mb-4">There are no events in the "{filteredEventCategories.find(cat => cat.id === activeCategory)?.name}" category for this month.</p>
+              <button
+                onClick={() => setActiveCategory('all')}
+                className="text-green-600 hover:text-green-700 font-medium"
+              >
+                View all events
+              </button>
+            </div>
+          )}
+          {editMode && <button onClick={() => openEditModal('calendar')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
+        </div>
+
+        {/* Academic Year Overview */}
+        {data.academicOverview?.show && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.academicOverview.title}</h2>
+              <p className="text-gray-600">
+                {data.academicOverview.subtitle}
+              </p>
+            </div>
+
+            <div className="relative mb-12">
+              <div className="absolute left-0 right-0 top-1/2 h-1 bg-gray-200 transform -translate-y-1/2"></div>
+
+              <div className="relative grid grid-cols-1 md:grid-cols-5 gap-4">
+                {filteredAcademicTerms.map((term, index) => (
+                  <div key={index} className="relative text-center">
+                    <div className={`${term.color} w-6 h-6 rounded-full mx-auto mb-2`}></div>
+                    <div className="bg-white p-4 rounded-lg border border-gray-200">
+                      <h3 className="font-semibold text-gray-800 mb-1">{term.period}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{term.date}</p>
+                      <p className="text-xs text-gray-500">{term.events} major events</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {filteredAcademicStats.map((stat, index) => {
+                const IconComponent = iconMap[stat.icon];
+                return (
+                  <div key={index} className="text-center p-6 bg-gray-50 rounded-lg">
+                    <div className={`bg-${stat.color}-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <IconComponent className={`h-8 w-8 text-${stat.color}-600`} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{stat.value}</h3>
+                    <p className="text-gray-600 font-medium">{stat.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+            {editMode && <button onClick={() => openEditModal('academicOverview')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
+          </div>
+        )}
+
+        {/* Resources */}
+        {data.resources?.show && filteredResources.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.resources.title}</h2>
+            <p className="text-gray-600 mb-6">{data.resources.description}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredResources.map((resource, index) => {
+                const IconComponent = iconMap[resource.icon] || FileText;
+                return (
+                  <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
+                    <div className="flex items-start">
+                      <IconComponent className="h-6 w-6 text-green-600 mr-4 mt-1" />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800 mb-2">{resource.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3">{resource.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center text-xs text-gray-500">
+                            <span className="bg-gray-100 px-2 py-1 rounded mr-2">{resource.format}</span>
+                            <span>{resource.size}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">{resource.downloads} downloads</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button className="mt-4 text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
+                      {data.resources.downloadLabel}
+                      <Download className="ml-2 h-4 w-4" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            {editMode && <button onClick={() => openEditModal('resources')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
+          </div>
+        )}
+
+        {/* Subscription CTA */}
+        {data.subscription?.show && (
+          <div className="bg-green-800 text-white rounded-lg p-8 text-center mb-8">
+            <h2 className="text-2xl font-bold mb-4">{data.subscription.title}</h2>
+            <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+              {data.subscription.subtitle}
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-2xl mx-auto mb-4">
+              <input
+                type="email"
+                placeholder={data.subscription.placeholder}
+                className="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300"
+              />
+              <button className="bg-white text-green-800 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors">
+                {data.subscription.buttonText}
+              </button>
+            </div>
+            <p className="text-sm text-green-200 mb-4">
+              {data.subscription.note} • {data.subscription.subscribers}
+            </p>
+            <button className="text-green-200 hover:text-white font-medium text-sm flex items-center justify-center mx-auto">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              {data.subscription.linkText}
+            </button>
+          </div>
+        )}
+
+        {/* CTA Section */}
+        {data.cta?.show && (
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center relative">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">{data.cta.title}</h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              {data.cta.description}
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              {filteredCtaButtons.map((button, index) => (
+                <button
+                  key={index}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                    button.variant === 'primary'
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-transparent border border-green-600 text-green-600 hover:bg-green-50'
+                  }`}
+                >
+                  {button.label}
+                </button>
+              ))}
+            </div>
+            {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
