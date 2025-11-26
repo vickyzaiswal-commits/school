@@ -486,7 +486,9 @@ const EventsPage = ({ eventsData }) => {
           location: "School Grounds",
           description: "An afternoon of games, food, and fun for the whole family featuring performances by student groups",
           status: "Tickets Available",
+          buttonText: "Get Tickets",
           link: "#",
+          showButton: true,
           show: true
         },
         {
@@ -497,7 +499,9 @@ const EventsPage = ({ eventsData }) => {
           location: "Gymnasium",
           description: "Representatives from over 50 colleges and universities",
           status: "Registration Open",
+          buttonText: "Register",
           link: "#",
+          showButton: true,
           show: true
         },
         {
@@ -508,7 +512,9 @@ const EventsPage = ({ eventsData }) => {
           location: "Auditorium",
           description: "Holiday performances by music and dance groups",
           status: "Tickets Available",
+          buttonText: "Get Tickets",
           link: "#",
+          showButton: true,
           show: true
         },
         {
@@ -519,7 +525,9 @@ const EventsPage = ({ eventsData }) => {
           location: "School Fields",
           description: "Annual athletic competitions and family picnic",
           status: "Upcoming",
+          buttonText: "Learn More",
           link: "#",
+          showButton: true,
           show: true
         }
       ]
@@ -831,9 +839,9 @@ const EventsPage = ({ eventsData }) => {
   // Handlers for adding/removing category items
   const addCategoryItem = (catId) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      if (!updated.events?.items) updated.events = { ...prev.events, items: { ...prev.events?.items } };
-      if (!updated.events.items[catId]) updated.events.items[catId] = [];
+      const prevEvents = prev.events || {};
+      const prevItems = prevEvents.items || {};
+      const catItems = prevItems[catId] ? [...prevItems[catId]] : [];
       const newItem = {
         name: "",
         icon: "",
@@ -847,18 +855,20 @@ const EventsPage = ({ eventsData }) => {
         learnMore: "View details",
         show: true
       };
-      updated.events.items[catId].push(newItem);
-      return updated;
+      const newCatItems = [...catItems, newItem];
+      const newItems = { ...prevItems, [catId]: newCatItems };
+      return { ...prev, events: { ...prevEvents, items: newItems } };
     });
   };
 
   const removeCategoryItem = (catId, index) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      if (updated.events?.items?.[catId]) {
-        updated.events.items[catId].splice(index, 1);
-      }
-      return updated;
+      const prevEvents = prev.events || {};
+      const prevItems = prevEvents.items || {};
+      const catItems = prevItems[catId] ? [...prevItems[catId]] : [];
+      const newCatItems = catItems.filter((_, i) => i !== index);
+      const newItems = { ...prevItems, [catId]: newCatItems };
+      return { ...prev, events: { ...prevEvents, items: newItems } };
     });
   };
 

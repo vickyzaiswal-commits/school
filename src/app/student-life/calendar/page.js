@@ -692,12 +692,16 @@ const SchoolCalendarPage = ({ calendarData }) => {
                       placeholder="Label"
                       className="w-full p-2 border rounded"
                     />
-                    <input
-                      value={editData.ctaButton?.link || ''}
-                      onChange={(e) => handleNestedChange('ctaButton', 'link', e.target.value)}
-                      placeholder="Link"
-                      className="w-full p-2 border rounded"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Upload File (replaces link)</label>
+                      <FileUpload
+                        currentUrl={editData.ctaButton?.link || ''}
+                        onUploadSuccess={(url) => handleNestedChange('ctaButton', 'link', url)}
+                        isDocument={true}
+                        label="Upload Full Calendar (PDF, DOCX, etc.)"
+                        className="w-full"
+                      />
+                    </div>
                     <label className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -909,10 +913,23 @@ const SchoolCalendarPage = ({ calendarData }) => {
                 {data.hero.subtitle}
               </p>
               {data.hero.ctaButton?.show !== false && (
-                <button className="bg-white text-green-800 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                  {data.hero.ctaButton.label}
-                  <Download className="ml-2 h-5 w-5" />
-                </button>
+                data.hero.ctaButton?.link ? (
+                  <a
+                    href={data.hero.ctaButton.link}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white text-green-800 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center"
+                  >
+                    {data.hero.ctaButton.label}
+                    <Download className="ml-2 h-5 w-5" />
+                  </a>
+                ) : (
+                  <button disabled className="bg-white text-green-800 px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center opacity-60 cursor-not-allowed">
+                    {data.hero.ctaButton.label}
+                    <Download className="ml-2 h-5 w-5" />
+                  </button>
+                )
               )}
             </div>
           </div>
@@ -1271,4 +1288,4 @@ const SchoolCalendarPage = ({ calendarData }) => {
   );
 };
 
-export default SchoolCalendarPage;
+export default SchoolCalendarPage;  

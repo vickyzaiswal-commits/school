@@ -38,6 +38,8 @@ const StudentCouncilPage = () => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping
@@ -77,6 +79,20 @@ const StudentCouncilPage = () => {
     cta: 'showCta',
     labels: 'showLabels'
   };
+
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showBenefits', label: 'Benefits' },
+    { key: 'showTabs', label: 'Tabs' },
+    { key: 'showOverview', label: 'Overview Tab' },
+    { key: 'showMembers', label: 'Members Tab' },
+    { key: 'showElections', label: 'Elections Tab' },
+    { key: 'showInitiatives', label: 'Initiatives Tab' },
+    { key: 'showAchievements', label: 'Achievements Tab' },
+    { key: 'showResources', label: 'Resources' },
+    { key: 'showCta', label: 'CTA Section' },
+    { key: 'showLabels', label: 'Labels' }
+  ];
 
   // Default data structure
   const defaultData = {
@@ -490,8 +506,8 @@ const StudentCouncilPage = () => {
       title: "Get Involved with Student Council",
       subtitle: "Your voice matters! Participate in council activities, share your ideas, or consider running for office",
       buttons: [
-        { text: "Attend a Meeting", style: "primary", link: "#", show: true },
-        { text: "Contact Your Representative", style: "secondary", link: "#", show: true }
+        { text: "Attend a Meeting",  link: "#", show: true },
+        { text: "Contact Your Representative", link: "#", show: true }
       ]
     },
     labels: {
@@ -613,24 +629,26 @@ const StudentCouncilPage = () => {
     const items = getNested(editData, arrayKey) || [];
     
     const removeItem = (index) => {
-      const newItems = items.filter((_, i) => i !== index);
+      // Use a deep clone update to avoid mutating nested references
       setEditData(prev => {
-        const updated = { ...prev };
+        const updated = JSON.parse(JSON.stringify(prev || {}));
         const parts = arrayKey.split('.');
         let cur = updated;
         for (let i = 0; i < parts.length - 1; i++) {
           if (!cur[parts[i]]) cur[parts[i]] = {};
           cur = cur[parts[i]];
         }
-        cur[parts[parts.length - 1]] = newItems;
+        const arr = cur[parts[parts.length - 1]] || [];
+        cur[parts[parts.length - 1]] = arr.filter((_, i) => i !== index);
         return updated;
       });
     };
 
     const addItem = () => {
       const newItem = isStringArray ? '' : (options.defaultItem || { show: true });
+      // Deep clone prev and create new nested array to ensure immutable update
       setEditData(prev => {
-        const updated = { ...prev };
+        const updated = JSON.parse(JSON.stringify(prev || {}));
         const parts = arrayKey.split('.');
         let cur = updated;
         for (let i = 0; i < parts.length - 1; i++) {
@@ -820,70 +838,132 @@ const StudentCouncilPage = () => {
     setEditFormOpen(false);
   };
 
+  // Section Visibility modal handlers
+  const openSectionVisibilityModal = () => {
+    const visibility = {};
+    sectionDisplay.forEach(s => {
+      visibility[s.key] = data[s.key];
+    });
+    setSectionVisibility(visibility);
+    setSectionVisibilityModal(true);
+  };
+
+  const saveSectionVisibility = async () => {
+    const newData = { ...data };
+    Object.keys(sectionVisibility).forEach(k => {
+      newData[k] = sectionVisibility[k];
+    });
+    setData(newData);
+    try {
+      await apiRequest('save_data/save_student_council_data', { payload: newData });
+    } catch (err) {
+      console.error('Failed to save section visibility', err);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   // Executive Members Editor
   const ExecutiveEditor = () => {
     const positions = ['president', 'vicePresident', 'secretary', 'treasurer'];
-    
+
+    const getExecItem = (position) => {
+      // Support both editData.members.executive.items and editData.executive.items
+      return (
+        editData?.members?.executive?.items?.[position] ||
+        editData?.executive?.items?.[position] ||
+        {}
+      );
+    };
+
+    const updateExecField = (position, field, value) => {
+      setEditData(prev => {
+        const updated = JSON.parse(JSON.stringify(prev || {}));
+        // prefer members.executive when present (tabs modal), else executive (members modal)
+        if (updated.members && updated.members.executive) {
+          if (!updated.members.executive.items) updated.members.executive.items = {};
+          if (!updated.members.executive.items[position]) updated.members.executive.items[position] = { show: true };
+          if (field === 'responsibilities' || field === 'achievements') {
+            updated.members.executive.items[position][field] = typeof value === 'string' ? value.split(',').map(s => s.trim()).filter(Boolean) : value;
+          } else {
+            updated.members.executive.items[position][field] = value;
+          }
+        } else {
+          if (!updated.executive) updated.executive = { items: {} };
+          if (!updated.executive.items) updated.executive.items = {};
+          if (!updated.executive.items[position]) updated.executive.items[position] = { show: true };
+          if (field === 'responsibilities' || field === 'achievements') {
+            updated.executive.items[position][field] = typeof value === 'string' ? value.split(',').map(s => s.trim()).filter(Boolean) : value;
+          } else {
+            updated.executive.items[position][field] = value;
+          }
+        }
+        return updated;
+      });
+    };
+
     return (
       <div className="space-y-6">
-        {positions.map(position => (
-          <div key={position} className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-semibold mb-4">{position.toUpperCase()}</h4>
-            <input
-              value={editData.members?.executive?.items?.[position]?.name || ''}
-              onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'name', e.target.value)}
-              placeholder="Name"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <input
-              value={editData.members?.executive?.items?.[position]?.position || ''}
-              onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'position', e.target.value)}
-              placeholder="Position"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <input
-              value={editData.members?.executive?.items?.[position]?.grade || ''}
-              onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'grade', e.target.value)}
-              placeholder="Grade"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <textarea
-              value={editData.members?.executive?.items?.[position]?.bio || ''}
-              onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'bio', e.target.value)}
-              placeholder="Bio"
-              className="w-full p-2 border rounded mb-2"
-              rows="3"
-            />
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Responsibilities (comma separated)</label>
-              <textarea
-                value={editData.members?.executive?.items?.[position]?.responsibilities?.join(', ') || ''}
-                onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'responsibilities', e.target.value)}
-                placeholder="Responsibilities"
-                className="w-full p-2 border rounded"
-                rows="3"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Achievements (comma separated)</label>
-              <textarea
-                value={editData.members?.executive?.items?.[position]?.achievements?.join(', ') || ''}
-                onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'achievements', e.target.value)}
-                placeholder="Achievements"
-                className="w-full p-2 border rounded"
-                rows="3"
-              />
-            </div>
-            <label className="flex items-center space-x-2">
+        {positions.map(position => {
+          const item = getExecItem(position);
+          return (
+            <div key={position} className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold mb-4">{position.toUpperCase()}</h4>
               <input
-                type="checkbox"
-                checked={editData.members?.executive?.items?.[position]?.show !== false}
-                onChange={(e) => handleNestedChange(`members.executive.items.${position}`, 'show', e.target.checked)}
+                value={item?.name || ''}
+                onChange={(e) => updateExecField(position, 'name', e.target.value)}
+                placeholder="Name"
+                className="w-full p-2 border rounded mb-2"
               />
-              <span>Show {position}</span>
-            </label>
-          </div>
-        ))}
+              <input
+                value={item?.position || ''}
+                onChange={(e) => updateExecField(position, 'position', e.target.value)}
+                placeholder="Position"
+                className="w-full p-2 border rounded mb-2"
+              />
+              <input
+                value={item?.grade || ''}
+                onChange={(e) => updateExecField(position, 'grade', e.target.value)}
+                placeholder="Grade"
+                className="w-full p-2 border rounded mb-2"
+              />
+              <textarea
+                value={item?.bio || ''}
+                onChange={(e) => updateExecField(position, 'bio', e.target.value)}
+                placeholder="Bio"
+                className="w-full p-2 border rounded mb-2"
+                rows="3"
+              />
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Responsibilities (comma separated)</label>
+                <textarea
+                  value={(item?.responsibilities || []).join(', ')}
+                  onChange={(e) => updateExecField(position, 'responsibilities', e.target.value)}
+                  placeholder="Responsibilities"
+                  className="w-full p-2 border rounded"
+                  rows="3"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Achievements (comma separated)</label>
+                <textarea
+                  value={(item?.achievements || []).join(', ')}
+                  onChange={(e) => updateExecField(position, 'achievements', e.target.value)}
+                  placeholder="Achievements"
+                  className="w-full p-2 border rounded"
+                  rows="3"
+                />
+              </div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={item?.show !== false}
+                  onChange={(e) => updateExecField(position, 'show', e.target.checked)}
+                />
+                <span>Show {position}</span>
+              </label>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -1262,7 +1342,7 @@ const StudentCouncilPage = () => {
                 <div className="space-y-4">
                   <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
                   <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} placeholder="Subtitle" className="w-full p-2 border rounded" rows="3" />
-                  {ItemEditor('buttons', ['text', 'style', 'link'], false, { allowFileUpload: false })}
+                  {ItemEditor('buttons', ['text', 'link'], false, { allowFileUpload: false })}
                 </div>
               )}
               
@@ -1275,6 +1355,24 @@ const StudentCouncilPage = () => {
               )}
             </div>
             <ModalFooter onCancel={cancelEdit} onSave={saveSection} />
+          </div>
+        </div>
+      )}
+
+      {/* Section Visibility Modal */}
+      {sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full overflow-hidden">
+            <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+            <div className="p-6 space-y-4">
+              {sectionDisplay.map(section => (
+                <label key={section.key} className="flex items-center justify-between">
+                  <span>{section.label}</span>
+                  <input type="checkbox" checked={sectionVisibility[section.key] || false} onChange={(e) => setSectionVisibility(prev => ({ ...prev, [section.key]: e.target.checked }))} />
+                </label>
+              ))}
+            </div>
+            <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
           </div>
         </div>
       )}
@@ -1677,16 +1775,17 @@ const StudentCouncilPage = () => {
                 const IconComponent = iconMap[resource.icon];
                 return (
                   <div key={index} className="border border-gray-200 rounded-lg p-5 hover:border-green-300 transition-colors">
-                    <div className="flex items-center justify-between mb-3">
-                      <IconComponent className="h-6 w-6 text-green-600" />
-                      <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                        {resource.format}
-                      </span>
+                    <div className="flex items-start">
+                      <IconComponent className="h-6 w-6 text-green-600 mr-4 mt-1" />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800 mb-2">{resource.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3">{resource.description}</p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <span className="bg-gray-100 px-2 py-1 rounded mr-2">{resource.format}</span>
+                          <span>{resource.size}</span>
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="font-semibold text-gray-800 mb-2">{resource.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{resource.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">{resource.size}</span>
                     {resource.fileUrl ? (
                       <a
                         href={resource.fileUrl}
@@ -1701,7 +1800,6 @@ const StudentCouncilPage = () => {
                     ) : (
                       <span className="text-xs text-gray-400 mt-4 block">No file available</span>
                     )}
-                    </div>
                   </div>
                 );
               })}
@@ -1738,8 +1836,8 @@ const StudentCouncilPage = () => {
       )}
 
       {/* Edit Labels Button (Global) */}
-      {editMode && data.showLabels && (
-        <button onClick={() => openEditModal('labels')} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+      {editMode && (
+        <button onClick={openSectionVisibilityModal} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
           <Edit className="h-5 w-5" />
         </button>
       )}

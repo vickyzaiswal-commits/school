@@ -633,6 +633,35 @@ const HouseSystemPage = () => {
       };
       setEditData(JSON.parse(JSON.stringify(tabsData)));
       setOriginalData(JSON.parse(JSON.stringify(tabsData)));
+    } else if (section === 'houses') {
+      // For houses section, keep the same nested shape used in tabs editor
+      const housesData = {
+        showSection: data.showHouses,
+        houses: data.houses
+      };
+      setEditData(JSON.parse(JSON.stringify(housesData)));
+      setOriginalData(JSON.parse(JSON.stringify(housesData)));
+    } else if (section === 'competitions') {
+      const competitionsData = {
+        showSection: data.showCompetitions,
+        competitions: data.competitions
+      };
+      setEditData(JSON.parse(JSON.stringify(competitionsData)));
+      setOriginalData(JSON.parse(JSON.stringify(competitionsData)));
+    } else if (section === 'points') {
+      const pointsData = {
+        showSection: data.showPoints,
+        points: data.points
+      };
+      setEditData(JSON.parse(JSON.stringify(pointsData)));
+      setOriginalData(JSON.parse(JSON.stringify(pointsData)));
+    } else if (section === 'overview') {
+      const overviewData = {
+        showSection: data.showOverview,
+        overview: data.overview
+      };
+      setEditData(JSON.parse(JSON.stringify(overviewData)));
+      setOriginalData(JSON.parse(JSON.stringify(overviewData)));
     } else {
       const layoutKey = layoutMap[section];
       let sectionData = {
@@ -674,7 +703,17 @@ const HouseSystemPage = () => {
       newData[layoutKey] = updatedData.showSection;
       const sectionContent = { ...updatedData };
       delete sectionContent.showSection;
-      newData[editSection] = { ...newData[editSection], ...sectionContent };
+      if (editSection === 'houses') {
+        newData.houses = { ...newData.houses, ...(sectionContent.houses || {}) };
+      } else if (editSection === 'competitions') {
+        newData.competitions = { ...newData.competitions, ...(sectionContent.competitions || {}) };
+      } else if (editSection === 'points') {
+        newData.points = { ...newData.points, ...(sectionContent.points || {}) };
+      } else if (editSection === 'overview') {
+        newData.overview = { ...newData.overview, ...(sectionContent.overview || {}) };
+      } else {
+        newData[editSection] = { ...newData[editSection], ...sectionContent };
+      }
     }
    
     setData(newData);
@@ -703,31 +742,35 @@ const HouseSystemPage = () => {
     const items = getNested(editData, arrayKey) || (isStringArray ? [] : []);
     
     const removeItem = (index) => {
+      // Use a deep clone update to avoid mutating nested references
       setEditData(prev => {
-        const newData = { ...prev };
+        const updated = JSON.parse(JSON.stringify(prev || {}));
         const parts = arrayKey.split('.');
-        let current = newData;
+        let cur = updated;
         for (let i = 0; i < parts.length - 1; i++) {
-          current = current[parts[i]] || {};
+          if (!cur[parts[i]]) cur[parts[i]] = {};
+          cur = cur[parts[i]];
         }
-        const arr = current[parts[parts.length - 1]] || [];
-        current[parts[parts.length - 1]] = arr.filter((_, i) => i !== index);
-        return newData;
+        const arr = cur[parts[parts.length - 1]] || [];
+        cur[parts[parts.length - 1]] = arr.filter((_, i) => i !== index);
+        return updated;
       });
     };
 
     const addItem = () => {
       const newItem = isStringArray ? '' : (options.defaultItem || { show: true });
+      // Deep clone prev and create new nested array to ensure immutable update
       setEditData(prev => {
-        const newData = { ...prev };
+        const updated = JSON.parse(JSON.stringify(prev || {}));
         const parts = arrayKey.split('.');
-        let current = newData;
+        let cur = updated;
         for (let i = 0; i < parts.length - 1; i++) {
-          current = current[parts[i]] || {};
+          if (!cur[parts[i]]) cur[parts[i]] = {};
+          cur = cur[parts[i]];
         }
-        const arr = current[parts[parts.length - 1]] || [];
-        current[parts[parts.length - 1]] = [...arr, newItem];
-        return newData;
+        const arr = cur[parts[parts.length - 1]] || [];
+        cur[parts[parts.length - 1]] = [...arr, newItem];
+        return updated;
       });
     };
 
@@ -1075,7 +1118,7 @@ const HouseSystemPage = () => {
                 <div className="space-y-4">
                   <input value={getNested(editData, 'title') || ''} onChange={(e) => updateByPath('title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
                   <textarea value={getNested(editData, 'subtitle') || ''} onChange={(e) => updateByPath('subtitle', e.target.value)} placeholder="Subtitle" className="w-full p-2 border rounded" rows="3" />
-                  {ItemEditor('buttons', ['text', 'style', 'link'], false, { allowFileUpload: false })}
+                  {ItemEditor('buttons', ['text', 'link'], false, { allowFileUpload: false })}
                 </div>
               )}
 
@@ -1090,6 +1133,84 @@ const HouseSystemPage = () => {
                   <input value={getNested(editData, 'strengths') || ''} onChange={(e) => updateByPath('strengths', e.target.value)} placeholder="Strengths Label" className="w-full p-2 border rounded" />
                   <input value={getNested(editData, 'houseDescription') || ''} onChange={(e) => updateByPath('houseDescription', e.target.value)} placeholder="House Description Label" className="w-full p-2 border rounded" />
                   <input value={getNested(editData, 'houseTraditions') || ''} onChange={(e) => updateByPath('houseTraditions', e.target.value)} placeholder="House Traditions Label" className="w-full p-2 border rounded" />
+                </div>
+              )}
+
+              {editSection === 'houses' && (
+                <div className="space-y-6">
+                  <input value={getNested(editData, 'houses.title') || ''} onChange={(e) => updateByPath('houses.title', e.target.value)} placeholder="Houses Title" className="w-full p-2 border rounded mb-4" />
+                  <textarea value={getNested(editData, 'houses.subtitle') || ''} onChange={(e) => updateByPath('houses.subtitle', e.target.value)} placeholder="Houses Subtitle" className="w-full p-2 border rounded mb-4" rows="3" />
+                  <div className="ml-6">
+                    <HouseEditor />
+                  </div>
+                </div>
+              )}
+
+              {editSection === 'overview' && (
+                <div className="space-y-6">
+                  <input value={getNested(editData, 'overview.title') || ''} onChange={(e) => updateByPath('overview.title', e.target.value)} placeholder="Overview Title" className="w-full p-2 border rounded mb-4" />
+                  <textarea value={getNested(editData, 'overview.subtitle') || ''} onChange={(e) => updateByPath('overview.subtitle', e.target.value)} placeholder="Overview Subtitle" className="w-full p-2 border rounded mb-4" rows="3" />
+                  <div className="ml-6 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">History Section Title</label>
+                      <input value={getNested(editData, 'overview.history.title') || ''} onChange={(e) => updateByPath('overview.history.title', e.target.value)} placeholder="History Title" className="w-full p-2 border rounded mb-2" />
+                      <label className="block text-sm font-medium mb-2">History Content (one paragraph per line)</label>
+                      <textarea value={getNested(editData, 'overview.history.content')?.join('\n') || ''} onChange={(e) => updateByPath('overview.history.content', e.target.value.split('\n').map(s => s.trim()).filter(Boolean))} className="w-full p-2 border rounded" rows="6" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">System Section Title</label>
+                      <input value={getNested(editData, 'overview.system.title') || ''} onChange={(e) => updateByPath('overview.system.title', e.target.value)} placeholder="System Title" className="w-full p-2 border rounded mb-2" />
+                      {ItemEditor('overview.system.steps', ['step', 'title', 'description'])}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Captains Section</label>
+                      <input value={getNested(editData, 'overview.captains.title') || ''} onChange={(e) => updateByPath('overview.captains.title', e.target.value)} placeholder="Captains Title" className="w-full p-2 border rounded mb-2" />
+                      <input value={getNested(editData, 'overview.captains.viewProfileButton') || ''} onChange={(e) => updateByPath('overview.captains.viewProfileButton', e.target.value)} placeholder="View Profile Button" className="w-full p-2 border rounded mb-2" />
+                      <CaptainEditor />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {editSection === 'competitions' && (
+                <div className="space-y-6">
+                  <input value={getNested(editData, 'competitions.title') || ''} onChange={(e) => updateByPath('competitions.title', e.target.value)} placeholder="Competitions Title" className="w-full p-2 border rounded mb-4" />
+                  <textarea value={getNested(editData, 'competitions.subtitle') || ''} onChange={(e) => updateByPath('competitions.subtitle', e.target.value)} placeholder="Competitions Subtitle" className="w-full p-2 border rounded mb-4" rows="3" />
+                  <div className="ml-6 space-y-4">
+                    {ItemEditor('competitions.categories', ['category', 'icon'], false, { defaultItem: { events: [] } })}
+                    {getNested(editData, 'competitions.categories')?.map((cat, catIndex) => (
+                      <div key={catIndex} className="ml-4 border p-4 rounded">
+                        <h5>Events for {cat.category}</h5>
+                        {ItemEditor(`competitions.categories.${catIndex}.events`, ['name', 'points', 'date'])}
+                      </div>
+                    ))}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Points System Title</label>
+                      <input value={getNested(editData, 'competitions.pointsSystem.title') || ''} onChange={(e) => updateByPath('competitions.pointsSystem.title', e.target.value)} placeholder="Points System Title" className="w-full p-2 border rounded mb-2" />
+                      <textarea value={getNested(editData, 'competitions.pointsSystem.rules')?.join('\n') || ''} onChange={(e) => updateByPath('competitions.pointsSystem.rules', e.target.value.split('\n').map(s => s.trim()).filter(Boolean))} placeholder="Rules (one per line)" className="w-full p-2 border rounded" rows="6" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {editSection === 'points' && (
+                <div className="space-y-6">
+                  <input value={getNested(editData, 'points.title') || ''} onChange={(e) => updateByPath('points.title', e.target.value)} placeholder="Points Title" className="w-full p-2 border rounded mb-4" />
+                  <textarea value={getNested(editData, 'points.subtitle') || ''} onChange={(e) => updateByPath('points.subtitle', e.target.value)} placeholder="Points Subtitle" className="w-full p-2 border rounded mb-4" rows="3" />
+                  <div className="ml-6 space-y-4">
+                    {ItemEditor('points.tableHeaders', ['label'])}
+                    {ItemEditor('points.breakdown', ['house', 'points', 'sports', 'cultural', 'academic', 'art', 'trend'])}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Recent Events Title</label>
+                      <input value={getNested(editData, 'points.recentEvents.title') || ''} onChange={(e) => updateByPath('points.recentEvents.title', e.target.value)} placeholder="Recent Events Title" className="w-full p-2 border rounded mb-2" />
+                      {ItemEditor('points.recentEvents.events', ['description', 'points'])}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Upcoming Events Title</label>
+                      <input value={getNested(editData, 'points.upcomingEvents.title') || ''} onChange={(e) => updateByPath('points.upcomingEvents.title', e.target.value)} placeholder="Upcoming Events Title" className="w-full p-2 border rounded mb-2" />
+                      {ItemEditor('points.upcomingEvents.events', ['description', 'points'])}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -1685,7 +1806,7 @@ const HouseSystemPage = () => {
                   key={index}
                   href={button.link || '#'}
                   className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                    button.style === 'primary'
+                    (button.style === 'primary' || (button.style === undefined && index === 0))
                       ? 'bg-white text-green-700 hover:bg-gray-100'
                       : 'bg-transparent border border-white text-white hover:bg-white/10'
                   }`}

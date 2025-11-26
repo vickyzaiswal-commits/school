@@ -679,46 +679,55 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
   };
 
   // Handlers for adding/removing
+  // small helper to deep-clone state to avoid accidental mutations
+  const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+
   const addScheduleItem = (level) => {
     setEditData(prev => {
-      const updated = { ...prev };
+      const updated = deepClone(prev || {});
+      if (!updated.dailySchedules) updated.dailySchedules = { items: {} };
+      if (!updated.dailySchedules.items) updated.dailySchedules.items = {};
       if (!updated.dailySchedules.items[level]) updated.dailySchedules.items[level] = { schedule: [] };
-      updated.dailySchedules.items[level].schedule.push({
-        period: "",
-        time: "",
-        description: "",
-        subject: "",
-        show: true
-      });
+      updated.dailySchedules.items[level].schedule = [
+        ... (updated.dailySchedules.items[level].schedule || []),
+        {
+          period: "",
+          time: "",
+          description: "",
+          subject: "",
+          show: true
+        }
+      ];
       return updated;
     });
   };
 
   const removeScheduleItem = (level, index) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      updated.dailySchedules.items[level].schedule.splice(index, 1);
+      const updated = deepClone(prev || {});
+      if (!updated.dailySchedules?.items?.[level]) return prev;
+      updated.dailySchedules.items[level].schedule = (updated.dailySchedules.items[level].schedule || []).filter((_, i) => i !== index);
       return updated;
     });
   };
 
   const addMonthEvent = (monthIndex) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      updated.academicCalendar.items[monthIndex].events.push({
-        date: "",
-        description: "",
-        highlight: false,
-        show: true
-      });
+      const updated = deepClone(prev || {});
+      if (!updated.academicCalendar) updated.academicCalendar = { items: [] };
+      if (!Array.isArray(updated.academicCalendar.items)) updated.academicCalendar.items = [];
+      const targetMonth = updated.academicCalendar.items[monthIndex] || { events: [] };
+      targetMonth.events = [...(targetMonth.events || []), { date: "", description: "", highlight: false, show: true }];
+      updated.academicCalendar.items[monthIndex] = targetMonth;
       return updated;
     });
   };
 
   const removeMonthEvent = (monthIndex, eventIndex) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      updated.academicCalendar.items[monthIndex].events.splice(eventIndex, 1);
+      const updated = deepClone(prev || {});
+      if (!updated.academicCalendar?.items?.[monthIndex]) return prev;
+      updated.academicCalendar.items[monthIndex].events = (updated.academicCalendar.items[monthIndex].events || []).filter((_, i) => i !== eventIndex);
       return updated;
     });
   };
@@ -953,12 +962,16 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
                       placeholder="Label"
                       className="w-full p-2 border rounded"
                     />
-                    <input
-                      value={editData.ctaButton?.link || ''}
-                      onChange={(e) => handleNestedChange('ctaButton', 'link', e.target.value)}
-                      placeholder="Link"
-                      className="w-full p-2 border rounded"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Upload File (replaces link)</label>
+                      <FileUpload
+                        currentUrl={editData.ctaButton?.link || ''}
+                        onUploadSuccess={(url) => handleNestedChange('ctaButton', 'link', url)}
+                        isDocument={true}
+                        label="Upload School Schedule (PDF, DOCX, etc.)"
+                        className="w-full"
+                      />
+                    </div>
                     <label className="flex items-center space-x-2">
                       <input
                         type="checkbox"

@@ -655,7 +655,6 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
             {/* Fixed Modal Header */}
             <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <Settings className="h-5 w-5 text-green-600" />
                 <h2 className="text-xl font-bold">Edit {editSection.replace(/([A-Z])/g, ' $1').trim()}</h2>
               </div>
               <button
@@ -724,15 +723,6 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
                             type="text"
                             value={slide.cta || ''}
                             onChange={(e) => handleArrayChange('items', index, 'cta', e.target.value)}
-                            className="w-full p-2 border rounded"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium">CTA Link</label>
-                          <input
-                            type="text"
-                            value={slide.ctaLink || ''}
-                            onChange={(e) => handleArrayChange('items', index, 'ctaLink', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1770,8 +1760,6 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
     href={action.isDownload ? (action.fileUrl || action.link) : action.link} 
     download={action.isDownload ? "prospectus.pdf" : undefined}
     className="flex items-center justify-between bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-colors text-sm"
-    target={action.isDownload ? "_blank" : undefined}
-    rel={action.isDownload ? "noopener noreferrer" : undefined}
   >
     <div className="flex items-center space-x-2">
       {renderIcon(action.icon)}

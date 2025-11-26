@@ -546,6 +546,19 @@ const TransportPage = () => {
     newData[editSection].show = editData.showSection;
     const sectionContent = { ...editData };
     delete sectionContent.showSection;
+    // If saving busRoutes, convert any temporary _areasText into areas array
+    if (editSection === 'busRoutes' && Array.isArray(sectionContent.routes)) {
+      sectionContent.routes = sectionContent.routes.map(r => {
+        const copy = { ...r };
+        if (typeof copy._areasText === 'string') {
+          copy.areas = copy._areasText.split('\n').map(a => a.trim()).filter(a => a);
+          delete copy._areasText;
+        } else if (!Array.isArray(copy.areas)) {
+          copy.areas = [];
+        }
+        return copy;
+      });
+    }
     newData[editSection] = { ...newData[editSection], ...sectionContent };
     setData(newData);
     try {
@@ -624,10 +637,10 @@ const TransportPage = () => {
     }, []);
 
     const updateRouteAreas = useCallback((index, value) => {
-      const areas = value.split('\n').map(a => a.trim()).filter(a => a);
+      // Keep raw textarea content while editing to avoid cursor jump
       setEditData(prev => {
         const routes = prev.routes || [];
-        const newRoutes = routes.map((r, i) => i === index ? { ...r, areas } : r);
+        const newRoutes = routes.map((r, i) => i === index ? { ...r, _areasText: value } : r);
         return { ...prev, routes: newRoutes };
       });
     }, []);
@@ -650,7 +663,8 @@ const TransportPage = () => {
     const addRoute = useCallback(() => {
       setEditData(prev => {
         const currentRoutes = prev.routes || [];
-        const newId = currentRoutes.length + 1;
+        // use a unique id to avoid key collisions and remounts
+        const newId = Date.now() + Math.floor(Math.random() * 1000);
         const newRoute = {
           id: newId,
           name: "",
@@ -673,44 +687,80 @@ const TransportPage = () => {
     }, []);
 
     const RouteItemEditor = useMemo(() =>
-      memo(({ route, index }) => (
-        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <div className="flex justify-between items-start mb-2">
-            <h4 className="font-semibold">Route {index + 1}</h4>
-            <button onClick={() => removeRoute(index)} className="text-red-600">
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </div>
-          {['name', 'driver', 'attendant', 'busNumber', 'capacity', 'morningPickup', 'afternoonDrop', 'stops', 'status'].map(field => (
-            <div key={field} className="mb-2">
-              <input 
-                value={route[field] || ''} 
-                onChange={(e) => updateRouteField(index, field, e.target.value)}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} 
-                className="w-full p-2 border rounded" 
+      memo(({ route, index }) => {
+        const [local, setLocal] = React.useState(() => ({
+          ...route,
+          _areasText: route._areasText !== undefined ? route._areasText : (route.areas || []).join('\n')
+        }));
+
+        React.useEffect(() => {
+          // when route identity changes (new route loaded), reset local state
+          setLocal({
+            ...route,
+            _areasText: route._areasText !== undefined ? route._areasText : (route.areas || []).join('\n')
+          });
+        }, [route.id]);
+
+        const handleChange = (field, value) => {
+          setLocal(prev => ({ ...prev, [field]: value }));
+        };
+
+        const handleBlurField = (field) => {
+          // push the field change to parent state on blur
+          updateRouteField(index, field, local[field]);
+        };
+
+        const handleAreasBlur = () => {
+          // sync the textarea content to parent as array
+          updateRouteAreas(index, local._areasText || '');
+        };
+
+        const handleShowChange = (checked) => {
+          setLocal(prev => ({ ...prev, show: checked }));
+          updateRouteShow(index, checked);
+        };
+
+        return (
+          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="font-semibold">Route {index + 1}</h4>
+              <button onClick={() => removeRoute(index)} className="text-red-600">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            {['name', 'driver', 'attendant', 'busNumber', 'capacity', 'morningPickup', 'afternoonDrop', 'stops', 'status'].map(field => (
+              <div key={field} className="mb-2">
+                <input
+                  value={local[field] || ''}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  onBlur={() => handleBlurField(field)}
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            ))}
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Areas (one per line)</label>
+              <textarea
+                value={local._areasText || ''}
+                onChange={(e) => handleChange('_areasText', e.target.value)}
+                onBlur={handleAreasBlur}
+                placeholder="Enter areas, one per line"
+                className="w-full p-2 border rounded"
+                rows="3"
               />
             </div>
-          ))}
-          <div className="mb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Areas (one per line)</label>
-            <textarea
-              value={(route.areas || []).join('\n')}
-              onChange={(e) => updateRouteAreas(index, e.target.value)}
-              placeholder="Enter areas, one per line"
-              className="w-full p-2 border rounded"
-              rows="3"
-            />
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={local.show !== false}
+                onChange={(e) => handleShowChange(e.target.checked)}
+              />
+              <span>Show Route</span>
+            </label>
           </div>
-          <label className="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
-              checked={route.show !== false} 
-              onChange={(e) => updateRouteShow(index, e.target.checked)} 
-            />
-            <span>Show Route</span>
-          </label>
-        </div>
-      )),
+        );
+      }),
       [updateRouteField, updateRouteAreas, updateRouteShow, removeRoute]
     );
 
