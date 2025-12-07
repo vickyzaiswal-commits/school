@@ -25,6 +25,9 @@ import {
   Edit,
   X,
   Trash2
+  ,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
@@ -40,6 +43,7 @@ const CanteenPage = () => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping
@@ -91,6 +95,19 @@ const CanteenPage = () => {
     resources: 'showResources',
     cta: 'showCta',
     labels: 'showLabels'
+  };
+
+  const sectionDisplayNames = {
+    showHero: 'Hero',
+    showBenefits: 'Benefits',
+    showTabs: 'Tabs',
+    showMenu: 'Menu',
+    showNutrition: 'Nutrition',
+    showOrdering: 'Ordering',
+    showContact: 'Contact',
+    showResources: 'Resources',
+    showCta: 'CTA',
+    showLabels: 'Labels'
   };
 
   // Default data structure
@@ -726,6 +743,20 @@ const CanteenPage = () => {
     setEditFormOpen(false);
   };
 
+  // Section visibility helpers
+  const toggleSectionVisibility = (key) => {
+    setData(prev => ({ ...prev, [key]: prev[key] === false ? true : !prev[key] }));
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_canteen_data', { payload: data });
+    } catch (error) {
+      console.error('Save failed', error);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   // Item Editor Component
   const ItemEditor = (arrayKey, fields = [], isStringArray = false, isEmojiIcon = false, options = {}) => {
     // Helper to resolve nested array paths; falls back to common parents if needed
@@ -1190,14 +1221,7 @@ const CanteenPage = () => {
                   {ItemEditor('buttons', ['text', 'link'], false, false, { allowFileUpload: false })}
                 </div>
               )}
-              {editSection === 'labels' && (
-                <div className="space-y-4">
-                  <input value={editData.addToCart || ''} onChange={(e) => handleObjectChange('addToCart', e.target.value)} placeholder="Add to Cart" className="w-full p-2 border rounded" />
-                  <input value={editData.vegLabel || ''} onChange={(e) => handleObjectChange('vegLabel', e.target.value)} placeholder="Veg Label" className="w-full p-2 border rounded" />
-                  <input value={editData.healthyLabel || ''} onChange={(e) => handleObjectChange('healthyLabel', e.target.value)} placeholder="Healthy Label" className="w-full p-2 border rounded" />
-                  <input value={editData.ingredientsLabel || ''} onChange={(e) => handleObjectChange('ingredientsLabel', e.target.value)} placeholder="Ingredients Label" className="w-full p-2 border rounded" />
-                </div>
-              )}
+              {/* labels editor removed as requested */}
             </div>
             <ModalFooter onCancel={cancelEdit} onSave={saveSection} />
           </div>
@@ -1645,10 +1669,39 @@ const CanteenPage = () => {
       </div>
 
       {/* Edit Labels Button (Global) */}
-      {editMode && data.showLabels && (
-        <button onClick={() => openEditModal('labels')} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow">
-          <Edit className="h-5 w-5" />
-        </button>
+      {editMode && (
+        <>
+          <button onClick={() => setSectionVisibilityModal(true)} className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow">
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg max-w-4xl w-full overflow-hidden">
+                <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+                <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
+                  {Object.entries(sectionDisplayNames).map(([key, label]) => {
+                    const visible = data[key] !== false;
+                    return (
+                      <div key={key} className="flex items-center justify-between border-b border-gray-100 py-3">
+                        <div className="flex items-center space-x-3">
+                          {visible ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                          <span className="text-sm font-medium text-gray-800">{label}</span>
+                        </div>
+                        <button onClick={() => toggleSectionVisibility(key)} className={`${visible ? 'bg-green-600' : 'bg-gray-200'} w-12 h-6 rounded-full relative transition-colors`} aria-pressed={visible}>
+                          <span className={`block w-5 h-5 bg-white rounded-full shadow transform transition-transform ${visible ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+                <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+              </div>
+            </div>
+          )}
+
+          {/* Labels edit button removed per request */}
+        </>
       )}
     </div>
   );

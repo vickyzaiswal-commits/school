@@ -28,6 +28,8 @@ import {
   Shield,
   Zap,
   Edit,
+  Eye,
+  EyeOff,
   X,
   Plus,
   Trash2
@@ -45,6 +47,8 @@ const CompetitionsPage = ({ competitionsData }) => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [openCategories, setOpenCategories] = useState(['academic', 'arts', 'sports', 'tech']);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping
@@ -926,6 +930,45 @@ const CompetitionsPage = ({ competitionsData }) => {
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
   const filteredHeroStats = data.hero?.stats?.filter(stat => stat.show !== false) || [];
 
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showBenefits', label: 'Benefits' },
+    { key: 'showCategories', label: 'Categories' },
+    { key: 'showCompetitions', label: 'Competitions List' },
+    { key: 'showUpcomingEvents', label: 'Upcoming Events' },
+    { key: 'showAchievements', label: 'Achievements' },
+    { key: 'showResources', label: 'Resources' },
+    { key: 'showCta', label: 'CTA Section' }
+  ];
+
+  // Section Visibility modal handlers
+  const openSectionVisibilityModal = () => {
+    const visibility = {};
+    sectionDisplay.forEach(s => {
+      visibility[s.key] = data.layout?.[s.key];
+    });
+    setSectionVisibility(visibility);
+    setSectionVisibilityModal(true);
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: prev?.[key] === false ? true : false };
+      return next;
+    });
+    // update live data so sections reflect immediately
+    setData(prev => ({ ...prev, layout: { ...prev.layout, [key]: prev.layout?.[key] === false ? true : false } }));
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_competitions_data', { payload: data });
+    } catch (err) {
+      console.error('Failed to save section visibility', err);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -1389,6 +1432,38 @@ const CompetitionsPage = ({ competitionsData }) => {
           </div>
         </div>
       )}
+
+      {editMode && (
+        <button onClick={openSectionVisibilityModal} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+          <Edit className="h-5 w-5" />
+        </button>
+      )}
+
+        {/* Manage Section Visibility Modal */}
+        {sectionVisibilityModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+              <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
+                {sectionDisplay.map(section => (
+                  <div key={section.key} className="flex items-center justify-between border p-3 rounded">
+                    <div className="flex items-center space-x-3">
+                      {sectionVisibility[section.key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                      <div>
+                        <div className="font-medium">{section.label}</div>
+                        <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                      </div>
+                    </div>
+                    <button onClick={() => toggleSectionVisibility(section.key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${sectionVisibility[section.key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                      <span className={`bg-white w-4 h-4 rounded-full transform transition ${sectionVisibility[section.key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+            </div>
+          </div>
+        )}
 
       {/* Hero Section */}
       {data.layout?.showHero && data.hero?.show && (

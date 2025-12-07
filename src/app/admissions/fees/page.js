@@ -27,6 +27,8 @@ import {
   Shield,
   BadgeIndianRupee,
   Settings,
+  Eye,
+  EyeOff,
   X,
   Edit,
   Ban,
@@ -43,6 +45,8 @@ const FeesPage = () => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const role = 'admin'; // Should come from auth context
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
 
   // Default data structure - Consistent with MiddleSchoolPage
   const defaultData = {
@@ -265,6 +269,17 @@ const FeesPage = () => {
     contact: 'showContact'
   };
 
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showFeeStructure', label: 'Fee Structure' },
+    { key: 'showAdditionalCharges', label: 'Additional Charges' },
+    { key: 'showPaymentSchedule', label: 'Payment Schedule' },
+    { key: 'showPaymentMethods', label: 'Payment Methods' },
+    { key: 'showScholarships', label: 'Scholarships' },
+    { key: 'showFaqs', label: 'FAQs' },
+    { key: 'showContact', label: 'Contact' }
+  ];
+
   // Initialize data
   const [data, setData] = useState(defaultData);
   const [selectedGrade, setSelectedGrade] = useState('primary');
@@ -473,6 +488,46 @@ const FeesPage = () => {
     setOriginalData(null);
   };
 
+  // Section Visibility modal handlers
+  const openSectionVisibilityModal = () => {
+    // initialize visibility state from current layout
+    setSectionVisibility({ ...data.layout });
+    setSectionVisibilityModal(true);
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      const updatedData = { ...data };
+      updatedData.layout = { ...updatedData.layout, ...sectionVisibility };
+
+      const payload = {
+        ...updatedData,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+
+      const save_data = await apiRequest('save_data/save_fees_data', { payload });
+      if (save_data.status === 200) {
+        setData(updatedData);
+      } else {
+        console.error('Save failed:', save_data);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+    setSectionVisibilityModal(false);
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: prev?.[key] === false ? true : false };
+      return next;
+    });
+    // update live layout so the page reflects changes immediately
+    setData(prev => ({ ...prev, layout: { ...prev.layout, [key]: prev?.layout?.[key] === false ? true : false } }));
+  };
+
   // Filters
   const filteredFeeCategories = safeData('feeStructure').feeCategories?.filter(cat => cat.show !== false) || [];
   const filteredGradeLevels = Object.entries(safeData('feeStructure').gradeLevels || {}).filter(([key, level]) => level.show !== false);
@@ -554,6 +609,24 @@ const FeesPage = () => {
           <span>Save</span>
         </button>
       </div>
+    </div>
+  );
+
+  // Reusable modal header (matches Council page)
+  const ModalHeader = ({ title, onClose }) => (
+    <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+      <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <X className="h-5 w-5" />
+      </button>
+    </div>
+  );
+
+  // Reusable modal footer compatible with existing handlers
+  const ModalFooterActions = ({ onCancel, onSave }) => (
+    <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end space-x-3 sticky bottom-0 z-10">
+      <button onClick={onCancel} className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">Cancel</button>
+      <button onClick={onSave} className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">Save Changes</button>
     </div>
   );
 
@@ -1045,6 +1118,32 @@ const FeesPage = () => {
         </div>
       )}
 
+      {/* Section Visibility Modal */}
+      {sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
+              {sectionDisplay.map(section => (
+                <div key={section.key} className="flex items-center justify-between border p-3 rounded">
+                  <div className="flex items-center space-x-3">
+                    {sectionVisibility[section.key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                    <div>
+                      <div className="font-medium">{section.label}</div>
+                      <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                    </div>
+                  </div>
+                  <button onClick={() => toggleSectionVisibility(section.key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${sectionVisibility[section.key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                    <span className={`bg-white w-4 h-4 rounded-full transform transition ${sectionVisibility[section.key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <ModalFooterActions onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       {data.layout?.showHero && safeData('hero').show && (
         <section 
@@ -1153,6 +1252,12 @@ const FeesPage = () => {
             <p className="text-xs text-gray-500 mt-3">* Excluding additional optional charges</p>
             {editMode && <button onClick={() => openEditModal('feeStructure')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </section>
+        )}
+        {/* Global edit button to manage visibility (matches Council page) */}
+        {editMode && (
+          <button onClick={openSectionVisibilityModal} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+            <Edit className="h-5 w-5" />
+          </button>
         )}
 
         {/* Additional Charges */}

@@ -50,6 +50,7 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
   const role = 'admin'; // Should come from auth context
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
 
   // Default data structure - Consistent with other pages
   const defaultData = {
@@ -373,11 +374,53 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
   // Layout key mapping
   const layoutMap = {
     hero: 'showHero',
+    tabs: 'showTabs',
     introduction: 'showIntroduction',
     academicStreams: 'showAcademicStreams',
     curriculum: 'showCurriculum',
     careerGuidance: 'showCareerGuidance',
     cta: 'showCta'
+  };
+
+  const sectionDisplay = [
+    { key: 'tabs', label: 'Tabs' },
+    { key: 'hero', label: 'Hero' },
+    { key: 'introduction', label: 'Introduction' },
+    { key: 'academicStreams', label: 'Academic Streams' },
+    { key: 'curriculum', label: 'Curriculum' },
+    { key: 'careerGuidance', label: 'Career Guidance' },
+    { key: 'cta', label: 'Call To Action' }
+  ];
+
+  const toggleSectionVisibility = (key) => {
+    setData(prev => {
+      const layoutKey = layoutMap[key];
+      const updated = { ...prev };
+      updated.layout = { ...(prev.layout || {}) };
+      if (layoutKey) {
+        updated.layout[layoutKey] = !Boolean(prev.layout?.[layoutKey]);
+      }
+      if (prev[key] && typeof prev[key] === 'object' && !Array.isArray(prev[key])) {
+        updated[key] = { ...prev[key], show: !Boolean(prev[key]?.show) };
+      }
+      return updated;
+    });
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      const payload = {
+        ...data,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+      const save_data = await apiRequest('save_data/save_seniorschool', { payload });
+      if (save_data?.status !== 200) console.error('Save failed:', save_data);
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+    setSectionVisibilityModal(false);
   };
 
   // Initialize data with default
@@ -1428,6 +1471,59 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
             <ModalFooter />
           </div>
         </div>
+      )}
+
+      {/* Manage Section Visibility Modal */}
+      {editMode && sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[70vh]">
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-5 text-green-600" />
+                <h2 className="text-lg font-bold">Manage Section Visibility</h2>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button onClick={() => setSectionVisibilityModal(false)} className="p-2 text-gray-600 hover:text-gray-800">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex-1 max-h-[70vh]">
+              <div className="space-y-3">
+                {sectionDisplay.map(section => (
+                  <div key={section.key} className="flex items-center justify-between p-3 border border-gray-100 rounded">
+                    <div className="flex items-center space-x-3">
+                      <span className={`w-3 h-3 rounded-full ${(layoutMap[section.key] ? !!data.layout?.[layoutMap[section.key]] : !!safeData(section.key).show) ? 'bg-green-600' : 'bg-gray-300'}`} />
+                      <span className="font-medium">{section.label}</span>
+                    </div>
+                    <button
+                      onClick={() => toggleSectionVisibility(section.key)}
+                      className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${(layoutMap[section.key] ? !!data.layout?.[layoutMap[section.key]] : !!safeData(section.key).show) ? 'bg-green-600 justify-end' : 'bg-gray-300 justify-start'}`}>
+                      <span className={`block w-4 h-4 bg-white rounded-full shadow transform transition-transform`} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end items-center px-4 py-3 bg-gray-50 border-t">
+              <button onClick={() => setSectionVisibilityModal(false)} className="px-3 py-2 mr-2 text-sm text-gray-700 bg-white border border-gray-300 rounded">Cancel</button>
+              <button onClick={saveSectionVisibility} className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Manage Visibility Button */}
+      {editMode && (
+        <button
+          onClick={() => setSectionVisibilityModal(true)}
+          className="fixed bottom-6 right-6 z-50 bg-white text-green-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center"
+          title="Manage Section Visibility"
+        >
+          <Edit className="h-5 w-5" />
+        </button>
       )}
 
       {/* Hero Section */}

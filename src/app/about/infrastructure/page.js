@@ -43,6 +43,7 @@ const InfrastructurePage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // Should come from auth context
 
   // Default data structure - Consistent with other pages
@@ -399,6 +400,82 @@ const InfrastructurePage = ({ schoolData = {} }) => {
 
   // Safe access for rendering
   const safeData = (key) => data[key] || {};
+
+  // Section visibility helpers
+  const sectionDisplayNames = {
+    hero: 'Hero',
+    introduction: 'Introduction',
+    facilities: 'Facilities',
+    campusFeatures: 'Campus Features',
+    virtualTour: 'Virtual Tour',
+    contactInfo: 'Contact Info'
+  };
+
+  const getDataValue = (key) => {
+    const layoutKey = layoutMap[key];
+    if (layoutKey) return data[layoutKey] !== false;
+    if (data[key] && typeof data[key] === 'object' && 'show' in data[key]) return data[key].show !== false;
+    if (Array.isArray(data[key])) return data[key].some((t) => t && t.show !== false);
+    return true;
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setData((prev) => {
+      const copy = JSON.parse(JSON.stringify(prev));
+      const layoutKey = layoutMap[key];
+      const current = layoutKey ? copy[layoutKey] : (Array.isArray(copy[key]) ? copy[key].some(i => i && i.show !== false) : (copy[key]?.show !== false));
+      const newVal = !current;
+      if (layoutKey) {
+        copy[layoutKey] = newVal;
+      }
+
+      if (key === 'facilities' && Array.isArray(copy.facilities)) {
+        copy.facilities = copy.facilities.map((f) => ({ ...(f || {}), show: newVal }));
+      } else if (key === 'campusFeatures' && Array.isArray(copy.campusFeatures)) {
+        copy.campusFeatures = copy.campusFeatures.map((f) => ({ ...(f || {}), show: newVal }));
+      } else if (Array.isArray(copy[key])) {
+        copy[key] = copy[key].map((t) => ({ ...(t || {}), show: newVal }));
+      } else if (copy[key] && typeof copy[key] === 'object' && 'show' in copy[key]) {
+        copy[key].show = newVal;
+      } else {
+        copy[key] = { ...(copy[key] || {}), show: newVal };
+      }
+
+      return copy;
+    });
+  };
+
+  // Keep top-level layout flags in sync with individual arrays
+  useEffect(() => {
+    const anyFacilityShown = Array.isArray(data.facilities) ? data.facilities.some((f) => f && f.show !== false) : false;
+    if ((data.showFacilities || false) !== anyFacilityShown) {
+      setData((prev) => ({ ...prev, showFacilities: anyFacilityShown }));
+    }
+
+    const anyCampusShown = Array.isArray(data.campusFeatures) ? data.campusFeatures.some((f) => f && f.show !== false) : false;
+    if ((data.showCampusFeatures || false) !== anyCampusShown) {
+      setData((prev) => ({ ...prev, showCampusFeatures: anyCampusShown }));
+    }
+  }, [data.facilities, data.campusFeatures]);
+
+  const saveSectionVisibility = async () => {
+    try {
+      const payload = {
+        ...data,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+      const res = await apiRequest('save_data/save_infrastructure', { payload });
+      if (res.status === 200) {
+        setSectionVisibilityModal(false);
+      } else {
+        console.error('Save failed', res);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+  };
 
   // Render icon component
   const renderIcon = (iconName, className = "h-6 w-6 text-green-600") => {
@@ -893,6 +970,65 @@ const InfrastructurePage = ({ schoolData = {} }) => {
             <ModalFooter />
           </div>
         </div>
+      )}
+      {/* Manage Section Visibility Floating Button */}
+      {editMode && (
+        <>
+          <button
+            onClick={() => setSectionVisibilityModal(true)}
+            title="Manage Section Visibility"
+            className="fixed bottom-6 right-6 z-50 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg w-full max-w-2xl m-4 flex flex-col max-h-[90vh]">
+                <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Manage Section Visibility</h3>
+                  <button onClick={() => setSectionVisibilityModal(false)} className="p-2 text-gray-600 hover:text-gray-800">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1">
+                  <div className="space-y-3">
+                    {Object.entries(sectionDisplayNames).map(([key, label]) => (
+                      <div key={key} className="flex items-center justify-between border border-gray-100 rounded p-3">
+                        <div className="text-sm font-medium text-gray-800">{label}</div>
+                        <label className="inline-flex relative items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={!!getDataValue(key)}
+                            onChange={() => toggleSectionVisibility(key)}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-2 peer-focus:ring-green-300 peer-checked:bg-green-600 relative after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end items-center px-4 py-3 bg-gray-50 border-t border-gray-200">
+                  <button
+                    onClick={() => setSectionVisibilityModal(false)}
+                    className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveSectionVisibility}
+                    className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded hover:bg-green-700"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Hero Section */}

@@ -254,6 +254,119 @@ const OurHistoryPage = () => {
   // Initialize data with default
   const [data, setData] = useState(defaultData);
 
+  // Manage Section Visibility modal state
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+
+  const sectionDisplayNames = {
+    hero: 'Hero',
+    edmundRiceValues: 'Edmund Rice Values',
+    timeline: 'Timeline',
+    milestones: 'Milestones',
+    achievements: 'Achievements',
+    quote: 'Quote',
+    callToAction: 'Call To Action'
+  };
+
+  const getDataValue = (key) => {
+    const layoutKey = layoutMap[key];
+    if (layoutKey && data.layout && typeof data.layout[layoutKey] !== 'undefined') {
+      return !!data.layout[layoutKey];
+    }
+
+    const section = data[key];
+    if (!section) return false;
+    if (Array.isArray(section)) return section.some(item => item.show !== false);
+    if (typeof section === 'object') return section.show !== false || Object.values(section).some(v => Array.isArray(v) ? v.some(i => i.show !== false) : false);
+    return false;
+  };
+
+  const toggleSectionVisibility = (key) => {
+    const copy = JSON.parse(JSON.stringify(data));
+    const layoutKey = layoutMap[key];
+    const current = getDataValue(key);
+    const newVal = !current;
+
+    if (layoutKey) {
+      if (!copy.layout) copy.layout = {};
+      copy.layout[layoutKey] = newVal;
+    }
+
+    // Update per-item/show flags where applicable
+    if (copy[key] && Array.isArray(copy[key].events)) {
+      // timeline.events
+      copy[key].events = copy[key].events.map(e => ({ ...e, show: newVal }));
+    } else if (copy[key] && Array.isArray(copy[key].items)) {
+      // milestones.items
+      copy[key].items = copy[key].items.map(i => ({ ...i, show: newVal }));
+    } else if (copy[key] && Array.isArray(copy[key].categories)) {
+      // achievements.categories
+      copy[key].categories = copy[key].categories.map(c => ({ ...c, show: newVal }));
+    } else if (copy[key] && Array.isArray(copy[key].stats)) {
+      // hero.stats
+      copy[key].stats = copy[key].stats.map(s => ({ ...s, show: newVal }));
+    } else if (copy[key] && Array.isArray(copy[key])) {
+      copy[key] = copy[key].map(item => ({ ...item, show: newVal }));
+    } else if (copy[key] && typeof copy[key] === 'object') {
+      copy[key].show = newVal;
+    }
+
+    setData(copy);
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      const payload = {
+        ...data,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+      const res = await apiRequest('save_data/save_history', { payload });
+      if (res?.status === 200) {
+        setSectionVisibilityModal(false);
+      } else {
+        console.error('Save failed', res);
+      }
+    } catch (err) {
+      console.error('Save error', err);
+    }
+  };
+
+  // Keep layout flags in sync with nested items
+  useEffect(() => {
+    const copy = JSON.parse(JSON.stringify(data));
+    let changed = false;
+
+    // timeline
+    if (copy.timeline && Array.isArray(copy.timeline.events)) {
+      const any = copy.timeline.events.some(e => e.show !== false);
+      if (copy.layout && typeof copy.layout.showTimeline !== 'undefined' && copy.layout.showTimeline !== any) {
+        copy.layout.showTimeline = any;
+        changed = true;
+      }
+    }
+
+    // milestones
+    if (copy.milestones && Array.isArray(copy.milestones.items)) {
+      const any = copy.milestones.items.some(i => i.show !== false);
+      if (copy.layout && typeof copy.layout.showMilestones !== 'undefined' && copy.layout.showMilestones !== any) {
+        copy.layout.showMilestones = any;
+        changed = true;
+      }
+    }
+
+    // achievements
+    if (copy.achievements && Array.isArray(copy.achievements.categories)) {
+      const any = copy.achievements.categories.some(c => c.show !== false);
+      if (copy.layout && typeof copy.layout.showAchievements !== 'undefined' && copy.layout.showAchievements !== any) {
+        copy.layout.showAchievements = any;
+        changed = true;
+      }
+    }
+
+    if (changed) setData(copy);
+  }, [data.timeline?.events, data.milestones?.items, data.achievements?.categories]);
+
   // Check role to enable edit mode
   useEffect(() => {
     if (role === 'admin') {
@@ -1348,6 +1461,61 @@ const OurHistoryPage = () => {
             )}
           </div>
         </section>
+      )}
+      {/* Manage Section Visibility Floating Button & Modal */}
+      {editMode && (
+        <>
+          <button
+            onClick={() => setSectionVisibilityModal(true)}
+            className="fixed right-6 bottom-6 bg-white/90 text-green-700 p-3 rounded-full shadow-lg hover:shadow-2xl flex items-center space-x-2 z-50"
+            title="Manage Sections"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[70vh]">
+                <div className="sticky top-0 bg-white z-10 p-4 border-b flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Manage Section Visibility</h3>
+                  <button onClick={() => setSectionVisibilityModal(false)} className="p-1 text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="p-4 overflow-y-auto flex-1 max-h-[70vh] space-y-3">
+                  {Object.keys(sectionDisplayNames).map((key) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <div className="text-sm text-gray-800">{sectionDisplayNames[key]}</div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={getDataValue(key)}
+                          onChange={() => toggleSectionVisibility(key)}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-600 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-4 border-t flex justify-end space-x-2">
+                  <button
+                    onClick={() => setSectionVisibilityModal(false)}
+                    className="px-3 py-2 bg-white border rounded text-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveSectionVisibility}
+                    className="px-3 py-2 bg-green-600 text-white rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

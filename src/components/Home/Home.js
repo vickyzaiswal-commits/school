@@ -41,6 +41,8 @@ const HomePage = ({ schoolData = {} }) => {
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Manage Section Visibility modal state
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // This should ideally come from auth context
 
   // Default data structure - all from JSON
@@ -327,6 +329,78 @@ const HomePage = ({ schoolData = {} }) => {
   // Safe access for principal message stats
   const principalMessage = getSafeObject(data.principalMessage);
   const filteredPrincipalStats = getSafeArray(principalMessage.stats).filter(stat => stat && stat.show !== false);
+  // Sections and layout helpers for Manage Section Visibility
+  const layoutMap = {
+    heroSlides: 'showHero',
+    quickStats: 'showStats',
+    features: 'showFeatures',
+    principalMessage: 'showPrincipal',
+    announcements: 'showAnnouncements',
+    testimonials: 'showTestimonials',
+    contactInfo: 'showContact'
+  };
+
+  const sectionDisplay = [
+    { key: 'heroSlides', label: 'Hero' },
+    { key: 'quickStats', label: 'Quick Stats' },
+    { key: 'features', label: 'Features' },
+    { key: 'principalMessage', label: 'Principal Message' },
+    { key: 'announcements', label: 'Announcements' },
+    { key: 'testimonials', label: 'Testimonials' },
+    { key: 'contactInfo', label: 'Contact' }
+  ];
+
+  const toggleSectionVisibility = (key) => {
+    setData(prev => {
+      const layoutKey = layoutMap[key];
+      const updated = { ...prev };
+      updated.layout = { ...(prev.layout || {}) };
+      updated.layout[layoutKey] = !prev.layout?.[layoutKey];
+
+      const newVal = !!updated.layout[layoutKey];
+
+      // update nested arrays/objects
+      if (key === 'heroSlides' && Array.isArray(prev.heroSlides)) {
+        updated.heroSlides = prev.heroSlides.map(s => ({ ...s, show: newVal }));
+      } else if (key === 'quickStats' && Array.isArray(prev.quickStats)) {
+        updated.quickStats = prev.quickStats.map(s => ({ ...s, show: newVal }));
+      } else if (key === 'features' && Array.isArray(prev.features)) {
+        updated.features = prev.features.map(f => ({ ...f, show: newVal }));
+      } else if (key === 'announcements' && Array.isArray(prev.announcements)) {
+        updated.announcements = prev.announcements.map(a => ({ ...a, show: newVal }));
+      } else if (key === 'testimonials' && Array.isArray(prev.testimonials)) {
+        updated.testimonials = prev.testimonials.map(t => ({ ...t, show: newVal }));
+      } else if (key === 'principalMessage' && prev.principalMessage) {
+        updated.principalMessage = { ...prev.principalMessage, show: newVal };
+      } else if (key === 'contactInfo' && prev.contactInfo) {
+        updated.contactInfo = { ...prev.contactInfo, show: newVal };
+      }
+
+      return updated;
+    });
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      const payload = {
+        homeData: data,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+      const res = await apiRequest('save_data/save_home', { payload });
+      if (res && (res.status === 200 || res.status === 201)) {
+        setSectionVisibilityModal(false);
+        toast.success('Visibility settings saved');
+      } else {
+        console.error('Save failed', res);
+        toast.error('Failed to save visibility settings');
+      }
+    } catch (err) {
+      console.error('Save error', err);
+      toast.error('Error saving visibility settings');
+    }
+  };
 
   // Safe access for layout
   const layout = getSafeObject(data.layout);
@@ -1402,6 +1476,60 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
             <ModalFooter />
           </div>
         </div>
+      )}
+
+      {/* Manage Section Visibility Floating Button & Modal */}
+      {editMode && (
+        <>
+          <button
+            onClick={() => setSectionVisibilityModal(true)}
+            className="fixed bottom-6 right-6 z-50 bg-white text-green-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center"
+            title="Manage Section Visibility"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+              <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[70vh]">
+                <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-5 w-5 text-green-600" />
+                    <h2 className="text-lg font-bold">Manage Section Visibility</h2>
+                  </div>
+                  <div>
+                    <button onClick={() => setSectionVisibilityModal(false)} className="p-2 text-gray-600 hover:text-gray-800">
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1 max-h-[70vh]">
+                  <div className="space-y-3">
+                    {sectionDisplay.map(section => (
+                      <div key={section.key} className="flex items-center justify-between p-3 border border-gray-100 rounded">
+                        <div className="flex items-center space-x-3">
+                          <span className={`w-3 h-3 rounded-full ${(layoutMap[section.key] ? !!data.layout?.[layoutMap[section.key]] : !!data[section.key]?.show) ? 'bg-green-600' : 'bg-gray-300'}`} />
+                          <span className="font-medium">{section.label}</span>
+                        </div>
+                        <button
+                          onClick={() => toggleSectionVisibility(section.key)}
+                          className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${(layoutMap[section.key] ? !!data.layout?.[layoutMap[section.key]] : !!data[section.key]?.show) ? 'bg-green-600 justify-end' : 'bg-gray-300 justify-start'}`}>
+                          <span className={`block w-4 h-4 bg-white rounded-full shadow transform transition-transform`} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end items-center px-4 py-3 bg-gray-50 border-t">
+                  <button onClick={() => setSectionVisibilityModal(false)} className="px-3 py-2 mr-2 text-sm text-gray-700 bg-white border border-gray-300 rounded">Cancel</button>
+                  <button onClick={saveSectionVisibility} className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded">Save</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Hero Section */}

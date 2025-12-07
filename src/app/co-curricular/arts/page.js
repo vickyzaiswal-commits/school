@@ -46,6 +46,8 @@ const ArtsCulturePage = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
   const [editSection, setEditSection] = useState(null);
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
@@ -630,6 +632,53 @@ const ArtsCulturePage = () => {
   // Toggle section
   const handleToggleSection = (value) => {
     setEditData({ ...editData, showSection: value });
+  };
+
+  // Section visibility mapping and helpers
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showCategories', label: 'Categories' },
+    { key: 'showPrograms', label: 'Programs' },
+    { key: 'showFacilities', label: 'Facilities' },
+    { key: 'showUpcomingEvents', label: 'Upcoming Events' },
+    { key: 'showAchievements', label: 'Achievements' },
+    { key: 'showFaculty', label: 'Faculty' },
+    { key: 'showGallery', label: 'Gallery' },
+    { key: 'showCta', label: 'CTA' },
+    { key: 'showContact', label: 'Contact' }
+  ];
+
+  const openSectionVisibilityModal = () => {
+    const layout = data?.layout || {};
+    const initial = {};
+    sectionDisplay.forEach(s => { initial[s.key] = !!layout[s.key]; });
+    setSectionVisibility(initial);
+    setSectionVisibilityModal(true);
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      // update live data layout so changes take effect immediately
+      setData(curr => ({ ...curr, layout: { ...curr.layout, [key]: next[key] } }));
+      return next;
+    });
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      const updatedData = { ...data, layout: { ...data.layout, ...sectionVisibility } };
+      const payload = { ...updatedData, lastUpdated: new Date().toISOString(), updatedBy: 'admin', version: '1.0' };
+      const res = await apiRequest('save_data/save_arts_data', { payload });
+      if (res?.status === 200) {
+        setData(updatedData);
+      } else {
+        console.error('Save failed:', res);
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+    }
+    setSectionVisibilityModal(false);
   };
 
   // Save
@@ -1286,6 +1335,48 @@ const ArtsCulturePage = () => {
         </div>
       )}
 
+      {/* Manage Section Visibility Modal */}
+      {editMode && sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 flex flex-col max-h-[70vh]">
+            <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-5 text-green-600" />
+                <h2 className="text-lg font-bold">Manage Section Visibility</h2>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button onClick={() => setSectionVisibilityModal(false)} className="p-2 text-gray-600 hover:text-gray-800">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex-1 max-h-[70vh]">
+              <div className="space-y-3">
+                {sectionDisplay.map(section => (
+                  <div key={section.key} className="flex items-center justify-between p-3 border border-gray-100 rounded">
+                    <div className="flex items-center space-x-3">
+                      <span className={`w-3 h-3 rounded-full ${sectionVisibility[section.key] ? 'bg-green-600' : 'bg-gray-300'}`} />
+                      <span className="font-medium">{section.label}</span>
+                    </div>
+                    <button
+                      onClick={() => toggleSectionVisibility(section.key)}
+                      className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${sectionVisibility[section.key] ? 'bg-green-600 justify-end' : 'bg-gray-300 justify-start'}`}>
+                      <span className="block w-4 h-4 bg-white rounded-full shadow" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end items-center px-4 py-3 bg-gray-50 border-t">
+              <button onClick={() => setSectionVisibilityModal(false)} className="px-3 py-2 mr-2 text-sm text-gray-700 bg-white border border-gray-300 rounded">Cancel</button>
+              <button onClick={saveSectionVisibility} className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       {data.layout?.showHero && data.hero?.show && (
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
@@ -1310,6 +1401,13 @@ const ArtsCulturePage = () => {
           </div>
           {editMode && <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
         </section>
+      )}
+
+      {/* Floating FAB: Manage Section Visibility */}
+      {editMode && (
+        <button onClick={openSectionVisibilityModal} className="fixed bottom-6 right-6 bg-green-600 text-white p-3 rounded-full shadow-xl hover:shadow-2xl transition-shadow z-40">
+          <Edit className="h-5 w-5" />
+        </button>
       )}
 
       {/* Main Content */}

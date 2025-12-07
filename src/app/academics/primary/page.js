@@ -47,6 +47,7 @@ const PrimarySchoolPage = () => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // Should come from auth context
 
   // Default data structure with dynamic controls
@@ -353,6 +354,7 @@ const PrimarySchoolPage = () => {
 
   // Layout key mapping
   const layoutMap = {
+    tabs: 'showTabs',
     hero: 'showHero',
     overview: 'showOverview',
     gradeLevels: 'showGradeLevels',
@@ -559,7 +561,8 @@ const PrimarySchoolPage = () => {
   };
 
   // Filter functions
-  const filteredTabs = (data.tabs || []).filter(tab => tab.show !== false);
+  const asArray = (v) => (Array.isArray(v) ? v : []);
+  const filteredTabs = asArray(data.tabs).filter(tab => tab.show !== false);
   const filteredOverviewHighlights = (data.overview?.highlights || []).filter(highlight => highlight.show !== false);
   const filteredTeachingApproach = (data.overview?.teachingApproach || []).filter(approach => approach.show !== false);
   const filteredGradeLevels = (data.gradeLevels?.levels || []).filter(level => level.show !== false);
@@ -574,6 +577,77 @@ const PrimarySchoolPage = () => {
 
   // Safe access for rendering
   const safeData = (key) => data[key] || {};
+
+  // Section visibility helpers
+  const sectionDisplayNames = {
+    hero: 'Hero',
+    tabs: 'Tabs',
+    overview: 'Overview',
+    gradeLevels: 'Grade Levels',
+    curriculum: 'Curriculum',
+    activities: 'Activities',
+    facilities: 'Facilities',
+    admissionsCta: 'Admissions CTA',
+    contactInfo: 'Contact Info'
+  };
+
+  const getDataValue = (key) => {
+    const layoutKey = layoutMap[key];
+    if (layoutKey) return data.layout?.[layoutKey] !== false;
+    if (data[key] && typeof data[key] === 'object' && 'show' in data[key]) return data[key].show !== false;
+    return true;
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setData((prev) => {
+      const copy = JSON.parse(JSON.stringify(prev));
+      const layoutKey = layoutMap[key];
+      const newVal = !(layoutKey ? copy.layout?.[layoutKey] : (copy[key]?.show !== false));
+      if (layoutKey) {
+        copy.layout = { ...(copy.layout || {}), [layoutKey]: newVal };
+      }
+
+      if (key === 'tabs') {
+        // when toggling the whole Tabs section, also set each tab's show flag
+        if (Array.isArray(copy.tabs)) {
+          copy.tabs = copy.tabs.map((t) => ({ ...(t || {}), show: newVal }));
+        }
+      } else if (copy[key] && typeof copy[key] === 'object' && 'show' in copy[key]) {
+        copy[key].show = newVal;
+      } else {
+        copy[key] = { ...(copy[key] || {}), show: newVal };
+      }
+      return copy;
+    });
+  };
+
+  // Keep layout.showTabs in sync with individual tab visibility
+  useEffect(() => {
+    const tabsArr = Array.isArray(data.tabs) ? data.tabs : [];
+    const anyShown = tabsArr.some((t) => t && t.show !== false);
+    if ((data.layout?.showTabs || false) !== anyShown) {
+      setData((prev) => ({ ...prev, layout: { ...(prev.layout || {}), showTabs: anyShown } }));
+    }
+  }, [data.tabs]);
+
+  const saveSectionVisibility = async () => {
+    try {
+      const payload = {
+        ...data,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: 'admin',
+        version: '1.0'
+      };
+      const res = await apiRequest('save_data/save_primaryschool', { payload });
+      if (res.status === 200) {
+        setSectionVisibilityModal(false);
+      } else {
+        console.error('Save failed', res);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+  };
 
   // Render icon component
   const renderIcon = (iconName, className = "h-6 w-6 text-green-600") => {
@@ -2205,6 +2279,65 @@ const PrimarySchoolPage = () => {
             </button>
           )}
         </section>
+      )}
+      {/* Manage Section Visibility Floating Button */}
+      {editMode && (
+        <>
+          <button
+            onClick={() => setSectionVisibilityModal(true)}
+            title="Manage Section Visibility"
+            className="fixed bottom-6 right-6 z-50 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg w-full max-w-2xl m-4 flex flex-col max-h-[90vh]">
+                <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Manage Section Visibility</h3>
+                  <button onClick={() => setSectionVisibilityModal(false)} className="p-2 text-gray-600 hover:text-gray-800">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1">
+                  <div className="space-y-3">
+                    {Object.entries(sectionDisplayNames).map(([key, label]) => (
+                      <div key={key} className="flex items-center justify-between border border-gray-100 rounded p-3">
+                        <div className="text-sm font-medium text-gray-800">{label}</div>
+                        <label className="inline-flex relative items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={!!getDataValue(key)}
+                            onChange={() => toggleSectionVisibility(key)}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-2 peer-focus:ring-green-300 peer-checked:bg-green-600 relative after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end items-center px-4 py-3 bg-gray-50 border-t border-gray-200">
+                  <button
+                    onClick={() => setSectionVisibilityModal(false)}
+                    className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveSectionVisibility}
+                    className="px-3 py-2 text-sm text-white bg-green-600 border border-green-700 rounded hover:bg-green-700"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

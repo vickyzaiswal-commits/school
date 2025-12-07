@@ -24,6 +24,8 @@ import {
   ArrowRight,
   FileText,
   Edit,
+  Eye,
+  EyeOff,
   X,
   Plus,
   Trash2
@@ -40,6 +42,8 @@ const EventsPage = ({ eventsData }) => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping
@@ -77,6 +81,17 @@ const EventsPage = ({ eventsData }) => {
     resources: 'showResources',
     cta: 'showCta'
   };
+
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showBenefits', label: 'Benefits' },
+    { key: 'showFeaturedEvents', label: 'Featured Events' },
+    { key: 'showCategories', label: 'Categories' },
+    { key: 'showEvents', label: 'Events List' },
+    { key: 'showPastEvents', label: 'Past Events' },
+    { key: 'showResources', label: 'Resources' },
+    { key: 'showCta', label: 'CTA Section' }
+  ];
 
   // Default data structure for Events
   const defaultData = {
@@ -767,6 +782,34 @@ const EventsPage = ({ eventsData }) => {
     setEditFormOpen(false);
   };
 
+  // Section Visibility modal handlers
+  const openSectionVisibilityModal = () => {
+    const visibility = {};
+    sectionDisplay.forEach(s => {
+      visibility[s.key] = data[s.key];
+    });
+    setSectionVisibility(visibility);
+    setSectionVisibilityModal(true);
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: prev?.[key] === false ? true : false };
+      return next;
+    });
+    // update live data so sections reflect immediately
+    setData(prev => ({ ...prev, [key]: prev?.[key] === false ? true : false }));
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_events_data', { payload: data });
+    } catch (err) {
+      console.error('Failed to save section visibility', err);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   // General handlers
   const handleObjectChange = (field, value) => {
     setEditData(prev => ({ ...prev, [field]: value }));
@@ -977,6 +1020,31 @@ const EventsPage = ({ eventsData }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Manage Section Visibility Modal */}
+      {sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
+              {sectionDisplay.map(section => (
+                <div key={section.key} className="flex items-center justify-between border p-3 rounded">
+                  <div className="flex items-center space-x-3">
+                    {sectionVisibility[section.key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                    <div>
+                      <div className="font-medium">{section.label}</div>
+                      <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                    </div>
+                  </div>
+                  <button onClick={() => toggleSectionVisibility(section.key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${sectionVisibility[section.key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                    <span className={`bg-white w-4 h-4 rounded-full transform transition ${sectionVisibility[section.key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+          </div>
+        </div>
+      )}
       {/* Edit Modal */}
       {editFormOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -1346,6 +1414,12 @@ const EventsPage = ({ eventsData }) => {
           </div>
           {editMode && <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
         </section>
+      )}
+
+      {editMode && (
+        <button onClick={openSectionVisibilityModal} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+          <Edit className="h-5 w-5" />
+        </button>
       )}
 
       {/* Main Content */}

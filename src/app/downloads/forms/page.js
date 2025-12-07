@@ -13,7 +13,6 @@ const iconMap = {
 };
 
 const categoryOptions = [
-  { id: 'all', name: 'All Forms' },
   { id: 'admission', name: 'Admission' },
   { id: 'academic', name: 'Academic' },
   { id: 'transport', name: 'Transport' },
@@ -36,7 +35,7 @@ const DownloadFormsPage = () => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
   const role = 'admin';
@@ -148,7 +147,7 @@ const DownloadFormsPage = () => {
   const allForms = data.forms?.items?.filter(f => f.show !== false) || [];
 
   const filteredForms = allForms
-    .filter(f => activeCategory === 'all' || f.category === activeCategory)
+    .filter(f => !activeCategory || f.category === activeCategory)
     .filter(f => f.title?.toLowerCase().includes(searchQuery.toLowerCase()) || f.description?.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const toggleSectionVisibility = (sectionKey) => {
@@ -481,59 +480,69 @@ const DownloadFormsPage = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 mb-8">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      placeholder="Search forms..."
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredForms.map(form => {
-                    const Icon = iconMap[form.icon] || FileText;
-                    return (
-                      <div key={form.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h4 className="font-semibold text-gray-800">{form.title}</h4>
-                            <div className="flex items-center mt-1">
-                              <span className="text-sm text-gray-600">{form.format}</span>
-                              <span className="mx-2 text-gray-300">•</span>
-                              <span className="text-sm text-gray-600">{form.size}</span>
-                            </div>
-                          </div>
-                          <Icon className="h-6 w-6 text-green-600" />
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4">{form.description}</p>
-                        <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                          <span>{form.downloads} downloads</span>
-                        </div>
-                        <a
-                          href={form.fileUrl || '#'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full text-center bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition flex items-center justify-center gap-2"
-                        >
-                          <Download className="h-4 w-4" />
-                          Download {form.format}
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {filteredForms.length === 0 && (
+                {!activeCategory ? (
                   <div className="text-center py-16">
-                    <FileText className="h-20 w-20 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-2xl font-semibold text-gray-600 mb-2">{data.forms?.noResultsTitle}</h3>
-                    <p className="text-gray-500">{data.forms?.noResultsSubtitle}</p>
+                    <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 mb-2">Please select a category to view forms</h3>
+                    <p className="text-gray-500">Choose a category from the left to see forms for that category.</p>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col md:flex-row gap-4 mb-8">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                        <input
+                          type="text"
+                          placeholder="Search forms..."
+                          value={searchQuery}
+                          onChange={e => setSearchQuery(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {filteredForms.map(form => {
+                        const Icon = iconMap[form.icon] || FileText;
+                        return (
+                          <div key={form.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h4 className="font-semibold text-gray-800">{form.title}</h4>
+                                <div className="flex items-center mt-1">
+                                  <span className="text-sm text-gray-600">{form.format}</span>
+                                  <span className="mx-2 text-gray-300">•</span>
+                                  <span className="text-sm text-gray-600">{form.size}</span>
+                                </div>
+                              </div>
+                              <Icon className="h-6 w-6 text-green-600" />
+                            </div>
+                            <p className="text-sm text-gray-600 mb-4">{form.description}</p>
+                            <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                              <span>{form.downloads} downloads</span>
+                            </div>
+                            <a
+                              href={form.fileUrl || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full text-center bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition flex items-center justify-center gap-2"
+                            >
+                              <Download className="h-4 w-4" />
+                              Download {form.format}
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {filteredForms.length === 0 && (
+                      <div className="text-center py-16">
+                        <FileText className="h-20 w-20 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-2xl font-semibold text-gray-600 mb-2">{data.forms?.noResultsTitle}</h3>
+                        <p className="text-gray-500">{data.forms?.noResultsSubtitle}</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -570,7 +579,7 @@ const DownloadFormsPage = () => {
           onClick={() => setSectionVisibilityModal(true)}
           className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition z-50"
         >
-          <Edit className="h-7 w-7" />
+          <Edit className="h-5 w-5" />
         </button>
       )}
     </div>

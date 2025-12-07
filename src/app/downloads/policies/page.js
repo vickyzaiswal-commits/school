@@ -24,13 +24,10 @@ const defaultData = {
   showCompliance: true,
   hero: {
     show: true,
-    establishedYear: "1927",
     title: "School Policies & Guidelines",
     subtitle: "Comprehensive policies that ensure a safe, respectful, and productive learning environment for our school community.",
-    height: "h-96",
     showImage: true,
     backgroundImage: "https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    imageAlt: "School Policies",
     stats: [
       { value: "6+", label: "Comprehensive Policies", show: true },
       { value: "100%", label: "Community Compliance", show: true },
@@ -642,12 +639,10 @@ const SchoolPolicyPage = () => {
 
               {editSection === 'hero' && (
                 <div className="space-y-4">
-                  <input value={editData.establishedYear || ''} onChange={(e) => handleObjectChange('establishedYear', e.target.value)} placeholder="Established Year" className="w-full p-2 border rounded" />
                   <input value={editData.title || ''} onChange={(e) => handleObjectChange('title', e.target.value)} placeholder="Title" className="w-full p-2 border rounded" />
                   <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} placeholder="Subtitle" className="w-full p-2 border rounded" rows="3" />
                   <FileUpload initialValue={editData.backgroundImage || ''} onUpload={(url) => handleObjectChange('backgroundImage', url)} className="w-full" />
-                  <input value={editData.imageAlt || ''} onChange={(e) => handleObjectChange('imageAlt', e.target.value)} placeholder="Image Alt" className="w-full p-2 border rounded" />
-                  <input value={editData.height || ''} onChange={(e) => handleObjectChange('height', e.target.value)} placeholder="Height" className="w-full p-2 border rounded" />
+                  {/* height removed */}
                   <label className="flex items-center space-x-2">
                     <input type="checkbox" checked={editData.showImage !== false} onChange={(e) => handleObjectChange('showImage', e.target.checked)} />
                     <span>Show Background Image</span>
@@ -747,14 +742,11 @@ const SchoolPolicyPage = () => {
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.showImage !== false && data.hero?.backgroundImage && (
-            <img src={data.hero.backgroundImage} alt={data.hero.imageAlt || ''} className="absolute inset-0 w-full h-full object-cover opacity-50" />
+            <img src={data.hero.backgroundImage} alt={data.hero.title || ''} className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <div className="flex items-center space-x-2 mb-4">
-                <Clock className="h-6 w-6 text-yellow-400" />
-                <span className="text-yellow-400 font-semibold">Est. {data.hero.establishedYear}</span>
-              </div>
+              {/* established year removed */}
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>
               <p className="text-xl text-green-100 mb-8 leading-relaxed">{data.hero.subtitle}</p>
               <div className="flex flex-wrap gap-6">
@@ -1026,7 +1018,7 @@ const SchoolPolicyPage = () => {
           onClick={() => setSectionVisibilityModal(true)}
           className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition z-50 group"
         >
-          <Settings className="h-7 w-7 group-hover:rotate-90 transition-transform" />
+          <Edit className="h-5 w-5 group-hover:rotate-90 transition-transform" />
         </button>
       )}
     </div>

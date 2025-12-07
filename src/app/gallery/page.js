@@ -80,7 +80,7 @@ const iconMap = {
 
 const GalleryPage = () => {
   const [activeTab, setActiveTab] = useState('albums');
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('events');
   const [viewMode, setViewMode] = useState('grid');
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -226,7 +226,6 @@ const GalleryPage = () => {
       title: "Recent Photos & Videos",
       subtitle: "Latest captures from school events and activities",
       categories: [
-        { id: 'all', name: 'All Media', show: true },
         { id: 'events', name: 'School Events', show: true },
         { id: 'sports', name: 'Sports', show: true },
         { id: 'academic', name: 'Academic', show: true },
@@ -396,9 +395,7 @@ const GalleryPage = () => {
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
   const filteredHeroStats = data.hero?.stats?.filter(stat => stat.show !== false) || [];
 
-  const filteredGalleryMedia = activeCategory === 'all' 
-    ? filteredMedia
-    : filteredMedia.filter(media => media.category === activeCategory);
+  const filteredGalleryMedia = filteredMedia.filter(media => media.category === activeCategory);
 
   // Generic handlers
   const handleObjectChange = (field, value) => {

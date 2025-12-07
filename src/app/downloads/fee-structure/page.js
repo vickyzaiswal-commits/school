@@ -1205,7 +1205,7 @@ const DownloadFeeStructurePage = () => {
           onClick={() => setSectionVisibilityModal(true)}
           className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition z-50"
         >
-          <Edit className="h-7 w-7" />
+          <Edit className="h-5 w-5" />
         </button>
       )}
     </div>

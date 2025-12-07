@@ -18,6 +18,8 @@ import {
   ChevronRight,
   Clock,
   Edit,
+  Eye,
+  EyeOff,
   X,
   Trash2,
   Plus
@@ -35,6 +37,7 @@ const HouseSystemPage = () => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping
@@ -726,6 +729,32 @@ const HouseSystemPage = () => {
     closeEditModal();
   };
 
+  const sectionDisplayNames = {
+    showHero: 'Hero Section',
+    showBenefits: 'Benefits',
+    showTabs: 'Tabs',
+    showOverview: 'Overview',
+    showHouses: 'Houses',
+    showCompetitions: 'Competitions',
+    showPoints: 'Points',
+    showResources: 'Resources',
+    showCta: 'Call To Action',
+    showLabels: 'Labels'
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setData(prev => ({ ...prev, [key]: prev?.[key] === false ? true : false }));
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_house_data', { payload: data });
+    } catch (error) {
+      console.error('Save visibility error:', error);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   const cancelEdit = () => {
     if (originalData) {
       setEditData(originalData);
@@ -1122,19 +1151,7 @@ const HouseSystemPage = () => {
                 </div>
               )}
 
-              {editSection === 'labels' && (
-                <div className="space-y-4">
-                  <input value={getNested(editData, 'houseInformation') || ''} onChange={(e) => updateByPath('houseInformation', e.target.value)} placeholder="House Information Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'symbol') || ''} onChange={(e) => updateByPath('symbol', e.target.value)} placeholder="Symbol Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'houseHead') || ''} onChange={(e) => updateByPath('houseHead', e.target.value)} placeholder="House Head Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'captain') || ''} onChange={(e) => updateByPath('captain', e.target.value)} placeholder="Captain Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'viceCaptain') || ''} onChange={(e) => updateByPath('viceCaptain', e.target.value)} placeholder="Vice Captain Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'currentPoints') || ''} onChange={(e) => updateByPath('currentPoints', e.target.value)} placeholder="Current Points Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'strengths') || ''} onChange={(e) => updateByPath('strengths', e.target.value)} placeholder="Strengths Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'houseDescription') || ''} onChange={(e) => updateByPath('houseDescription', e.target.value)} placeholder="House Description Label" className="w-full p-2 border rounded" />
-                  <input value={getNested(editData, 'houseTraditions') || ''} onChange={(e) => updateByPath('houseTraditions', e.target.value)} placeholder="House Traditions Label" className="w-full p-2 border rounded" />
-                </div>
-              )}
+              
 
               {editSection === 'houses' && (
                 <div className="space-y-6">
@@ -1820,9 +1837,34 @@ const HouseSystemPage = () => {
         </section>
       )}
 
-      {/* Edit Labels Button (Global) */}
-      {editMode && data.showLabels && (
-        <button onClick={() => openEditModal('labels')} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+      {/* Manage Section Visibility Modal */}
+      {sectionVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
+              {Object.keys(sectionDisplayNames).map((key) => (
+                <div key={key} className="flex items-center justify-between border p-3 rounded">
+                  <div className="flex items-center space-x-3">
+                    {data?.[key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                    <div>
+                      <div className="font-medium">{sectionDisplayNames[key]}</div>
+                      <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                    </div>
+                  </div>
+                  <button onClick={() => toggleSectionVisibility(key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${data?.[key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                    <span className={`bg-white w-4 h-4 rounded-full transform transition ${data?.[key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+          </div>
+        </div>
+      )}
+
+      {editMode && (
+        <button onClick={() => setSectionVisibilityModal(true)} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
           <Edit className="h-5 w-5" />
         </button>
       )}

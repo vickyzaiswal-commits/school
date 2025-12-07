@@ -34,6 +34,8 @@ import {
   Leaf,
   Scale,
   PenTool,
+  Eye,
+  EyeOff,
   Edit,
   X,
   Settings,
@@ -52,6 +54,8 @@ const ClubsPage = () => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({});
   const role = 'admin'; // Should come from auth context
 
   // Default data structure for Clubs
@@ -811,6 +815,43 @@ const ClubsPage = () => {
   const filteredResources = data.resources?.items?.filter(resource => resource.show !== false) || [];
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
 
+  const sectionDisplay = [
+    { key: 'showHero', label: 'Hero' },
+    { key: 'showBenefits', label: 'Benefits' },
+    { key: 'showCategories', label: 'Categories' },
+    { key: 'showClubs', label: 'Clubs' },
+    { key: 'showUpcomingEvents', label: 'Upcoming Events' },
+    { key: 'showRegistration', label: 'Registration' },
+    { key: 'showResources', label: 'Resources' },
+    { key: 'showCta', label: 'CTA Section' }
+  ];
+
+  const openSectionVisibilityModal = () => {
+    const visibility = {};
+    sectionDisplay.forEach(s => {
+      visibility[s.key] = data.layout?.[s.key];
+    });
+    setSectionVisibility(visibility);
+    setSectionVisibilityModal(true);
+  };
+
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: prev?.[key] === false ? true : false };
+      return next;
+    });
+    setData(prev => ({ ...prev, layout: { ...prev.layout, [key]: prev.layout?.[key] === false ? true : false } }));
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_clubs_data', { payload: data });
+    } catch (err) {
+      console.error('Failed to save section visibility', err);
+    }
+    setSectionVisibilityModal(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -1293,6 +1334,40 @@ const ClubsPage = () => {
         </div>
       )}
 
+            {/* Manage Section Visibility Modal */}
+            {sectionVisibilityModal && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+                  <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+                    <h2 className="text-xl font-semibold text-gray-900">Manage Section Visibility</h2>
+                    <button onClick={() => setSectionVisibilityModal(false)} className="text-gray-400 hover:text-gray-600">
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
+                    {sectionDisplay.map(section => (
+                      <div key={section.key} className="flex items-center justify-between border p-3 rounded">
+                        <div className="flex items-center space-x-3">
+                          {sectionVisibility[section.key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                          <div>
+                            <div className="font-medium">{section.label}</div>
+                            <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                          </div>
+                        </div>
+                        <button onClick={() => toggleSectionVisibility(section.key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${sectionVisibility[section.key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                          <span className={`bg-white w-4 h-4 rounded-full transform transition ${sectionVisibility[section.key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end space-x-3 sticky bottom-0 z-10">
+                    <button onClick={() => setSectionVisibilityModal(false)} className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button onClick={saveSectionVisibility} className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">Save Changes</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
       {/* Hero Section */}
       {data.layout?.showHero && data.hero?.show && (
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
@@ -1333,6 +1408,12 @@ const ClubsPage = () => {
           </div>
           {editMode && <button onClick={() => openEditModal('hero')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
         </section>
+      )}
+
+      {editMode && (
+        <button onClick={openSectionVisibilityModal} className="fixed bottom-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50">
+          <Edit className="h-5 w-5" />
+        </button>
       )}
 
       {/* Main Content */}

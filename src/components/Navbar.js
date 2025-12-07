@@ -28,6 +28,8 @@ import {
   Plus,
   Trash2
 } from 'lucide-react';
+import FileUpload from '@/utils/fileUpload';
+import { apiRequest } from '@/utils/apiRequest';
 
 const Navbar = ({ schoolData }) => {
   const role = 'admin';
@@ -121,7 +123,7 @@ const Navbar = ({ schoolData }) => {
         id: 'admissionsButton',
         show: true,
         label: "Admissions",
-        url: "/admissions",
+        url: "/admissions/application",
         icon: "FileText",
         buttonText: "Admissions"
       }
@@ -141,7 +143,7 @@ const Navbar = ({ schoolData }) => {
         show: true,
         title: "Admissions",
         subtitle: "Open Now",
-        url: "/admissions",
+        url: "/admissions/application",
         icon: "FileText",
         showStatus: true
       }
@@ -149,6 +151,9 @@ const Navbar = ({ schoolData }) => {
     
     admissionsOpen: true,
     emergencyNotice: null
+    ,
+    // logo url (optional) - if provided will render image instead of icon
+    logo: ''
   };
 
   // Icon mapping
@@ -158,24 +163,70 @@ const Navbar = ({ schoolData }) => {
     Calendar, Award
   };
 
-  // Initialize config
+  // Initialize config: prefer remote data but fallback to static after timeout
   useEffect(() => {
-    const savedConfig = localStorage.getItem('navbarConfig');
-    if (savedConfig) {
-      try {
-        const parsedConfig = JSON.parse(savedConfig);
-        setConfig(parsedConfig);
-        setOriginalConfig(JSON.parse(JSON.stringify(parsedConfig)));
-      } catch (error) {
+    let mounted = true;
+    let usedFallback = false;
+    const TIMEOUT_MS = 30000; // 30 seconds
+
+    const fetchNavbar = async () => {
+      // do not set local defaults immediately — wait for remote or timeout
+
+      const fetchPromise = (async () => {
+        try {
+          const res = await apiRequest('save_data/get_navbar_data', {});
+          const remoteData = Array.isArray(res.data) && res.data.length > 0
+            ? res.data[0].Data
+            : res.data?.Data || res.data;
+          return { timeout: false, remoteData };
+        } catch (err) {
+          return { timeout: false, remoteData: null, error: err };
+        }
+      })();
+
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve({ timeout: true }), TIMEOUT_MS);
+      });
+
+      const result = await Promise.race([fetchPromise, timeoutPromise]);
+
+      if (!mounted) return;
+
+      if (result && result.timeout) {
+        // timeout won: use static merged config as fallback
+        usedFallback = true;
         const mergedConfig = { ...defaultConfig, ...schoolData };
         setConfig(mergedConfig);
         setOriginalConfig(JSON.parse(JSON.stringify(mergedConfig)));
+
+        // still attempt to fetch in background but do not override fallback
+        fetchPromise.then((r) => {
+          if (!mounted || usedFallback) return; // do not override
+          const remoteData = r?.remoteData || null;
+          if (remoteData) {
+            const merged = { ...defaultConfig, ...remoteData };
+            setConfig(merged);
+            setOriginalConfig(JSON.parse(JSON.stringify(merged)));
+          }
+        }).catch(() => {});
+      } else {
+        // fetch completed first (or immediately)
+        const remote = result?.remoteData || null;
+        if (remote) {
+          const merged = { ...defaultConfig, ...remote };
+          setConfig(merged);
+          setOriginalConfig(JSON.parse(JSON.stringify(merged)));
+        } else {
+          // fetch completed but no remote data; fall back
+          const mergedConfig = { ...defaultConfig, ...schoolData };
+          setConfig(mergedConfig);
+          setOriginalConfig(JSON.parse(JSON.stringify(mergedConfig)));
+        }
       }
-    } else {
-      const mergedConfig = { ...defaultConfig, ...schoolData };
-      setConfig(mergedConfig);
-      setOriginalConfig(JSON.parse(JSON.stringify(mergedConfig)));
-    }
+    };
+
+    fetchNavbar();
+    return () => { mounted = false };
   }, [schoolData]);
 
   useEffect(() => {
@@ -252,11 +303,23 @@ const Navbar = ({ schoolData }) => {
   const handleSave = () => {
     if (validateConfig()) {
       const payload = preparePayload();
-      console.log('Navbar Configuration:', JSON.stringify(payload, null, 2));
-      localStorage.setItem('navbarConfig', JSON.stringify(payload));
-      setPreviewMode(false);
-      setEditFormOpen(false);
-      setOriginalConfig(JSON.parse(JSON.stringify(config)));
+      // console.log('Navbar Configuration:', JSON.stringify(payload, null, 2));
+      // localStorage.setItem('navbarConfig', JSON.stringify(payload));
+      (async () => {
+        try {
+          await apiRequest('save_data/save_navbar_data', { payload });
+        } catch (err) {
+          console.warn('Failed to save navbar remotely, falling back to localStorage', err);
+          try {
+            localStorage.setItem('navbarConfig', JSON.stringify(payload));
+          } catch (e) {
+            console.error('Failed to persist navbar locally', e);
+          }
+        }
+        setPreviewMode(false);
+        setEditFormOpen(false);
+        setOriginalConfig(JSON.parse(JSON.stringify(config)));
+      })();
     }
   };
 
@@ -384,6 +447,36 @@ const Navbar = ({ schoolData }) => {
               />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Logo (optional)</label>
+                <div className="flex items-center space-x-3">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border">
+                    {config.logo ? (
+                      <img src={config.logo} alt="Logo preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <GraduationCap className="w-6 h-6" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <FileUpload
+                      currentUrl={config.logo || ''}
+                      onUploadSuccess={(url) => handleInputChange('logo', url)}
+                      label="Upload Logo"
+                    />
+                    {config.logo && (
+                      <button
+                        onClick={() => handleInputChange('logo', '')}
+                        className="mt-2 text-sm text-red-600 hover:underline flex items-center space-x-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Remove Logo</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
               <textarea
@@ -704,14 +797,20 @@ const Navbar = ({ schoolData }) => {
       )}
 
       {/* Main Navbar */}
-      <nav className={`sticky top-0 z-50 bg-white transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}>
+      <nav className={`sticky top-0 left-0 z-50 bg-white transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3 lg:py-4">
             <div className="flex items-center space-x-3 lg:space-x-4">
               <div className="flex-shrink-0">
-                <div className="h-12 w-12 lg:h-16 lg:w-16 bg-green-600 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg">
-                  <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />
-                </div>
+                <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600">
+                    {config.logo ? (
+                      <img src={config.logo} alt="Logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-green-600">
+                        <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />
+                      </div>
+                    )}
+                  </div>
               </div>
               <div>
                 <h1 className="text-lg lg:text-2xl font-bold text-green-700 leading-tight">

@@ -1211,7 +1211,7 @@ const ContactUsPage = () => {
           onClick={() => setSectionVisibilityModal(true)}
           className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition z-50 group"
         >
-          <Edit className="h-7 w-7 group-hover:rotate-90 transition-transform" />
+          <Edit className="h-5 w-5 group-hover:rotate-90 transition-transform" />
         </button>
       )}
     </div>

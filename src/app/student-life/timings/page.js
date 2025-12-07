@@ -23,6 +23,8 @@ import {
   Coffee,
   Bus,
   Home,
+  Eye,
+  EyeOff,
   Edit,
   X,
   Plus,
@@ -40,6 +42,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // Should come from auth context
 
   // Icon mapping (string-based for consistency)
@@ -79,6 +82,18 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
     transport: 'showTransport',
     resources: 'showResources',
     cta: 'showCta'
+  };
+
+  const sectionDisplayNames = {
+    showHero: 'Hero Section',
+    showBenefits: 'Benefits',
+    showTabs: 'Tabs',
+    showDailySchedules: 'Daily Schedules',
+    showAcademicCalendar: 'Academic Calendar',
+    showBellSchedule: 'Bell Schedule',
+    showTransport: 'Transport',
+    showResources: 'Resources',
+    showCta: 'CTA'
   };
 
   // Default data structure for School Timings
@@ -530,6 +545,17 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
   const filteredTransportSafety = data.transport?.safety?.filter(item => item.show !== false) || [];
   const filteredResources = data.resources?.items?.filter(item => item.show !== false) || [];
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
+
+  const toggleSectionVisibility = (key) => setData(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const saveSectionVisibility = async () => {
+    try {
+      await apiRequest('save_data/save_school_timings_data', { payload: data });
+    } catch (error) {
+      console.error('Save failed', error);
+    }
+    setSectionVisibilityModal(false);
+  };
 
   // Open edit modal
   const openEditModal = (section) => {
@@ -1501,7 +1527,49 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
             {editMode && <button onClick={() => openEditModal('cta')} className="absolute top-4 right-4 bg-white text-green-600 p-2 rounded shadow-lg hover:shadow-xl transition-shadow"><Edit className="h-5 w-5" /></button>}
           </div>
         )}
-      </div>
+        </div>
+
+        {/* Floating Edit Button / Manage Section Visibility */}
+        {editMode && (
+          <button
+            onClick={() => setSectionVisibilityModal(true)}
+            className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition z-50"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+        )}
+
+        {/* Section Visibility Modal */}
+        {sectionVisibilityModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full h-[80vh] flex flex-col overflow-hidden">
+              <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
+              <div className="flex-1 overflow-y-auto p-6">
+                <p className="text-gray-600 mb-6">Toggle sections on or off to control what visitors see on this page.</p>
+                <div className="space-y-4">
+                  {Object.keys(sectionDisplayNames).map(sectionKey => (
+                    <div key={sectionKey} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center space-x-3">
+                        {data[sectionKey] ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                        <div>
+                          <h3 className="font-medium text-gray-900">{sectionDisplayNames[sectionKey]}</h3>
+                          <p className="text-sm text-gray-500">{data[sectionKey] ? 'Visible' : 'Hidden'}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => toggleSectionVisibility(sectionKey)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${data[sectionKey] ? 'bg-green-600' : 'bg-gray-300'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${data[sectionKey] ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />
+            </div>
+          </div>
+        )}
     </div>
   );
 };

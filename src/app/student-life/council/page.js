@@ -21,6 +21,8 @@ import {
   Trophy,
   TrendingUp,
   Edit,
+  Eye,
+  EyeOff,
   X,
   Trash2,
   Plus
@@ -862,6 +864,15 @@ const StudentCouncilPage = () => {
     setSectionVisibilityModal(false);
   };
 
+  const toggleSectionVisibility = (key) => {
+    setSectionVisibility(prev => {
+      const next = { ...prev, [key]: prev?.[key] === false ? true : false };
+      return next;
+    });
+    // Also update live page data so the section hides/shows immediately
+    setData(prev => ({ ...prev, [key]: prev?.[key] === false ? true : false }));
+  };
+
   // Executive Members Editor
   const ExecutiveEditor = () => {
     const positions = ['president', 'vicePresident', 'secretary', 'treasurer'];
@@ -1359,17 +1370,25 @@ const StudentCouncilPage = () => {
         </div>
       )}
 
-      {/* Section Visibility Modal */}
+      {/* Manage Section Visibility Modal (canonical UI) */}
       {sectionVisibilityModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full overflow-hidden">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <ModalHeader title="Manage Section Visibility" onClose={() => setSectionVisibilityModal(false)} />
-            <div className="p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[70vh]">
               {sectionDisplay.map(section => (
-                <label key={section.key} className="flex items-center justify-between">
-                  <span>{section.label}</span>
-                  <input type="checkbox" checked={sectionVisibility[section.key] || false} onChange={(e) => setSectionVisibility(prev => ({ ...prev, [section.key]: e.target.checked }))} />
-                </label>
+                <div key={section.key} className="flex items-center justify-between border p-3 rounded">
+                  <div className="flex items-center space-x-3">
+                    {sectionVisibility[section.key] !== false ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                    <div>
+                      <div className="font-medium">{section.label}</div>
+                      <div className="text-sm text-gray-500">Toggle visibility for this section</div>
+                    </div>
+                  </div>
+                  <button onClick={() => toggleSectionVisibility(section.key)} className={`relative inline-flex items-center h-6 w-11 rounded-full ${sectionVisibility[section.key] !== false ? 'bg-green-600' : 'bg-gray-300'}`}>
+                    <span className={`bg-white w-4 h-4 rounded-full transform transition ${sectionVisibility[section.key] !== false ? 'translate-x-5' : 'translate-x-1'}`}></span>
+                  </button>
+                </div>
               ))}
             </div>
             <ModalFooter onCancel={() => setSectionVisibilityModal(false)} onSave={saveSectionVisibility} />

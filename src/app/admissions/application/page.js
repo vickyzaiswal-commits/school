@@ -39,6 +39,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [config, setConfig] = useState(null);
+  const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   
   const [formData, setFormData] = useState({
     // Student Information
@@ -379,6 +380,65 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     }
     setEditFormOpen(false);
     setOriginalData(null);
+  };
+
+  // Section visibility helpers
+  const sectionDisplayNames = {
+    showStudentInfo: 'Student Information Step',
+    showContactDetails: 'Contact Details Step',
+    showParentInfo: 'Parent Information Step',
+    showAcademicInfo: 'Academic Information Step',
+    showDocuments: 'Documents Upload Step',
+    showReview: 'Review & Submit Step',
+    'helpSection.show': 'Help Section'
+  };
+
+  const getConfigValue = (key) => {
+    if (!config) return false;
+    if (key.includes('.')) {
+      const parts = key.split('.');
+      let cur = config;
+      for (const p of parts) {
+        if (cur === undefined || cur === null) return false;
+        cur = cur[p];
+      }
+      return cur;
+    }
+    return config[key];
+  };
+
+  const toggleSectionVisibility = (key) => {
+    if (!config) return;
+    if (key.includes('.')) {
+      const parts = key.split('.');
+      setConfig(prev => {
+        const next = { ...prev };
+        let cur = next;
+        for (let i = 0; i < parts.length - 1; i++) {
+          const p = parts[i];
+          cur[p] = { ...cur[p] };
+          cur = cur[p];
+        }
+        const last = parts[parts.length - 1];
+        cur[last] = !cur[last];
+        return next;
+      });
+    } else {
+      setConfig(prev => ({ ...prev, [key]: !prev[key] }));
+    }
+  };
+
+  const saveSectionVisibility = async () => {
+    try {
+      // attempt to persist visibility changes if api exists
+      if (typeof apiRequest === 'function') {
+        const payload = { ...config, lastUpdated: new Date().toISOString(), updatedBy: 'admin' };
+        await apiRequest('save_data/save_application_form', { payload });
+      }
+    } catch (error) {
+      console.error('Error saving visibility settings', error);
+    }
+    setSectionVisibilityModal(false);
   };
 
   // Modal Footer Component
@@ -1675,6 +1735,55 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
             </div>
           </div>
         )}
+      
+      {editMode && (
+        <>
+          <button onClick={() => setSectionVisibilityModal(true)} className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow">
+            <Edit className="h-5 w-5" />
+          </button>
+
+          {sectionVisibilityModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg max-w-4xl w-full overflow-hidden">
+                <div className="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+                  <h2 className="text-xl font-semibold">Manage Section Visibility</h2>
+                  <button onClick={() => setSectionVisibilityModal(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+                </div>
+                <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
+                  {[
+                    ['hero.show', 'Hero Section'],
+                    ['helpSection.show', 'Help Section'],
+                    ['showStudentInfo', 'Student Information Step'],
+                    ['showContactDetails', 'Contact Details Step'],
+                    ['showParentInfo', 'Parent Information Step'],
+                    ['showAcademicInfo', 'Academic Information Step'],
+                    ['showDocuments', 'Documents Upload Step'],
+                    ['showReview', 'Review & Submit Step']
+                  ].map(([key, label]) => (
+                    <div key={key} className="flex items-center justify-between p-3 border rounded">
+                      <div className="text-sm font-medium text-gray-700">{label}</div>
+                      <label className="inline-flex relative items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={!!getConfigValue(key)}
+                          onChange={() => toggleSectionVisibility(key)}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-2 peer-focus:ring-green-300 peer-checked:bg-green-600 relative after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-4 bg-gray-50 border-t flex justify-end space-x-3">
+                  <button onClick={() => setSectionVisibilityModal(false)} className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                  <button onClick={saveSectionVisibility} className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
       </div>
     </div>
   );
