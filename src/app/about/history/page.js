@@ -43,7 +43,6 @@ const OurHistoryPage = () => {
   // Default data structure
   const defaultData = {
     hero: {
-      establishedYear: "1927",
       title: "Our Rich Heritage",
       subtitle: "Nearly a century of educational excellence, rooted in Edmund Rice values and committed to nurturing generations of compassionate leaders.",
       stats: [
@@ -605,15 +604,7 @@ const OurHistoryPage = () => {
                       <span>Show Hero Section</span>
                     </label>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium">Established Year</label>
-                    <input
-                      type="text"
-                      value={editData.establishedYear || ''}
-                      onChange={(e) => handleObjectChange('establishedYear', e.target.value)}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
+                  {/* Established year removed */}
                   <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input
@@ -1162,10 +1153,7 @@ const OurHistoryPage = () => {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
-              <div className="flex items-center space-x-2 mb-4">
-                <Clock className="h-6 w-6 text-yellow-400" />
-                <span className="text-yellow-400 font-semibold">Est. {safeData('hero').establishedYear}</span>
-              </div>
+              {/* established year removed from hero */}
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{safeData('hero').title}</h1>
               <p className="text-xl text-green-100 mb-8 leading-relaxed">
                 {safeData('hero').subtitle}

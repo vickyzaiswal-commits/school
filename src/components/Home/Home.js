@@ -31,6 +31,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { toast } from "sonner";
+import Spinner from '@components/Spinner/Spinner';
 const HomePage = ({ schoolData = {} }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -40,7 +41,7 @@ const HomePage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!Object.keys(schoolData || {}).length);
   // Manage Section Visibility modal state
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const role = 'admin'; // This should ideally come from auth context
@@ -244,8 +245,8 @@ const HomePage = ({ schoolData = {} }) => {
     User
   };
 
-  // Start with default data
-  const [data, setData] = useState(defaultData);
+  // Start with server-provided data if present, otherwise default data
+  const [data, setData] = useState(Object.keys(schoolData || {}).length ? schoolData : defaultData);
 
   // Fetch data from database on component mount
   useEffect(() => {
@@ -711,12 +712,7 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading school data...</p>
-        </div>
-      </div>
+     <Spinner fullScreen={true} />
     );
   }
 

@@ -80,17 +80,17 @@ const Navbar = ({ schoolData }) => {
         icon: "GraduationCap"
       },
       {
-        id: 'academics',
+        id: 'notice',
         show: true,
-        label: "Academics",
-        url: "/academics",
+        label: "Notice",
+        url: "/notice",
         icon: "BookOpen"
       },
       {
         id: 'events',
         show: true,
         label: "Events",
-        url: "/events",
+        url: "/co-curricular/events",
         icon: "Calendar"
       },
       {
@@ -120,12 +120,12 @@ const Navbar = ({ schoolData }) => {
         buttonText: "Pay Fees"
       },
       {
-        id: 'admissionsButton',
+        id: 'noticeButton',
         show: true,
-        label: "Admissions",
-        url: "/admissions/application",
+        label: "Notice",
+        url: "/notice",
         icon: "FileText",
-        buttonText: "Admissions"
+        buttonText: "Notice"
       }
     ],
     
