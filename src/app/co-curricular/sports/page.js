@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const SportsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -436,11 +437,16 @@ const SportsPage = () => {
         updatedBy: 'admin',
         version: '1.0'
       };
-      const save_data = await apiRequest('save_data/save_sports_data', { payload });
-      if (save_data?.status === 200) {
-        // data already updated locally via toggleSectionVisibility
-      } else {
-        console.error('Save failed:', save_data);
+      try {
+        const encrypted = await encryptObject(payload);
+        const save_data = await apiRequest('save_data/save_sports_data', { payload: encrypted });
+        if (save_data?.status === 200) {
+          // data already updated locally via toggleSectionVisibility
+        } else {
+          console.error('Save failed:', save_data);
+        }
+      } catch (encErr) {
+        console.error('Encryption/Save error:', encErr);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -465,8 +471,18 @@ const SportsPage = () => {
         const res = await apiRequest('save_data/get_all_sports_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && typeof fetchedData === 'object' && fetchedData.encrypted) {
+              const dec = await decryptObject(fetchedData);
+              if (dec) fetchedData = dec;
+            } else if (typeof fetchedData === 'string') {
+              try { fetchedData = JSON.parse(fetchedData); } catch (e) { /* leave as-is */ }
+            }
+          } catch (deErr) {
+            console.warn('Decryption failed for sports page:', deErr);
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -574,13 +590,17 @@ const SportsPage = () => {
       };
 
       console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_sports_data', { payload });
-      console.log(save_data);
-      
-      if (save_data.status === 200) {
-        setData(updatedData);
-      } else {
-        console.error('Save failed:', save_data);
+      try {
+        const encrypted = await encryptObject(payload);
+        const save_data = await apiRequest('save_data/save_sports_data', { payload: encrypted });
+        console.log(save_data);
+        if (save_data.status === 200) {
+          setData(updatedData);
+        } else {
+          console.error('Save failed:', save_data);
+        }
+      } catch (encErr) {
+        console.error('Encryption/Save error:', encErr);
       }
     } catch (error) {
       console.error('Save error:', error);

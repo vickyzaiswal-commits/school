@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 // Map string icon names to Lucide React components
 const iconMap = {
@@ -368,8 +369,22 @@ const GalleryPage = () => {
         const res = await apiRequest('save_data/get_all_gallery_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              fetchedData = JSON.parse(fetchedData);
+            }
+          } catch (err) {
+            console.warn('Failed to decrypt/parse fetched gallery data, using raw:', err);
+            try {
+              fetchedData = JSON.parse(fetchedData);
+            } catch (e) {
+              // leave fetchedData as-is
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -454,8 +469,9 @@ const GalleryPage = () => {
   // Save all section visibility
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_gallery_data', { payload: data });
-      console.log('Section visibility saved successfully');
+      const payload = await encryptObject(data);
+      await apiRequest('save_data/save_gallery_data', { payload });
+      console.log('Section visibility saved successfully (encrypted payload sent)');
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -635,8 +651,9 @@ const GalleryPage = () => {
     
     setData(newData);
     try {
-      await apiRequest('save_data/save_gallery_data', { payload: newData });
-      console.log('Data saved successfully');
+        const payload = await encryptObject(newData);
+        await apiRequest('save_data/save_gallery_data', { payload });
+        console.log('Data saved successfully (encrypted payload sent)');
     } catch (error) {
       console.error('Save failed', error);
     }

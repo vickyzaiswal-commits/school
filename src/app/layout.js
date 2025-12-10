@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 // import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +34,7 @@ export default function RootLayout({ children }) {
         </main>
         {/* <Footer/> */}
         {/* Footer can be added here */}
-        <footer className="bg-green-800 text-white py-8 mt-12">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-sm">© 2025 St. Columba's School. All rights reserved.</p>
-            <p className="text-xs text-green-200 mt-1">An Edmund Rice Educational Institution</p>
-          </div>
-        </footer>
+       <Footer />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const iconMap = {
   MapPin, Clock, Phone, Mail, ExternalLink, ChevronRight, ArrowRight, Users, Award, Globe, Heart, Building, Settings, X, Edit, Trash2, Plus
@@ -175,7 +176,19 @@ const AlumniPage = () => {
       try {
         const res = await apiRequest('save_data/get_all_alumni_data', {});
         if (res.status === 200 && res.data?.length > 0) {
-          setData({ ...defaultData, ...res.data[0].Data });
+          const raw = res.data[0].Data;
+          let fetched = raw;
+          try {
+            if (raw && raw.encrypted) {
+              fetched = await decryptObject(raw);
+            } else if (typeof raw === 'string') {
+              fetched = JSON.parse(raw);
+            }
+          } catch (e) {
+            console.warn('Failed to decrypt/parse alumni data, using raw value', e);
+            fetched = raw;
+          }
+          setData({ ...defaultData, ...fetched });
         } else {
           setData(defaultData);
         }
@@ -208,7 +221,14 @@ const AlumniPage = () => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_alumni_data', { payload: data });
+      let payload = data;
+      try {
+        payload = await encryptObject(data);
+      } catch (e) {
+        console.warn('Encryption failed for alumni section visibility — sending raw payload', e);
+        payload = data;
+      }
+      await apiRequest('save_data/save_alumni_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -230,7 +250,14 @@ const AlumniPage = () => {
     newData[editSection] = editData;
     setData(newData);
     try {
-      await apiRequest('save_data/save_alumni_data', { payload: newData });
+      let payload = newData;
+      try {
+        payload = await encryptObject(newData);
+      } catch (e) {
+        console.warn('Encryption failed for alumni save — sending raw payload', e);
+        payload = newData;
+      }
+      await apiRequest('save_data/save_alumni_data', { payload });
     } catch (err) {
       console.error(err);
     }

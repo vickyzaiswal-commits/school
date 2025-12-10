@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const StudentCouncilPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -537,8 +538,18 @@ const StudentCouncilPage = () => {
         const res = await apiRequest('save_data/get_all_student_council_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              fetchedData = JSON.parse(fetchedData);
+            }
+          } catch (err) {
+            console.warn('Failed to decrypt/parse fetched council data, using raw:', err);
+            try { fetchedData = JSON.parse(fetchedData); } catch(e) { /* leave as-is */ }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -826,8 +837,9 @@ const StudentCouncilPage = () => {
     
     setData(newData);
     try {
-      await apiRequest('save_data/save_student_council_data', { payload: newData });
-      console.log('Data saved successfully');
+      const payload = await encryptObject(newData);
+      await apiRequest('save_data/save_student_council_data', { payload });
+      console.log('Data saved successfully (encrypted payload sent)');
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -857,7 +869,8 @@ const StudentCouncilPage = () => {
     });
     setData(newData);
     try {
-      await apiRequest('save_data/save_student_council_data', { payload: newData });
+      const payload = await encryptObject(newData);
+      await apiRequest('save_data/save_student_council_data', { payload });
     } catch (err) {
       console.error('Failed to save section visibility', err);
     }

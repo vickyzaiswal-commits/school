@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const TransportPage = () => {
   const [activeTab, setActiveTab] = useState('routes');
@@ -438,8 +439,22 @@ const TransportPage = () => {
         const res = await apiRequest('save_data/get_all_transport_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              fetchedData = JSON.parse(fetchedData);
+            }
+          } catch (err) {
+            console.warn('Failed to decrypt/parse fetched transport data, using raw:', err);
+            try {
+              fetchedData = JSON.parse(fetchedData);
+            } catch (e) {
+              // leave fetchedData as-is
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -480,7 +495,8 @@ const TransportPage = () => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_transport_data', { payload: data });
+      const payload = await encryptObject(data);
+      await apiRequest('save_data/save_transport_data', { payload });
       setSectionVisibilityModal(false);
     } catch (error) {
       console.error('Failed to save section visibility', error);
@@ -596,7 +612,8 @@ const TransportPage = () => {
     newData[editSection] = { ...newData[editSection], ...sectionContent };
     setData(newData);
     try {
-      await apiRequest('save_data/save_transport_data', { payload: newData });
+      const payload = await encryptObject(newData);
+      await apiRequest('save_data/save_transport_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }

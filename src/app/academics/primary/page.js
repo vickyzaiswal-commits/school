@@ -36,6 +36,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 
 const PrimarySchoolPage = () => {
@@ -386,8 +387,24 @@ const PrimarySchoolPage = () => {
         const res = await apiRequest('save_data/get_all_primaryschool_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedRaw = res.data[0]?.Data || {};
+          console.log('Fetched Raw Data:', fetchedRaw);
+
+          let fetchedData = fetchedRaw;
+          if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
+            const decrypted = await decryptObject(fetchedRaw);
+            if (decrypted) fetchedData = decrypted;
+            else {
+              try {
+                fetchedData = JSON.parse(fetchedRaw);
+              } catch (e) {
+                console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
+                fetchedData = {};
+              }
+            }
+          }
+
+          console.log('Fetched Data (after decrypt/parse):', fetchedData);
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -528,11 +545,14 @@ const PrimarySchoolPage = () => {
         version: '1.0'
       };
 
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_primaryschool', { payload });
-      console.log(save_data);
-      
-      if (save_data.status === 200) {
+      console.log('Payload (pre-encrypt):', JSON.stringify(payload, null, 2));
+
+      // encrypt payload before sending
+      const encryptedPayload = await encryptObject(payload);
+      const save_data = await apiRequest('save_data/save_primaryschool', { payload: encryptedPayload });
+      console.log('Save response:', save_data);
+
+      if (save_data?.status === 200) {
         setData(updatedData);
       } else {
         console.error('Save failed:', save_data);
@@ -638,7 +658,9 @@ const PrimarySchoolPage = () => {
         updatedBy: 'admin',
         version: '1.0'
       };
-      const res = await apiRequest('save_data/save_primaryschool', { payload });
+      // encrypt payload before sending
+      const encrypted = await encryptObject(payload);
+      const res = await apiRequest('save_data/save_primaryschool', { payload: encrypted });
       if (res.status === 200) {
         setSectionVisibilityModal(false);
       } else {

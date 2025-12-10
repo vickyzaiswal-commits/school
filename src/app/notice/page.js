@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const defaultData = {
   showHero: true,
@@ -108,7 +109,19 @@ const NoticePage = () => {
       try {
         const res = await apiRequest('save_data/get_all_notice_data', {});
         if (res.status === 200 && res.data?.length > 0) {
-          setData({ ...defaultData, ...res.data[0].Data });
+          const raw = res.data[0].Data;
+          let fetched = raw;
+          try {
+            if (raw && raw.encrypted) {
+              fetched = await decryptObject(raw);
+            } else if (typeof raw === 'string') {
+              fetched = JSON.parse(raw);
+            }
+          } catch (e) {
+            console.warn('Failed to decrypt/parse notice data, using raw value', e);
+            fetched = raw;
+          }
+          setData({ ...defaultData, ...fetched });
         }
       } catch (err) {
         console.error(err);
@@ -123,7 +136,14 @@ const NoticePage = () => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_notice_data', { payload: data });
+      let payload = data;
+      try {
+        payload = await encryptObject(data);
+      } catch (e) {
+        console.warn('Encryption failed for notice section visibility — sending raw payload', e);
+        payload = data;
+      }
+      await apiRequest('save_data/save_notice_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -146,7 +166,14 @@ const NoticePage = () => {
     newData[editSection] = editData;
     setData(newData);
     try {
-      await apiRequest('save_data/save_notice_data', { payload: newData });
+      let payload = newData;
+      try {
+        payload = await encryptObject(newData);
+      } catch (e) {
+        console.warn('Encryption failed for notice save — sending raw payload', e);
+        payload = newData;
+      }
+      await apiRequest('save_data/save_notice_data', { payload });
     } catch (err) {
       console.error(err);
     }

@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const FeesPage = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -312,8 +313,27 @@ const FeesPage = () => {
         const res = await apiRequest('save_data/get_all_fees_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              try {
+                fetchedData = JSON.parse(fetchedData);
+              } catch (e) {
+                console.warn('Failed to parse fetchedData string, using default', e);
+                fetchedData = {};
+              }
+            }
+          } catch (e) {
+            console.warn('Decryption failed, falling back to raw data or default', e);
+            try {
+              if (typeof fetchedData === 'string') fetchedData = JSON.parse(fetchedData);
+            } catch (err) {
+              fetchedData = {};
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -464,13 +484,18 @@ const FeesPage = () => {
       };
 
       console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_fees_data', { payload });
-      console.log(save_data);
-      
-      if (save_data.status === 200) {
-        setData(updatedData);
-      } else {
-        console.error('Save failed:', save_data);
+      try {
+        const encrypted = await encryptObject(payload);
+        const save_data = await apiRequest('save_data/save_fees_data', { payload: encrypted });
+        console.log(save_data);
+        
+        if (save_data.status === 200) {
+          setData(updatedData);
+        } else {
+          console.error('Save failed:', save_data);
+        }
+      } catch (err) {
+        console.error('Save/Encryption error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -507,11 +532,16 @@ const FeesPage = () => {
         version: '1.0'
       };
 
-      const save_data = await apiRequest('save_data/save_fees_data', { payload });
-      if (save_data.status === 200) {
-        setData(updatedData);
-      } else {
-        console.error('Save failed:', save_data);
+      try {
+        const encrypted = await encryptObject(payload);
+        const save_data = await apiRequest('save_data/save_fees_data', { payload: encrypted });
+        if (save_data.status === 200) {
+          setData(updatedData);
+        } else {
+          console.error('Save failed:', save_data);
+        }
+      } catch (err) {
+        console.error('Save/Encryption error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);

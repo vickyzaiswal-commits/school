@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const CanteenPage = () => {
   const [activeTab, setActiveTab] = useState('menu');
@@ -505,8 +506,22 @@ const CanteenPage = () => {
         const res = await apiRequest('save_data/get_all_canteen_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              fetchedData = JSON.parse(fetchedData);
+            }
+          } catch (err) {
+            console.warn('Failed to decrypt/parse fetched canteen data, using raw:', err);
+            try {
+              fetchedData = JSON.parse(fetchedData);
+            } catch (e) {
+              // leave fetchedData as-is
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -730,7 +745,8 @@ const CanteenPage = () => {
     }
     setData(newData);
     try {
-      await apiRequest('save_data/save_canteen_data', { payload: newData });
+      const payload = await encryptObject(newData);
+      await apiRequest('save_data/save_canteen_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -750,7 +766,8 @@ const CanteenPage = () => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_canteen_data', { payload: data });
+      const payload = await encryptObject(data);
+      await apiRequest('save_data/save_canteen_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }

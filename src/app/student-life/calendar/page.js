@@ -33,8 +33,9 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
-const SchoolCalendarPage = ({ calendarData }) => {
+const SchoolCalendarPage = ({  }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [activeCategory, setActiveCategory] = useState('all');
@@ -375,8 +376,22 @@ const SchoolCalendarPage = ({ calendarData }) => {
         const res = await apiRequest('save_data/get_all_calendar_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              fetchedData = JSON.parse(fetchedData);
+            }
+          } catch (err) {
+            console.warn('Failed to decrypt/parse fetched calendar data, using raw:', err);
+            try {
+              fetchedData = JSON.parse(fetchedData);
+            } catch (e) {
+              // leave fetchedData as-is
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -413,7 +428,8 @@ const SchoolCalendarPage = ({ calendarData }) => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_calendar_data', { payload: data });
+      const payload = await encryptObject(data);
+      await apiRequest('save_data/save_calendar_data', { payload });
       setSectionVisibilityModal(false);
     } catch (error) {
       console.error('Failed to save section visibility', error);
@@ -668,7 +684,8 @@ const SchoolCalendarPage = ({ calendarData }) => {
     }
     setData(newData);
     try {
-      await apiRequest('save_data/save_calendar_data', { payload: newData });
+      const payload = await encryptObject(newData);
+      await apiRequest('save_data/save_calendar_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }

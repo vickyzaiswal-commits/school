@@ -30,6 +30,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const ApplicationFormPage = ({ schoolData = {} }) => {
   // All useState calls FIRST, unconditionally
@@ -249,8 +250,27 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
         const res = await apiRequest('save_data/get_all_application_forms', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              try {
+                fetchedData = JSON.parse(fetchedData);
+              } catch (e) {
+                console.warn('Failed to parse fetchedData string, using default', e);
+                fetchedData = {};
+              }
+            }
+          } catch (e) {
+            console.warn('Decryption failed, falling back to raw data or default', e);
+            try {
+              if (typeof fetchedData === 'string') fetchedData = JSON.parse(fetchedData);
+            } catch (err) {
+              fetchedData = {};
+            }
+          }
           setConfig({ ...defaultConfig, ...fetchedData, ...schoolData });
         } else {
           console.log('No data or invalid response, using default');
@@ -367,13 +387,17 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       };
 
       console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_application_form', { payload });
-      console.log(save_data);
-      
-      if (save_data.status === 200) {
-        setConfig(editData);
-      } else {
-        console.error('Save failed:', save_data);
+      try {
+        const encrypted = await encryptObject(payload);
+        const save_data = await apiRequest('save_data/save_application_form', { payload: encrypted });
+        console.log(save_data);
+        if (save_data.status === 200) {
+          setConfig(editData);
+        } else {
+          console.error('Save failed:', save_data);
+        }
+      } catch (err) {
+        console.error('Save/Encryption error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -433,7 +457,12 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       // attempt to persist visibility changes if api exists
       if (typeof apiRequest === 'function') {
         const payload = { ...config, lastUpdated: new Date().toISOString(), updatedBy: 'admin' };
-        await apiRequest('save_data/save_application_form', { payload });
+        try {
+          const encrypted = await encryptObject(payload);
+          await apiRequest('save_data/save_application_form', { payload: encrypted });
+        } catch (err) {
+          console.error('Save/Encryption error', err);
+        }
       }
     } catch (error) {
       console.error('Error saving visibility settings', error);

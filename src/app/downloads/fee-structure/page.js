@@ -7,6 +7,7 @@ import {
   Building, Wallet, Bus, FileQuestion, Filter
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 
 const iconMap = {
@@ -384,7 +385,19 @@ const DownloadFeeStructurePage = () => {
       try {
         const res = await apiRequest('save_data/get_all_fee_structure_data', {});
         if (res.status === 200 && res.data?.length > 0) {
-          setData({ ...defaultData, ...res.data[0].Data });
+          const raw = res.data[0].Data;
+          let fetched = raw;
+          try {
+            if (raw?.encrypted) {
+              fetched = await decryptObject(raw);
+            } else if (typeof raw === 'string') {
+              fetched = JSON.parse(raw);
+            }
+          } catch (deErr) {
+            console.warn('Data decryption/parsing failed, using raw data', deErr);
+            fetched = raw;
+          }
+          setData({ ...defaultData, ...fetched });
         } else {
           setData(defaultData);
         }
@@ -429,7 +442,13 @@ const DownloadFeeStructurePage = () => {
   
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_fee_structure_data', { payload: data });
+      let payload = data;
+      try {
+        payload = await encryptObject(data);
+      } catch (encErr) {
+        console.warn('Encryption failed, sending raw payload', encErr);
+      }
+      await apiRequest('save_data/save_fee_structure_data', { payload });
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -452,7 +471,13 @@ const DownloadFeeStructurePage = () => {
     newData[editSection] = editData;
     setData(newData);
     try {
-      await apiRequest('save_data/save_fee_structure_data', { payload: newData });
+      let payload = newData;
+      try {
+        payload = await encryptObject(newData);
+      } catch (encErr) {
+        console.warn('Encryption failed, sending raw payload', encErr);
+      }
+      await apiRequest('save_data/save_fee_structure_data', { payload });
     } catch (err) {
       console.error(err);
     }
@@ -495,7 +520,13 @@ const DownloadFeeStructurePage = () => {
 
   const saveCtaLink = async () => {
     try {
-      await apiRequest('save_data/save_fee_structure_data', { payload: data });
+      let payload = data;
+      try {
+        payload = await encryptObject(data);
+      } catch (encErr) {
+        console.warn('Encryption failed, sending raw payload', encErr);
+      }
+      await apiRequest('save_data/save_fee_structure_data', { payload });
     } catch (err) {
       console.error(err);
     }

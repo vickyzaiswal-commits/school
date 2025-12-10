@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const SchoolTimingsPage = ({ schoolTimingsData }) => {
   const [activeTab, setActiveTab] = useState('daily');
@@ -515,8 +516,27 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
         const res = await apiRequest('save_data/get_all_school_timings_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          let fetchedData = res.data[0]?.Data || {};
+          console.log('Fetched Data (raw):', fetchedData);
+          try {
+            if (fetchedData && fetchedData.encrypted) {
+              fetchedData = await decryptObject(fetchedData);
+            } else if (typeof fetchedData === 'string') {
+              try {
+                fetchedData = JSON.parse(fetchedData);
+              } catch (e) {
+                console.warn('Failed to parse fetchedData string, using default', e);
+                fetchedData = {};
+              }
+            }
+          } catch (e) {
+            console.warn('Decryption failed, falling back to raw data or default', e);
+            try {
+              if (typeof fetchedData === 'string') fetchedData = JSON.parse(fetchedData);
+            } catch (err) {
+              fetchedData = {};
+            }
+          }
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -550,7 +570,12 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
 
   const saveSectionVisibility = async () => {
     try {
-      await apiRequest('save_data/save_school_timings_data', { payload: data });
+      try {
+        const encrypted = await encryptObject(data);
+        await apiRequest('save_data/save_school_timings_data', { payload: encrypted });
+      } catch (err) {
+        console.error('Save/Encryption error', err);
+      }
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -611,7 +636,12 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
     }
     setData(newData);
     try {
-      await apiRequest('save_data/save_school_timings_data', { payload: newData });
+      try {
+        const encrypted = await encryptObject(newData);
+        await apiRequest('save_data/save_school_timings_data', { payload: encrypted });
+      } catch (err) {
+        console.error('Save/Encryption error', err);
+      }
     } catch (error) {
       console.error('Save failed', error);
     }

@@ -29,6 +29,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 import { toast } from "sonner";
 import Spinner from '@components/Spinner/Spinner';
@@ -261,14 +262,33 @@ const HomePage = ({ schoolData = {} }) => {
           const homeRecord = res.data[0];
           
           // Check if Data exists and has the expected structure
-          if (homeRecord.Data && homeRecord.Data.homeData) {
-            // Use the complete homeData from database
-            console.log('Using database data:', homeRecord.Data.homeData);
-            setData(homeRecord.Data.homeData);
-          } else if (homeRecord.Data) {
-            // If Data exists but no homeData wrapper, use Data directly
-            console.log('Using database data (direct):', homeRecord.Data);
-            setData(homeRecord.Data);
+          if (homeRecord.Data) {
+            let fetched = homeRecord.Data;
+
+            // If server returned an encrypted wrapper, attempt to decrypt
+            if (typeof fetched === 'string' || (fetched && typeof fetched === 'object' && fetched.encrypted)) {
+              const decrypted = await decryptObject(fetched);
+              if (decrypted) fetched = decrypted;
+              else {
+                try {
+                  fetched = JSON.parse(fetched);
+                } catch (e) {
+                  console.warn('Failed to parse/decrypt homeRecord.Data');
+                  fetched = null;
+                }
+              }
+            }
+
+            if (fetched && fetched.homeData) {
+              console.log('Using database data:', fetched.homeData);
+              setData(fetched.homeData);
+            } else if (fetched) {
+              console.log('Using database data (direct):', fetched);
+              setData(fetched);
+            } else {
+              console.log('No valid data in database, using default');
+              setData(defaultData);
+            }
           } else {
             // Fallback to default data
             console.log('No valid data in database, using default');
@@ -389,7 +409,9 @@ const HomePage = ({ schoolData = {} }) => {
         updatedBy: 'admin',
         version: '1.0'
       };
-      const res = await apiRequest('save_data/save_home', { payload });
+      // encrypt payload before sending
+      const encrypted = await encryptObject(payload);
+      const res = await apiRequest('save_data/save_home', { payload: encrypted });
       if (res && (res.status === 200 || res.status === 201)) {
         setSectionVisibilityModal(false);
         toast.success('Visibility settings saved');
@@ -638,7 +660,9 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
     console.log('Saving complete JSON payload:', JSON.stringify(payload, null, 2));
     
     try {
-      const res = await apiRequest('save_data/save_home', { payload });
+      // encrypt payload before sending
+      const encryptedPayload = await encryptObject(payload);
+      const res = await apiRequest('save_data/save_home', { payload: encryptedPayload });
       console.log('Save response:', res);
       
       if (res && res.status === 201) {
@@ -754,14 +778,14 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
                       <h3 className="text-lg font-semibold mb-2">Slide {index + 1}</h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium mb-1">Image URL</label>
+                          {/* <label className="block text-sm font-medium mb-1">Image URL</label>
                           <input
                             type="text"
                             value={slide.image || ''}
                             onChange={(e) => handleArrayChange('items', index, 'image', e.target.value)}
                             placeholder="Enter image URL"
                             className="w-full p-2 border rounded mb-2"
-                          />
+                          /> */}
                           <label className="block text-sm font-medium mb-1">Or Upload File</label>
                           <FileUpload
                             currentUrl={slide.image || ''}

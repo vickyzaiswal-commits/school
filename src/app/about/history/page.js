@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const OurHistoryPage = () => {
   const [activeTimeline, setActiveTimeline] = useState(0);
@@ -266,6 +267,8 @@ const OurHistoryPage = () => {
     callToAction: 'Call To Action'
   };
 
+  // Encryption helpers are moved to `src/utils/encryption.js` and imported above.
+
   const getDataValue = (key) => {
     const layoutKey = layoutMap[key];
     if (layoutKey && data.layout && typeof data.layout[layoutKey] !== 'undefined') {
@@ -320,7 +323,10 @@ const OurHistoryPage = () => {
         updatedBy: 'admin',
         version: '1.0'
       };
-      const res = await apiRequest('save_data/save_history', { payload });
+
+      // Encrypt payload before sending
+      const encrypted = await encryptObject(payload);
+      const res = await apiRequest('save_data/save_history', { payload: encrypted });
       if (res?.status === 200) {
         setSectionVisibilityModal(false);
       } else {
@@ -384,8 +390,27 @@ const OurHistoryPage = () => {
         const res = await apiRequest('save_data/get_all_history_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
+          const fetchedRaw = res.data[0]?.Data || {};
+          console.log('Fetched Raw Data:', fetchedRaw);
+
+          let fetchedData = fetchedRaw;
+          // If server sent encrypted wrapper (object or JSON string), attempt to decrypt
+          if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
+            const decrypted = await decryptObject(fetchedRaw);
+            if (decrypted) {
+              fetchedData = decrypted;
+            } else {
+              // If decryption failed but server returned a JSON string, try parsing
+              try {
+                fetchedData = JSON.parse(fetchedRaw);
+              } catch (e) {
+                console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
+                fetchedData = {};
+              }
+            }
+          }
+
+          console.log('Fetched Data (after decrypt/parse):', fetchedData);
           setData({ ...defaultData, ...fetchedData });
         } else {
           console.log('No data or invalid response, using default');
@@ -489,11 +514,14 @@ const OurHistoryPage = () => {
         version: '1.0'
       };
 
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_history', { payload });
-      console.log(save_data);
-      
-      if (save_data.status === 200) {
+      console.log('Payload (pre-encrypt):', JSON.stringify(payload, null, 2));
+
+      // Encrypt payload before sending
+      const encryptedPayload = await encryptObject(payload);
+      const save_data = await apiRequest('save_data/save_history', { payload: encryptedPayload });
+      console.log('Save response:', save_data);
+
+      if (save_data?.status === 200) {
         setData(updatedData);
       } else {
         console.error('Save failed:', save_data);

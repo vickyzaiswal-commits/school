@@ -30,6 +30,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const VisionMissionPage = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -237,16 +238,32 @@ const VisionMissionPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiRequest('save_data/get_all_vision_mission_data', {});
-        console.log('API Response:', res);
-        if (res.status == 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data:', fetchedData);
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-          console.log('No data or invalid response, using default');
-          setData(defaultData);
-        }
+          const res = await apiRequest('save_data/get_all_vision_mission_data', {});
+          console.log('API Response:', res);
+          if (res.status == 200 && Array.isArray(res.data) && res.data.length > 0) {
+            let fetchedRaw = res.data[0]?.Data || {};
+            console.log('Fetched Raw Data:', fetchedRaw);
+
+            let fetchedData = fetchedRaw;
+            if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
+              const decrypted = await decryptObject(fetchedRaw);
+              if (decrypted) fetchedData = decrypted;
+              else {
+                try {
+                  fetchedData = JSON.parse(fetchedRaw);
+                } catch (e) {
+                  console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
+                  fetchedData = {};
+                }
+              }
+            }
+
+            console.log('Fetched Data (after decrypt/parse):', fetchedData);
+            setData({ ...defaultData, ...fetchedData });
+          } else {
+            console.log('No data or invalid response, using default');
+            setData(defaultData);
+          }
       } catch (error) {
         console.error('Fetch error:', error);
         setData(defaultData);
@@ -351,7 +368,9 @@ const VisionMissionPage = () => {
       };
 
       console.log('Payload:', JSON.stringify(payload, null, 2));
-      const save_data = await apiRequest('save_data/save_vision_mission', { payload });
+      // encrypt payload before sending
+      const encryptedPayload = await encryptObject(payload);
+      const save_data = await apiRequest('save_data/save_vision_mission', { payload: encryptedPayload });
       console.log(save_data);
       
       if (save_data.status === 200) {
@@ -461,7 +480,9 @@ const VisionMissionPage = () => {
         updatedBy: 'admin',
         version: '1.0'
       };
-      const res = await apiRequest('save_data/save_vision_mission', { payload });
+      // encrypt payload before sending
+      const encrypted = await encryptObject(payload);
+      const res = await apiRequest('save_data/save_vision_mission', { payload: encrypted });
       if (res.status === 200) {
         setSectionVisibilityModal(false);
       } else {
