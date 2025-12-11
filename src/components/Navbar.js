@@ -71,6 +71,70 @@ const Navbar = ({ schoolData }) => {
   const [errors, setErrors] = useState({});
   const [originalConfig, setOriginalConfig] = useState(null);
 
+  // Track eCare user login state
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loadUserFromStorage = async () => {
+      try {
+        const fromLocal = localStorage.getItem('ecareUser');
+        const fromSession = sessionStorage.getItem('ecareUser');
+        const raw = fromLocal || fromSession || null;
+        if (!raw) { setUser(null); return; }
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { setUser(null); return; }
+
+        // If stored object is encrypted (matches earlier save flow), attempt to decrypt
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const userObj = decrypted?.user || decrypted;
+            setUser(userObj);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setUser(null);
+            return;
+          }
+        }
+
+        const userObj = parsed.user || parsed;
+        setUser(userObj);
+      } catch (err) {
+        setUser(null);
+      }
+    };
+
+    loadUserFromStorage();
+
+    const onStorage = (e) => {
+      if (!e || !e.key) return;
+      if (e.key === 'ecareUser' || e.key === 'ecareToken') {
+        loadUserFromStorage();
+      }
+    };
+
+    window.addEventListener('storage', onStorage);
+    // also listen to a custom event dispatched from the login page in the same tab
+    window.addEventListener('ecareUserChanged', loadUserFromStorage);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('ecareUserChanged', loadUserFromStorage);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('ecareUser');
+      localStorage.removeItem('ecareToken');
+      sessionStorage.removeItem('ecareUser');
+      sessionStorage.removeItem('ecareToken');
+    } catch (e) {}
+    setUser(null);
+    // redirect to home
+    window.location.href = '/';
+  };
+
   // Default configuration
   const defaultConfig = {
     name: "St. Columba's School",
@@ -388,11 +452,37 @@ const Navbar = ({ schoolData }) => {
 
   const renderActionButtons = () => {
     if (!config?.actionButtons) return null;
-    
     return config.actionButtons.map((button) => {
       if (!button.show) return null;
       const IconComponent = iconMap[button.icon] || User;
-      
+
+      // For eCare login button, show Logout when user is present
+      if (button.id === 'eCareLogin') {
+        if (user) {
+          return (
+            <button
+              key={button.id}
+              onClick={handleLogout}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 shadow-md hover:shadow-lg bg-red-600 hover:bg-red-700 text-white`}
+            >
+              <IconComponent className="w-4 h-4" />
+              <span>Logout</span>
+            </button>
+          );
+        }
+
+        return (
+          <Link
+            key={button.id}
+            href={button.url}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 shadow-md hover:shadow-lg bg-blue-600 hover:bg-blue-700 text-white`}
+          >
+            <IconComponent className="w-4 h-4" />
+            <span>{button.buttonText}</span>
+          </Link>
+        );
+      }
+
       return (
         <Link 
           key={button.id}
