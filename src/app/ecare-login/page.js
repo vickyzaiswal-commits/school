@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/utils/apiRequest';
+import { encryptObject } from '@/utils/encryption';
 
 const EcareLoginPage = () => {
   const router = useRouter();
@@ -23,14 +24,37 @@ const EcareLoginPage = () => {
     setLoading(true);
     try {
       const payload = { email, password };
-      const res = await apiRequest('ecare/login', { payload });
+      const res = await apiRequest('users/login', { email, password });
+      console.log('Login response:', res);
+      if (res.status == 200) {
+        // Choose storage based on 'remember' checkbox
+        const storage = remember ? localStorage : sessionStorage;
 
-      if (res && (res.status === 200 || res.status === 201) && res.data) {
-        if (res.data.token) {
+        // Save token if provided
+        // if (res.data.token) {
+        //   try {
+        //     storage.setItem('ecareToken', res.data.token);
+        //   } catch (err) {
+        //     console.warn('Failed to save token:', err);
+        //   }
+        // }
+
+        // Save user object if returned (encrypted)
+        const userObj = res.user;
+        if (userObj) {
           try {
-            localStorage.setItem('ecareToken', res.data.token);
-          } catch (err) {}
+            const encrypted = await encryptObject(userObj);
+            storage.setItem('ecareUser', JSON.stringify(encrypted));
+          } catch (err) {
+            console.warn('Failed to encrypt/save user object:', err);
+            // Fallback to plain save if encryption fails
+            try { storage.setItem('ecareUser', JSON.stringify(userObj)); } catch (e) {}
+          }
         }
+
+        // Optional: set an in-memory flag or global context here (not implemented)
+
+        // Redirect to home/dashboard
         router.push('/');
       } else {
         setError(res?.message || 'Login failed. Please check your credentials.');
@@ -43,7 +67,7 @@ const EcareLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12 font-sans">
+    <div className=" bg-gray-100 flex items-center justify-center px-4 py-6 font-sans">
       <div className="w-full max-w-5xl bg-white shadow-xl rounded-lg overflow-hidden flex flex-col md:flex-row">
 
         {/* Left Sidebar - Green Panel */}

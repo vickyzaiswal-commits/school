@@ -45,7 +45,36 @@ const CanteenPage = () => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const role = 'admin'; // Should come from auth context
+  const [role, setRole] = useState(null); // Will be derived from stored user
+
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) { setRole(null); return; }
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+    initRole();
+  }, []);
 
   // Icon mapping
   const iconMap = {
@@ -1137,7 +1166,7 @@ const CanteenPage = () => {
                   </div>
                   <input value={editData.tabs?.title || ''} onChange={(e) => handleObjectChange('tabs.title', e.target.value)} placeholder="Tabs Title" className="w-full p-2 border rounded" />
                   <textarea value={editData.tabs?.description || ''} onChange={(e) => handleObjectChange('tabs.description', e.target.value)} placeholder="Tabs Description" className="w-full p-2 border rounded" rows="3" />
-                  {ItemEditor('tabs.items', ['id', 'name', 'icon', 'description'])}
+                  {ItemEditor('tabs.items', ['name', 'icon', 'description'])}
                   <div className="space-y-4">
                     <label className="flex items-center space-x-2">
                       <input type="checkbox" checked={editData.showMenu || false} onChange={(e) => handleObjectChange('showMenu', e.target.checked)} />

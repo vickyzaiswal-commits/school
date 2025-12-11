@@ -39,7 +39,36 @@ const HouseSystemPage = () => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const role = 'admin'; // Should come from auth context
+  const [role, setRole] = useState(null); // Will be derived from stored user
+
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) { setRole(null); return; }
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+    initRole();
+  }, []);
 
   // Icon mapping
   const iconMap = {
@@ -631,6 +660,9 @@ const HouseSystemPage = () => {
     });
   }, []);
 
+  // Utility to generate stable ids for list items
+  const genId = useCallback(() => `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, []);
+
   // Edit modal functions
   const openEditModal = (section) => {
     setEditSection(section);
@@ -678,8 +710,13 @@ const HouseSystemPage = () => {
         showSection: data.showOverview,
         overview: data.overview
       };
-      setEditData(JSON.parse(JSON.stringify(overviewData)));
-      setOriginalData(JSON.parse(JSON.stringify(overviewData)));
+      // Deep clone and ensure captains have stable ids to prevent index-key re-renders
+      const cloned = JSON.parse(JSON.stringify(overviewData || {}));
+      if (cloned.overview && Array.isArray(cloned.overview.captains?.items)) {
+        cloned.overview.captains.items = cloned.overview.captains.items.map(item => ({ id: item.id || genId(), ...item }));
+      }
+      setEditData(cloned);
+      setOriginalData(JSON.parse(JSON.stringify(cloned)));
     } else {
       const layoutKey = layoutMap[section];
       let sectionData = {
@@ -898,63 +935,91 @@ const HouseSystemPage = () => {
   const CaptainEditor = () => {
     const captains = getNested(editData, 'overview.captains.items') || [];
     const houses = ['Ruby', 'Emerald', 'Sapphire', 'Topaz'];
+
+    // Update a captain by id
+    const handleCaptainChange = (id, field, value) => {
+      setEditData(prev => {
+        if (!prev) return prev;
+        const updated = JSON.parse(JSON.stringify(prev));
+        const arr = (updated.overview?.captains?.items) || [];
+        updated.overview = updated.overview || {};
+        updated.overview.captains = updated.overview.captains || {};
+        updated.overview.captains.items = arr.map(item => {
+          if (item.id === id) {
+            const newItem = { ...item };
+            if (field === 'achievements') {
+              newItem.achievements = typeof value === 'string' ? value.split(',').map(s => s.trim()).filter(Boolean) : value;
+            } else {
+              newItem[field] = value;
+            }
+            return newItem;
+          }
+          return item;
+        });
+        return updated;
+      });
+    };
+
+    const removeCaptain = (id) => {
+      setEditData(prev => {
+        if (!prev) return prev;
+        const updated = JSON.parse(JSON.stringify(prev));
+        updated.overview = updated.overview || {};
+        updated.overview.captains = updated.overview.captains || {};
+        updated.overview.captains.items = (updated.overview.captains.items || []).filter(i => i.id !== id);
+        return updated;
+      });
+    };
+
+    const addCaptain = () => {
+      const newItem = { id: genId(), name: '', house: '', position: 'Captain', grade: '', achievements: [], quote: '', show: true };
+      setEditData(prev => {
+        const updated = JSON.parse(JSON.stringify(prev || {}));
+        updated.overview = updated.overview || {};
+        updated.overview.captains = updated.overview.captains || {};
+        const arr = updated.overview.captains.items || [];
+        updated.overview.captains.items = [...arr, newItem];
+        return updated;
+      });
+    };
+
+    // Per-row editor to keep local state while typing
+    const CaptainRow = React.memo(({ captain }) => {
+      const [local, setLocal] = useState({ ...captain });
+      useEffect(() => setLocal({ ...captain }), [captain.id]);
+
+      return (
+        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <div className="flex justify-between items-start mb-2">
+            <h4 className="font-semibold">{local.name || 'New Captain'}</h4>
+            <button onClick={() => removeCaptain(local.id)} className="text-red-600">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <input value={local.name || ''} onChange={(e) => setLocal(prev => ({ ...prev, name: e.target.value }))} onBlur={() => handleCaptainChange(local.id, 'name', local.name || '')} placeholder="Name" className="w-full p-2 border rounded mb-2" />
+          <select value={local.house || ''} onChange={(e) => setLocal(prev => ({ ...prev, house: e.target.value }))} onBlur={() => handleCaptainChange(local.id, 'house', local.house || '')} className="w-full p-2 border rounded mb-2">
+            <option value="">Select House</option>
+            {houses.map(h => <option key={h} value={h}>{h}</option>)}
+          </select>
+          <input value={local.position || ''} onChange={(e) => setLocal(prev => ({ ...prev, position: e.target.value }))} onBlur={() => handleCaptainChange(local.id, 'position', local.position || '')} placeholder="Position" className="w-full p-2 border rounded mb-2" />
+          <input value={local.grade || ''} onChange={(e) => setLocal(prev => ({ ...prev, grade: e.target.value }))} onBlur={() => handleCaptainChange(local.id, 'grade', local.grade || '')} placeholder="Grade" className="w-full p-2 border rounded mb-2" />
+          <textarea value={local.quote || ''} onChange={(e) => setLocal(prev => ({ ...prev, quote: e.target.value }))} onBlur={() => handleCaptainChange(local.id, 'quote', local.quote || '')} placeholder="Quote" className="w-full p-2 border rounded mb-2" rows="2" />
+          <label className="block text-sm font-medium mb-2">Achievements (comma separated)</label>
+          <textarea value={(local.achievements || []).join(', ')} onChange={(e) => setLocal(prev => ({ ...prev, achievements: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))} onBlur={() => handleCaptainChange(local.id, 'achievements', (local.achievements || []).join(', '))} placeholder="Achievements" className="w-full p-2 border rounded mb-2" rows="3" />
+          <label className="flex items-center space-x-2">
+            <input type="checkbox" checked={local.show !== false} onChange={(e) => { setLocal(prev => ({ ...prev, show: e.target.checked })); handleCaptainChange(local.id, 'show', e.target.checked); }} />
+            <span>Show Captain</span>
+          </label>
+        </div>
+      );
+    });
+
     return (
       <div className="space-y-6">
-        {captains.map((captain, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-            <h4 className="font-semibold mb-4">Captain {index + 1}</h4>
-            <input
-              value={captain.name || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'name', e.target.value)}
-              placeholder="Name"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <select
-              value={captain.house || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'house', e.target.value)}
-              className="w-full p-2 border rounded mb-2"
-            >
-              <option value="">Select House</option>
-              {houses.map(h => <option key={h} value={h}>{h}</option>)}
-            </select>
-            <input
-              value={captain.position || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'position', e.target.value)}
-              placeholder="Position"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <input
-              value={captain.grade || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'grade', e.target.value)}
-              placeholder="Grade"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <textarea
-              value={captain.quote || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'quote', e.target.value)}
-              placeholder="Quote"
-              className="w-full p-2 border rounded mb-2"
-              rows="2"
-            />
-            <label className="block text-sm font-medium mb-2">Achievements (comma separated)</label>
-            <textarea
-              value={captain.achievements?.join(', ') || ''}
-              onChange={(e) => handleArrayChange('overview.captains.items', index, 'achievements', e.target.value)}
-              placeholder="Achievements"
-              className="w-full p-2 border rounded mb-2"
-              rows="3"
-            />
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={captain.show !== false}
-                onChange={(e) => handleArrayChange('overview.captains.items', index, 'show', e.target.checked)}
-              />
-              <span>Show Captain</span>
-            </label>
-          </div>
+        {captains.map(c => (
+          <CaptainRow key={c.id || c.name} captain={c} />
         ))}
-        <button onClick={() => handleArrayChange('overview.captains.items', captains.length, 'name', '')} className="flex items-center text-green-600">
+        <button onClick={addCaptain} className="flex items-center text-green-600">
           <Plus className="h-4 w-4 mr-2" /> Add New Captain
         </button>
       </div>

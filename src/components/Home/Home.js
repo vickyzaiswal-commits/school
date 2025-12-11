@@ -45,7 +45,49 @@ const HomePage = ({ schoolData = {} }) => {
   const [isLoading, setIsLoading] = useState(!Object.keys(schoolData || {}).length);
   // Manage Section Visibility modal state
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const role = 'admin'; // This should ideally come from auth context
+  const [role, setRole] = useState(null); // derived from stored user
+
+  // Initialize role from stored `ecareUser` (localStorage or sessionStorage)
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) {
+          setRole(null);
+          return;
+        }
+
+        let parsed;
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          setRole(null);
+          return;
+        }
+
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+
+    initRole();
+  }, []);
 
   // Default data structure - all from JSON
   const defaultData = {

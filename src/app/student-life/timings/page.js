@@ -44,7 +44,36 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const role = 'admin'; // Should come from auth context
+  const [role, setRole] = useState(null); // Will be derived from stored user
+
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) { setRole(null); return; }
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+    initRole();
+  }, []);
 
   // Icon mapping (string-based for consistency)
   const iconMap = {
@@ -584,6 +613,26 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
 
   // Open edit modal
   const openEditModal = (section) => {
+    const addIdsToSchedules = (obj) => {
+      try {
+        const copy = JSON.parse(JSON.stringify(obj || {}));
+        if (copy?.dailySchedules?.items && typeof copy.dailySchedules.items === 'object') {
+          Object.keys(copy.dailySchedules.items).forEach(level => {
+            const levelObj = copy.dailySchedules.items[level] || {};
+            if (Array.isArray(levelObj.schedule)) {
+              levelObj.schedule = levelObj.schedule.map(item => ({
+                ...(item || {}),
+                id: item?.id || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`
+              }));
+              copy.dailySchedules.items[level] = levelObj;
+            }
+          });
+        }
+        return copy;
+      } catch (e) {
+        return obj;
+      }
+    };
     setEditSection(section);
     setEditFormOpen(true);
     if (section === 'tabs') {
@@ -591,7 +640,7 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
         showTabs: data.showTabs,
         tabs: data.tabs,
         showDailySchedules: data.showDailySchedules,
-        dailySchedules: data.dailySchedules,
+        dailySchedules: addIdsToSchedules({ dailySchedules: data.dailySchedules }).dailySchedules || data.dailySchedules,
         showAcademicCalendar: data.showAcademicCalendar,
         academicCalendar: data.academicCalendar,
         showBellSchedule: data.showBellSchedule,
@@ -607,6 +656,10 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
         showSection: data[layoutKey],
         ...data[section]
       };
+      // ensure schedule items have ids so React keys stay stable
+      if (sectionData?.dailySchedules) {
+        sectionData = addIdsToSchedules(sectionData);
+      }
       setEditData(sectionData);
       setOriginalData(JSON.parse(JSON.stringify(sectionData)));
     }
@@ -701,12 +754,93 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
     }));
   };
 
-  const handleScheduleItemChange = (level, index, field, value) => {
+  const handleScheduleItemChange = (level, id, field, value) => {
     setEditData(prev => {
-      const updated = { ...prev };
-      if (!updated.dailySchedules.items[level]) updated.dailySchedules.items[level] = { schedule: [] };
-      updated.dailySchedules.items[level].schedule[index] = { ...updated.dailySchedules.items[level].schedule[index], [field]: value };
-      return updated;
+      const prevDailyItems = prev?.dailySchedules?.items || {};
+      const levelObj = prevDailyItems[level] || { schedule: [] };
+      const schedule = (levelObj.schedule || []).map(item => item?.id === id ? { ...(item || {}), [field]: value } : item);
+
+      return {
+        ...prev,
+        dailySchedules: {
+          ...(prev?.dailySchedules || {}),
+          items: {
+            ...prevDailyItems,
+            [level]: { ...levelObj, schedule }
+          }
+        }
+      };
+    });
+  };
+
+  // Memoized per-row editor to avoid remounts / caret loss while typing
+  const ScheduleRowEditor = React.useMemo(() =>
+    React.memo(({ item, level }) => {
+      const [local, setLocal] = React.useState({ ...(item || {}) });
+
+      React.useEffect(() => {
+        // reset local state when the identity of the item changes
+        setLocal({ ...(item || {}) });
+      }, [item?.id]);
+
+      const handleLocalChange = (field, value) => setLocal(prev => ({ ...prev, [field]: value }));
+      const handleLocalBlur = (field) => {
+        // push change to parent on blur
+        handleScheduleItemChange(level, item.id, field, local[field]);
+      };
+
+      return (
+        <div className="flex gap-2 items-center">
+          <input
+            value={local.period || ''}
+            onChange={(e) => handleLocalChange('period', e.target.value)}
+            onBlur={() => handleLocalBlur('period')}
+            placeholder="Period"
+            className="flex-1 p-2 border rounded"
+          />
+          <input
+            value={local.time || ''}
+            onChange={(e) => handleLocalChange('time', e.target.value)}
+            onBlur={() => handleLocalBlur('time')}
+            placeholder="Time"
+            className="flex-1 p-2 border rounded"
+          />
+          <input
+            value={local.subject || ''}
+            onChange={(e) => handleLocalChange('subject', e.target.value)}
+            onBlur={() => handleLocalBlur('subject')}
+            placeholder="Subject"
+            className="flex-1 p-2 border rounded"
+          />
+          <input
+            value={local.description || ''}
+            onChange={(e) => handleLocalChange('description', e.target.value)}
+            onBlur={() => handleLocalBlur('description')}
+            placeholder="Description"
+            className="flex-1 p-2 border rounded"
+          />
+          <button onClick={() => removeScheduleItem(level, item.id)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
+        </div>
+      );
+    }),
+    [handleScheduleItemChange]
+  );
+
+  // Update the title (or other top-level fields) of a daily schedule level
+  const handleDailyScheduleTitleChange = (level, value) => {
+    setEditData(prev => {
+      const prevDailyItems = prev?.dailySchedules?.items || {};
+      const levelObj = prevDailyItems[level] || { schedule: [] };
+      return {
+        ...prev,
+        dailySchedules: {
+          ...(prev?.dailySchedules || {}),
+          items: {
+            ...prevDailyItems,
+            [level]: { ...levelObj, title: value }
+          }
+        }
+      };
     });
   };
 
@@ -740,30 +874,47 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
 
   const addScheduleItem = (level) => {
     setEditData(prev => {
-      const updated = deepClone(prev || {});
-      if (!updated.dailySchedules) updated.dailySchedules = { items: {} };
-      if (!updated.dailySchedules.items) updated.dailySchedules.items = {};
-      if (!updated.dailySchedules.items[level]) updated.dailySchedules.items[level] = { schedule: [] };
-      updated.dailySchedules.items[level].schedule = [
-        ... (updated.dailySchedules.items[level].schedule || []),
-        {
-          period: "",
-          time: "",
-          description: "",
-          subject: "",
-          show: true
+      const prevDailyItems = prev?.dailySchedules?.items || {};
+      const levelObj = prevDailyItems[level] || { schedule: [] };
+      const schedule = [...(levelObj.schedule || []), {
+        period: "",
+        time: "",
+        description: "",
+        subject: "",
+        show: true,
+        id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`
+      }];
+
+      return {
+        ...prev,
+        dailySchedules: {
+          ...(prev?.dailySchedules || {}),
+          items: {
+            ...prevDailyItems,
+            [level]: { ...levelObj, schedule }
+          }
         }
-      ];
-      return updated;
+      };
     });
   };
 
-  const removeScheduleItem = (level, index) => {
+  const removeScheduleItem = (level, id) => {
     setEditData(prev => {
-      const updated = deepClone(prev || {});
-      if (!updated.dailySchedules?.items?.[level]) return prev;
-      updated.dailySchedules.items[level].schedule = (updated.dailySchedules.items[level].schedule || []).filter((_, i) => i !== index);
-      return updated;
+      const prevDailyItems = prev?.dailySchedules?.items || {};
+      const levelObj = prevDailyItems[level];
+      if (!levelObj) return prev;
+      const schedule = (levelObj.schedule || []).filter(item => item?.id !== id);
+
+      return {
+        ...prev,
+        dailySchedules: {
+          ...(prev?.dailySchedules || {}),
+          items: {
+            ...prevDailyItems,
+            [level]: { ...levelObj, schedule }
+          }
+        }
+      };
     });
   };
 
@@ -876,15 +1027,13 @@ const SchoolTimingsPage = ({ schoolTimingsData }) => {
         <div key={level} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <h4 className="font-semibold mb-2">{item.title || level}</h4>
           <div className="space-y-2">
-            <input value={item.title || ''} onChange={(e) => handleScheduleItemChange(level, 0, 'title', e.target.value)} placeholder="Section Title" className="w-full p-2 border rounded" />
+            <input value={item.title || ''} onChange={(e) => handleDailyScheduleTitleChange(level, e.target.value)} placeholder="Section Title" className="w-full p-2 border rounded" />
             {(item.schedule || []).map((scheduleItem, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <input value={scheduleItem.period || ''} onChange={(e) => handleScheduleItemChange(level, index, 'period', e.target.value)} placeholder="Period" className="flex-1 p-2 border rounded" />
-                <input value={scheduleItem.time || ''} onChange={(e) => handleScheduleItemChange(level, index, 'time', e.target.value)} placeholder="Time" className="flex-1 p-2 border rounded" />
-                <input value={scheduleItem.subject || ''} onChange={(e) => handleScheduleItemChange(level, index, 'subject', e.target.value)} placeholder="Subject" className="flex-1 p-2 border rounded" />
-                <input value={scheduleItem.description || ''} onChange={(e) => handleScheduleItemChange(level, index, 'description', e.target.value)} placeholder="Description" className="flex-1 p-2 border rounded" />
-                <button onClick={() => removeScheduleItem(level, index)} className="text-red-600"><Trash2 className="h-4 w-4" /></button>
-              </div>
+              <ScheduleRowEditor
+                key={scheduleItem.id || index}
+                item={scheduleItem}
+                level={level}
+              />
             ))}
             <button onClick={() => addScheduleItem(level)} className="text-green-600 flex items-center"><Plus className="h-4 w-4 mr-1" /> Add Schedule Item</button>
           </div>

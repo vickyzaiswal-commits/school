@@ -92,8 +92,36 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
 
   const [errors, setErrors] = useState({});
   const [uploadedFiles, setUploadedFiles] = useState({});
+  const [role, setRole] = useState(null);
 
-  const role = 'admin'; // Should come from auth context
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) { setRole(null); return; }
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+    initRole();
+  }, []);
   
   // Default configuration with all fields enabled
   const defaultConfig = {

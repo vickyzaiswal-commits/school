@@ -39,7 +39,52 @@ const OurHistoryPage = () => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
-  const role = 'admin'; // Should come from auth context
+  const [role, setRole] = useState(null); // Will be derived from stored user
+
+  // Initialize role from stored `ecareUser` (localStorage or sessionStorage)
+  useEffect(() => {
+    const initRole = async () => {
+      try {
+        const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
+        if (!raw) {
+          setRole(null);
+          return;
+        }
+
+        let parsed;
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          // Not JSON — can't parse
+          setRole(null);
+          return;
+        }
+
+        // If it's an encrypted wrapper, attempt to decrypt
+        if (parsed && parsed.encrypted) {
+          try {
+            const decrypted = await decryptObject(parsed);
+            const user = decrypted?.user || decrypted;
+            setRole(user?.role || null);
+            return;
+          } catch (e) {
+            console.warn('Failed to decrypt stored ecareUser', e);
+            setRole(null);
+            return;
+          }
+        }
+
+        // Otherwise parsed is likely the user object or a wrapper with `user`
+        const user = parsed.user || parsed;
+        setRole(user?.role || null);
+      } catch (err) {
+        console.warn('Failed to read stored user for role detection', err);
+        setRole(null);
+      }
+    };
+
+    initRole();
+  }, []);
 
   // Default data structure
   const defaultData = {
