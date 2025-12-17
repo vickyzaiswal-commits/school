@@ -82,6 +82,9 @@ const CurriculumPage = () => {
       subtitle: "A comprehensive educational framework designed to nurture intellectual growth and character development",
       cta: { text: "Download Curriculum Overview", show: true, href: "/download-curriculum" },
       height: "h-96"
+      ,
+      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true
     },
     philosophy: {
       show: true,
@@ -768,6 +771,24 @@ const CurriculumPage = () => {
                       label="Upload CTA File"
                     />
                   </div>
+                  <div className="mt-3">
+                    <label className="block text-sm font-medium mb-1">Hero Background</label>
+                    <FileUpload
+                      currentUrl={editData.backgroundImage || ''}
+                      onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)}
+                      label="Upload Hero Background"
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.backgroundImageShow !== false}
+                        onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)}
+                      />
+                      <span>Show Background Image</span>
+                    </label>
+                  </div>
                   <div>
                     <label className="flex items-center space-x-2">
                       <input
@@ -778,15 +799,7 @@ const CurriculumPage = () => {
                       <span>Show CTA</span>
                     </label>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input
-                      type="text"
-                      value={editData.height || ''}
-                      onChange={(e) => handleObjectChange('height', e.target.value)}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
+                  
                 </div>
               )}
               {editSection === 'philosophy' && (
@@ -1578,6 +1591,9 @@ const CurriculumPage = () => {
           id="hero"
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
+          {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
+            <img src={safeData('hero').backgroundImage} alt="Hero background" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

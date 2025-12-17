@@ -89,6 +89,8 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
       title: "Senior School",
       subtitle: "Preparing future leaders for academic excellence and professional success in Classes XI-XII",
       height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true,
       cta: { text: "Download Senior School Prospectus", show: true, href: "#" }
     },
     tabs: [
@@ -896,6 +898,24 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
                       label="Upload CTA File"
                     />
                   </div>
+                  <div className="mt-3">
+                    <label className="block text-sm font-medium mb-1">Hero Background</label>
+                    <FileUpload
+                      currentUrl={editData.backgroundImage || ''}
+                      onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)}
+                      label="Upload Hero Background"
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.backgroundImageShow !== false}
+                        onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)}
+                      />
+                      <span>Show Background Image</span>
+                    </label>
+                  </div>
                   <div>
                     <label className="flex items-center space-x-2">
                       <input
@@ -1578,6 +1598,9 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
       {/* Hero Section */}
       {data.layout?.showHero && safeData('hero').show && (
         <section className={`relative ${safeData('hero').height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+          {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
+            <img src={safeData('hero').backgroundImage} alt="Hero background" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

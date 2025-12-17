@@ -30,6 +30,7 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
+import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const ApplicationFormPage = ({ schoolData = {} }) => {
@@ -131,6 +132,8 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       title: "Admission Application",
       subtitle: "Join the St. Columba's family - Begin your journey to excellence",
       height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true,
       cta: "Start Application",
       ctaIcon: ArrowRight,
       ctaLink: "#"
@@ -659,21 +662,147 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateAll()) {
-      // Submit form logic here
-      alert('Application submitted successfully!');
-      // Redirect or show success message
-    } else {
-      // Scroll to first error
-      const firstError = Object.keys(errors)[0];
-      const element = document.querySelector(`[name="${firstError}"]`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (validateAll()) {
+    // Create form data payload
+    const formPayload = {
+      // Student Information
+      studentInfo: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        nationality: formData.nationality,
+        bloodGroup: formData.bloodGroup,
+      },
+      
+      // Contact Information
+      contactInfo: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        phone: formData.phone,
+        email: formData.email,
+      },
+      
+      // Parent Information
+      parentInfo: {
+        fatherName: formData.fatherName,
+        fatherOccupation: formData.fatherOccupation,
+        fatherQualification: formData.fatherQualification,
+        fatherPhone: formData.fatherPhone,
+        fatherEmail: formData.fatherEmail,
+        
+        motherName: formData.motherName,
+        motherOccupation: formData.motherOccupation,
+        motherQualification: formData.motherQualification,
+        motherPhone: formData.motherPhone,
+        motherEmail: formData.motherEmail,
+      },
+      
+      // Academic Information
+      academicInfo: {
+        applyingForClass: formData.applyingForClass,
+        currentSchool: formData.currentSchool,
+        lastClass: formData.lastClass,
+        lastPercentage: formData.lastPercentage,
+        board: formData.board,
+      },
+      
+      // Documents Info (file names only, not actual files)
+      documents: {
+        birthCertificate: uploadedFiles.birthCertificate?.name || null,
+        aadhaarCard: uploadedFiles.aadhaarCard?.name || null,
+        photograph: uploadedFiles.photograph?.name || null,
+        previousMarksheet: uploadedFiles.previousMarksheet?.name || null,
+        transferCertificate: uploadedFiles.transferCertificate?.name || null,
+      },
+      
+      // System Info
+      meta: {
+        submissionDate: new Date().toISOString(),
+        currentStep: currentStep,
+        termsAccepted: formData.termsAccepted,
+        formVersion: '1.0'
       }
+    };
+    
+    // Log the payload to console
+    console.log('📋 FORM SUBMISSION PAYLOAD:');
+    console.log('========================================');
+    console.log(JSON.stringify(formPayload, null, 2));
+    console.log('========================================');
+    
+    // Log individual sections for better readability
+    console.log('📝 Individual Sections:');
+    console.log('👤 Student Info:', formPayload.studentInfo);
+    console.log('📞 Contact Info:', formPayload.contactInfo);
+    console.log('👨‍👩‍👧‍👦 Parent Info:', formPayload.parentInfo);
+    console.log('📚 Academic Info:', formPayload.academicInfo);
+    console.log('📄 Documents:', formPayload.documents);
+    console.log('⚙️ Meta:', formPayload.meta);
+    
+    // For actual file uploads, you'd need to use FormData
+    const formDataToSend = new FormData();
+    
+    // Append all form fields
+    Object.keys(formData).forEach(key => {
+      if (key !== 'termsAccepted') {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
+    
+    // Append files
+    Object.keys(uploadedFiles).forEach(key => {
+      if (uploadedFiles[key]) {
+        formDataToSend.append(key, uploadedFiles[key]);
+      }
+    });
+    
+    // Append metadata
+    formDataToSend.append('termsAccepted', formData.termsAccepted);
+    formDataToSend.append('submissionDate', new Date().toISOString());
+    
+    // Log FormData content
+    console.log('📤 FormData Contents:');
+    for (let pair of formDataToSend.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
     }
-  };
+    
+    // Here you would typically send the data to your API
+    try {
+      // Example API call (uncomment and modify as needed):
+      // const response = await fetch('/api/submit-application', {
+      //   method: 'POST',
+      //   body: formDataToSend,
+      // });
+      
+      // const result = await response.json();
+      // console.log('API Response:', result);
+      
+      // For now, just show alert
+      alert('Application submitted successfully! Check console for payload.');
+      
+      // You might want to redirect or show success message here
+      // window.location.href = '/success';
+      
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('There was an error submitting your application. Please try again.');
+    }
+    
+  } else {
+    // Scroll to first error
+    const firstError = Object.keys(errors)[0];
+    const element = document.querySelector(`[name="${firstError}"]`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+};
 
   // Form validation and submission functions will be here
 
@@ -1399,20 +1528,31 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                       placeholder="CTA Link"
                       className="w-full p-2 border rounded"
                     />
-                    <input
-                      value={editData.hero?.height || ''}
-                      onChange={(e) => handleHeroChange('height', e.target.value)}
-                      placeholder="Height (e.g., h-96)"
-                      className="w-full p-2 border rounded"
-                    />
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={editData.hero?.show || false}
-                        onChange={(e) => handleHeroChange('show', e.target.checked)}
-                      />
-                      <span>Show Hero Section</span>
-                    </label>
+                    <div className="space-y-2">
+                      <div>
+                        <FileUpload
+                          currentUrl={editData.hero?.backgroundImage || ''}
+                          onUpload={(url) => handleHeroChange('backgroundImage', url)}
+                          label="Upload Hero Background"
+                        />
+                      </div>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={editData.hero?.backgroundImageShow !== false}
+                          onChange={(e) => handleHeroChange('backgroundImageShow', e.target.checked)}
+                        />
+                        <span>Show Background Image</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={editData.hero?.show || false}
+                          onChange={(e) => handleHeroChange('show', e.target.checked)}
+                        />
+                        <span>Show Hero Section</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -1420,7 +1560,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
                 <div className="border border-gray-200 rounded-lg p-4">
                   <h3 className="text-lg font-semibold mb-4">Steps Visibility</h3>
                   {stepKeys.map((key) => (
-                    <label key={key} className="flex items-center space-x-2 mb-2 block">
+                    <label key={key} className="flex items-center space-x-2 mb-2">
                       <input
                         type="checkbox"
                         checked={editData[key] || false}
@@ -1510,7 +1650,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
 
                       {/* Contact Section */}
                       <div className="p-4 border rounded">
-                        <label className="flex items-center space-x-2 mb-2 block">
+                        <label className="flex items-center space-x-2 mb-2">
                           <input
                             type="checkbox"
                             checked={editData.helpSection?.contact?.show || false}
@@ -1568,7 +1708,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
 
                       {/* Office Hours Section */}
                       <div className="p-4 border rounded">
-                        <label className="flex items-center space-x-2 mb-2 block">
+                        <label className="flex items-center space-x-2 mb-2">
                           <input
                             type="checkbox"
                             checked={editData.helpSection?.officeHours?.show || false}
@@ -1637,6 +1777,13 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       {/* Hero Section */}
       {config.hero.show && (
         <section className={`relative ${config.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
+          {config.hero?.backgroundImageShow !== false && config.hero?.backgroundImage && (
+            <img
+              src={config.hero.backgroundImage}
+              alt="Hero background"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

@@ -95,7 +95,9 @@ const ArtsCulturePage = () => {
         { value: "200+", label: "Annual Events", show: true },
         { value: "50+", label: "National Awards", show: true }
       ],
-      height: "h-96"
+      height: 'h-96',
+      backgroundImage: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80",
+      backgroundImageShow: true,
     },
     categories: {
       show: true,
@@ -857,9 +859,16 @@ const ArtsCulturePage = () => {
                     <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} className="w-full p-2 border rounded" rows="3" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input type="text" value={editData.height || ''} onChange={(e) => handleObjectChange('height', e.target.value)} className="w-full p-2 border rounded" />
+                    <label className="block text-sm font-medium">Background Image</label>
+                    <FileUpload currentUrl={editData.backgroundImage || ''} onUploadSuccess={(url) => handleImageChange('backgroundImage', url)} label="Background Image" />
                   </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.backgroundImageShow !== false} onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)} />
+                      <span>Show Background Image</span>
+                    </label>
+                  </div>
+                 
                   <h3 className="text-lg font-semibold mt-4 mb-2">Stats</h3>
                   {(editData.stats || []).map((stat, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
@@ -912,7 +921,12 @@ const ArtsCulturePage = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input type="text" value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded" />
+                          <select value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                            <option value="">Select Icon</option>
+                            {Object.keys(iconMap).map(key => (
+                              <option key={key} value={key}>{key}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="flex items-center space-x-2">
@@ -1357,7 +1371,12 @@ const ArtsCulturePage = () => {
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input type="text" value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded" />
+                          <select value={item.icon || ''} onChange={(e) => handleArrayChange('items', index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                            <option value="">Select Icon</option>
+                            {Object.keys(iconMap).map(key => (
+                              <option key={key} value={key}>{key}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Label</label>
@@ -1430,6 +1449,13 @@ const ArtsCulturePage = () => {
       {data.layout?.showHero && data.hero?.show && (
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
+          {data.hero?.backgroundImageShow !== false && (
+            <img
+              src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'}
+              alt={data.hero.title}
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
+            />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>

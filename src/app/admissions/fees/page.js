@@ -85,6 +85,8 @@ const FeesPage = () => {
       title: "Fee Structure & Payment",
       subtitle: "Transparent and comprehensive fee information for academic year 2024-25",
       height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true,
       primaryCta: { text: "Pay Fees Online", show: true, href: "#payment" },
       secondaryCta: { text: "Download Fee Structure", show: true, href: "" }
     },
@@ -723,8 +725,14 @@ const FeesPage = () => {
                     <textarea value={editData.subtitle || ''} onChange={(e) => handleObjectChange('subtitle', e.target.value)} className="w-full p-2 border rounded" rows="3" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input type="text" value={editData.height || ''} onChange={(e) => handleObjectChange('height', e.target.value)} className="w-full p-2 border rounded" />
+                    <label className="block text-sm font-medium">Background Image</label>
+                    <FileUpload currentUrl={editData.backgroundImage || ''} onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)} label="Upload Hero Background" />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.backgroundImageShow !== false} onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)} />
+                      <span>Show Background Image</span>
+                    </label>
                   </div>
                   <h3 className="text-lg font-semibold mt-4 mb-2">Primary CTA</h3>
                   <div>
@@ -956,7 +964,12 @@ const FeesPage = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input type="text" value={method.icon || ''} onChange={(e) => handleArrayChange('methods', index, 'icon', e.target.value)} className="w-full p-2 border rounded" />
+                          <select value={method.icon || ''} onChange={(e) => handleArrayChange('methods', index, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                            <option value="">Select Icon</option>
+                            {Object.keys(iconMap).map(key => (
+                              <option key={key} value={key}>{key}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Description</label>
@@ -1210,6 +1223,13 @@ const FeesPage = () => {
           className={`relative ${safeData('hero').height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
           <div className="absolute inset-0 bg-black/20"></div>
+          {safeData('hero').backgroundImageShow !== false && (
+            <img
+              src={safeData('hero').backgroundImage || 'https://via.placeholder.com/1920x400'}
+              alt={safeData('hero').title}
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
+            />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
               <div className="flex items-center space-x-2 mb-4">

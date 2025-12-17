@@ -618,15 +618,7 @@ const InfrastructurePage = ({ schoolData = {} }) => {
                       rows="3"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input
-                      type="text"
-                      value={editData.height || ''}
-                      onChange={(e) => handleObjectChange('height', e.target.value)}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
+                  
                 </div>
               )}
               {editSection === 'introduction' && (

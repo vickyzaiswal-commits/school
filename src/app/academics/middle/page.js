@@ -84,6 +84,8 @@ const MiddleSchoolPage = () => {
       title: "Middle School",
       subtitle: "Building strong foundations for future success in Classes VI-VIII",
       height: "h-96", // Consistent with other pages
+      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true,
       cta: { text: "Download Middle School Brochure", show: true, href: "/download-brochure" }
     },
     tabs: [
@@ -651,8 +653,12 @@ const MiddleSchoolPage = () => {
       if (layoutKey && 'showSection' in editData) {
         updatedData.layout[layoutKey] = editData.showSection;
       }
-      const { showSection, ...sectionUpdates } = editData;
-      updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+      if (editSection === 'tabs') {
+        updatedData[editSection] = Array.isArray(editData) ? editData : [];
+      } else {
+        const { showSection, ...sectionUpdates } = editData;
+        updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+      }
 
       const payload = {
         ...updatedData,
@@ -895,6 +901,24 @@ const MiddleSchoolPage = () => {
                       label="Upload CTA File"
                     />
                   </div>
+                  <div className="mt-3">
+                    <label className="block text-sm font-medium mb-1">Hero Background</label>
+                    <FileUpload
+                      currentUrl={editData.backgroundImage || ''}
+                      onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)}
+                      label="Upload Hero Background"
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.backgroundImageShow !== false}
+                        onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)}
+                      />
+                      <span>Show Background Image</span>
+                    </label>
+                  </div>
                   <div>
                     <label className="flex items-center space-x-2">
                       <input
@@ -904,15 +928,6 @@ const MiddleSchoolPage = () => {
                       />
                       <span>Show CTA</span>
                     </label>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input
-                      type="text"
-                      value={editData.height || ''}
-                      onChange={(e) => handleObjectChange('height', e.target.value)}
-                      className="w-full p-2 border rounded"
-                    />
                   </div>
                 </div>
               )}
@@ -935,15 +950,6 @@ const MiddleSchoolPage = () => {
                       <h4 className="text-md font-semibold mb-2">Tab {index + 1}</h4>
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-sm font-medium">ID</label>
-                          <input
-                            type="text"
-                            value={tab.id || ''}
-                            onChange={(e) => handleTabsChange(index, 'id', e.target.value)}
-                            className="w-full p-2 border rounded"
-                          />
-                        </div>
-                        <div>
                           <label className="block text-sm font-medium">Name</label>
                           <input
                             type="text"
@@ -954,12 +960,16 @@ const MiddleSchoolPage = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input
-                            type="text"
+                          <select
                             value={tab.icon || ''}
                             onChange={(e) => handleTabsChange(index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
-                          />
+                          >
+                            <option value="">Select icon</option>
+                            {Object.keys(iconMap).map((name) => (
+                              <option key={name} value={name}>{name}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="flex items-center space-x-2">
@@ -1751,6 +1761,9 @@ const MiddleSchoolPage = () => {
           id="hero"
           className={`relative ${safeData('hero').height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
+          {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
+            <img src={safeData('hero').backgroundImage} alt="Hero background" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

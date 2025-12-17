@@ -33,6 +33,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Spinner from '@components/Spinner/Spinner';
 
 const EventsPage = ({ eventsData }) => {
   const [activeCategory, setActiveCategory] = useState('academic');
@@ -139,6 +140,7 @@ const EventsPage = ({ eventsData }) => {
       subtitle: "Join our vibrant school community through exciting events and celebrations throughout the year",
       height: "h-96",
       backgroundImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true,
       ctaButton: {
         label: "View Event Handbook",
         link: "#",
@@ -982,7 +984,7 @@ const EventsPage = ({ eventsData }) => {
   const filteredCtaButtons = data.cta?.buttons?.filter(button => button.show !== false) || [];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner/>;
   }
 
   // Modal Header Component
@@ -1126,6 +1128,12 @@ const EventsPage = ({ eventsData }) => {
                       onUpload={(url) => handleObjectChange('backgroundImage', url)} 
                       className="w-full" 
                     />
+                  </div>
+                  <div className="mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" checked={editData.backgroundImageShow !== false} onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)} />
+                      <span>Show Background Image</span>
+                    </label>
                   </div>
                   <h3 className="text-lg font-semibold mt-4 mb-2">CTA Button</h3>
                   <div className="space-y-2">
@@ -1444,11 +1452,13 @@ const EventsPage = ({ eventsData }) => {
       {data.showHero && data.hero?.show && (
         <section className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
-          <img
-            src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'}
-            alt={data.hero.title}
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
-          />
+          {data.hero?.backgroundImageShow !== false && (
+            <img
+              src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'}
+              alt={data.hero.title}
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
+            />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero?.title}</h1>

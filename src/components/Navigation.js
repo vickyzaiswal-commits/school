@@ -108,9 +108,11 @@ const Navigation = ({ schoolData = {} }) => {
       name: 'Academics', href: '/academics', icon: 'BookOpen', show: true,
       dropdown: [
         { name: 'Curriculum', href: '/academics/curriculum', desc: 'Academic framework', icon: 'Book', show: true },
+        { name: 'Pre-Primary School', href: '/academics/pre-primary', desc: 'Early years', icon: 'Book', show: true },
         { name: 'Primary School', href: '/academics/primary', desc: 'Foundation years', icon: 'GraduationCap', show: true },
         { name: 'Middle School', href: '/academics/middle', desc: 'Developing skills', icon: 'Calculator', show: true },
-        { name: 'Senior School', href: '/academics/senior', desc: 'Specialized learning', icon: 'Library', show: true }
+        { name: 'Senior School', href: '/academics/senior', desc: 'Specialized learning', icon: 'Library', show: true },
+        { name: 'Higher Education', href: '/academics/higher-education', desc: 'Undergraduate & postgraduate', icon: 'GraduationCap', show: true }
       ]
     },
     { 

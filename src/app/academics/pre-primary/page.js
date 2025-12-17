@@ -33,13 +33,22 @@ import {
   X,
   Edit,
   Ban,
-  Send
+  Send,
+  Baby,
+  Blocks,
+  Gamepad2,
+  Sparkles,
+  Flower2,
+  Home,
+  Utensils,
+  Shirt,
+  Bed
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 
-const PrimarySchoolPage = () => {
+const PrePrimarySchoolPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isVisible, setIsVisible] = useState({});
   const [editMode, setEditMode] = useState(false);
@@ -49,7 +58,7 @@ const PrimarySchoolPage = () => {
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
-  const [role, setRole] = useState(null); // Will be derived from stored user
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const initRole = async () => {
@@ -80,131 +89,122 @@ const PrimarySchoolPage = () => {
     initRole();
   }, []);
 
-  // Default data structure with dynamic controls
+  // Default data structure for Pre-Primary School
   const defaultData = {
     hero: {
       show: true,
-      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      title: "Primary School",
-      subtitle: "Nurturing young minds with love, care, and quality education for Classes I-V",
-      cta: { text: "Download Primary School Brochure", show: true, href: "/download-brochure" },
-      height: "h-96"
-      ,
-      backgroundImage: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80",
+      image: "https://images.unsplash.com/photo-1516627145497-ae6bde7f7d67?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      title: "Pre-Primary School",
+      subtitle: "Nurturing young minds with love, care, and playful learning for Nursery, LKG & UKG",
+      cta: { text: "Download Pre-Primary Brochure", show: true, href: "/download-brochure" },
+      height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1516627145497-ae6bde7f7d67?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
       backgroundImageShow: true
     },
     tabs: [
-      { id: 'overview', name: 'Overview', icon: "BookOpen", show: true },
-      { id: 'curriculum', name: 'Curriculum', icon: "Target", show: true },
-      { id: 'activities', name: 'Activities', icon: "Palette", show: true },
+      { id: 'overview', name: 'Overview', icon: "Home", show: true },
+      { id: 'curriculum', name: 'Curriculum', icon: "BookOpen", show: true },
+      { id: 'activities', name: 'Activities', icon: "Gamepad2", show: true },
       { id: 'facilities', name: 'Facilities', icon: "Heart", show: true }
     ],
     overview: {
       show: true,
-      title: "Welcome to Primary School",
-      description: "Our Primary School program (Classes I-V) provides a nurturing and stimulating environment where young learners develop foundational skills, curiosity, and a love for learning. We focus on holistic development through a balanced curriculum that addresses academic, social, emotional, and physical growth.",
+      title: "Welcome to Pre-Primary School",
+      description: "Our Pre-Primary program (Nursery, LKG, UKG) provides a warm, secure, and stimulating environment where young children develop foundational skills through play, exploration, and joyful learning experiences. We focus on holistic development that nurtures curiosity, creativity, and confidence.",
       highlights: [
-        { icon: "Users", text: "Student-Teacher Ratio: 25:1", show: true },
-        { icon: "Clock", text: "8:00 AM - 2:30 PM Schedule", show: true },
-        { icon: "Heart", text: "Personalized Attention", show: true },
-        { icon: "Star", text: "Activity-Based Learning", show: true }
+        { icon: "Users", text: "Student-Teacher Ratio: 15:1", show: true },
+        { icon: "Clock", text: "9:00 AM - 12:30 PM Schedule", show: true },
+        { icon: "Heart", text: "Individualized Attention", show: true },
+        { icon: "Sparkles", text: "Play-Based Learning", show: true }
       ],
       teachingApproach: [
         {
-          icon: "Lightbulb",
+          icon: "Gamepad2",
           title: "Play-Based Learning",
-          description: "Learning through play, exploration, and hands-on activities that make education enjoyable and effective.",
+          description: "Learning through purposeful play, exploration, and hands-on activities that stimulate cognitive, social, and emotional growth.",
           show: true
         },
         {
-          icon: "Users",
-          title: "Collaborative Activities",
-          description: "Group projects and teamwork that develop social skills and cooperative learning habits.",
+          icon: "Baby",
+          title: "Child-Centered Approach",
+          description: "Curriculum designed around children's interests, needs, and developmental stages.",
           show: true
         },
         {
-          icon: "Brain",
-          title: "Multiple Intelligences",
-          description: "Teaching methods that cater to different learning styles and intelligences.",
+          icon: "Blocks",
+          title: "Multi-Sensory Learning",
+          description: "Engaging all senses to enhance learning and retention through varied experiences.",
           show: true
         },
         {
           icon: "Heart",
-          title: "Emotional Development",
-          description: "Focus on emotional intelligence, self-awareness, and interpersonal skills.",
+          title: "Emotional Nurturing",
+          description: "Building secure attachments, emotional intelligence, and positive self-esteem.",
           show: true
         }
       ]
     },
-    gradeLevels: {
+    ageGroups: {
       show: true,
-      title: "Grade Level Overview",
-      description: "Our progressive curriculum builds skills and knowledge year by year",
-      levels: [
+      title: "Age Group Overview",
+      description: "Our program is designed to meet the developmental needs of each age group",
+      groups: [
         {
-          grade: "Class I",
-          focus: "Foundational Literacy & Numeracy",
-          subjects: ["English", "Hindi", "Mathematics", "Environmental Studies", "Art", "Physical Education"],
-          description: "Building strong foundations in reading, writing, and basic arithmetic through play-based learning.",
+          age: "Nursery (3-4 Years)",
+          focus: "Foundation Building",
+          activities: ["Free Play", "Story Time", "Rhymes", "Art Activities", "Outdoor Play"],
+          description: "Focus on social skills, basic language, and motor development through structured play.",
           show: true
         },
         {
-          grade: "Class II",
+          age: "LKG (4-5 Years)",
           focus: "Skill Development",
-          subjects: ["English", "Hindi", "Mathematics", "Environmental Studies", "Art", "Music", "Physical Education"],
-          description: "Developing core academic skills while encouraging creativity and social development.",
+          activities: ["Pre-Writing", "Pre-Math", "Music", "Dance", "Nature Exploration"],
+          description: "Developing pre-academic skills, creativity, and independence through guided activities.",
           show: true
         },
         {
-          grade: "Class III",
-          focus: "Conceptual Understanding",
-          subjects: ["English", "Hindi", "Mathematics", "Environmental Science", "Social Studies", "Art", "Computer Basics"],
-          description: "Strengthening conceptual understanding across subjects with hands-on learning experiences.",
-          show: true
-        },
-        {
-          grade: "Class IV",
-          focus: "Application of Knowledge",
-          subjects: ["English", "Hindi", "Mathematics", "Science", "Social Studies", "Art", "Computer Science", "Value Education"],
-          description: "Applying knowledge to real-world situations and developing critical thinking skills.",
-          show: true
-        },
-        {
-          grade: "Class V",
-          focus: "Preparation for Middle School",
-          subjects: ["English", "Hindi", "Mathematics", "Science", "Social Studies", "Art", "Computer Science", "Value Education"],
-          description: "Consolidating learning and preparing students for the transition to middle school.",
+          age: "UKG (5-6 Years)",
+          focus: "School Readiness",
+          activities: ["Reading Readiness", "Number Concepts", "Science Exploration", "Group Projects", "Dramatic Play"],
+          description: "Preparing for formal schooling with enhanced cognitive and social-emotional skills.",
           show: true
         }
       ]
     },
     curriculum: {
       show: true,
-      title: "Primary School Curriculum",
-      description: "A balanced and comprehensive curriculum designed for young learners",
-      coreSubjects: [
-        { icon: "BookOpen", name: "English Language", description: "Reading, writing, speaking, and listening skills development", show: true },
-        { icon: "Languages", name: "Hindi", description: "Language acquisition and communication skills", show: true },
-        { icon: "Calculator", name: "Mathematics", description: "Number concepts, operations, and problem-solving", show: true },
-        { icon: "Globe", name: "Environmental Studies", description: "Science and social studies integration", show: true }
+      title: "Pre-Primary Curriculum",
+      description: "A balanced, developmentally appropriate curriculum designed for young learners",
+      learningAreas: [
+        { icon: "Book", name: "Language Development", description: "Listening, speaking, vocabulary building through stories, rhymes, and conversations", show: true },
+        { icon: "Calculator", name: "Early Mathematics", description: "Number concepts, shapes, patterns, and measurement through games and activities", show: true },
+        { icon: "Globe", name: "Environmental Awareness", description: "Exploring the natural world, seasons, plants, animals, and community helpers", show: true },
+        { icon: "Palette", name: "Creative Arts", description: "Expression through drawing, painting, clay work, and craft activities", show: true }
       ],
-      specialSubjects: [
-        { icon: "Palette", name: "Art Education", description: "Creative expression through various media", show: true },
-        { icon: "Music", name: "Music", description: "Introduction to rhythm, melody, and instruments", show: true },
-        { icon: "Heart", name: "Physical Education", description: "Development of motor skills and healthy habits", show: true },
-        { icon: "Code", name: "Computer Science", description: "Basic digital literacy and coding concepts", show: true }
+      specialPrograms: [
+        { icon: "Music", name: "Music & Movement", description: "Developing rhythm, coordination, and expression through songs and dance", show: true },
+        { icon: "Gamepad2", name: "Play Time", description: "Structured and free play for social, emotional, and physical development", show: true },
+        { icon: "TreePine", name: "Outdoor Learning", description: "Nature walks, gardening, and outdoor exploration", show: true },
+        { icon: "Sparkles", name: "Celebrations", description: "Cultural festivals, birthdays, and special events", show: true }
       ],
       assessmentMethods: [
         {
-          term: "Formative Assessment",
-          description: "Ongoing evaluation through classwork, projects, quizzes, and observations",
-          weightage: "40%",
+          term: "Continuous Observation",
+          description: "Ongoing assessment through observation of play, interactions, and daily activities",
+          frequency: "Daily",
           show: true
         },
         {
-          term: "Summative Assessment",
-          description: "Term-end examinations to evaluate comprehensive understanding",
-          weightage: "60%",
+          term: "Portfolio Assessment",
+          description: "Collection of children's work samples, photographs, and observations",
+          frequency: "Termly",
+          show: true
+        },
+        {
+          term: "Parent-Teacher Meetings",
+          description: "Regular updates and discussions about child's progress and development",
+          frequency: "Quarterly",
           show: true
         }
       ],
@@ -212,138 +212,135 @@ const PrimarySchoolPage = () => {
         title: "Typical Daily Schedule",
         show: true,
         schedule: [
-          { time: "8:00 AM", activity: "Assembly & Morning Prayer", show: true },
-          { time: "8:15 AM", activity: "First Period", show: true },
-          { time: "9:00 AM", activity: "Second Period", show: true },
-          { time: "9:45 AM", activity: "Short Break", show: true },
-          { time: "10:00 AM", activity: "Third Period", show: true },
-          { time: "10:45 AM", activity: "Fourth Period", show: true },
-          { time: "11:30 AM", activity: "Lunch Break", show: true },
-          { time: "12:15 PM", activity: "Fifth Period", show: true },
-          { time: "1:00 PM", activity: "Sixth Period", show: true },
-          { time: "1:45 PM", activity: "Co-curricular Activities", show: true },
-          { time: "2:30 PM", activity: "Dispersal", show: true }
+          { time: "9:00 AM", activity: "Arrival & Free Play", show: true },
+          { time: "9:30 AM", activity: "Circle Time (Rhymes, Stories)", show: true },
+          { time: "10:00 AM", activity: "Learning Activity (Theme-based)", show: true },
+          { time: "10:30 AM", activity: "Snack Time", show: true },
+          { time: "11:00 AM", activity: "Outdoor Play / Garden Time", show: true },
+          { time: "11:30 AM", activity: "Creative Arts / Music", show: true },
+          { time: "12:00 PM", activity: "Story Time / Show & Tell", show: true },
+          { time: "12:30 PM", activity: "Dispersal", show: true }
         ]
       }
     },
     activities: {
       show: true,
-      title: "Co-Curricular Activities",
-      description: "Enriching experiences beyond the classroom for holistic development",
-      specialPrograms: [
+      title: "Activities & Experiences",
+      description: "Rich, varied experiences that foster holistic development",
+      learningCenters: [
         {
-          icon: "BookOpen",
-          title: "Reading Program",
-          description: "Develops reading habits through our leveled library system and reading challenges.",
+          icon: "Book",
+          title: "Reading Corner",
+          description: "Cozy space with picture books, story props, and puppets to foster love for reading.",
           show: true
         },
         {
-          icon: "Calculator",
-          title: "Math Lab",
-          description: "Hands-on mathematics learning with manipulatives and practical applications.",
+          icon: "Blocks",
+          title: "Block Center",
+          description: "Building blocks, construction toys for spatial awareness and creativity.",
           show: true
         },
         {
-          icon: "Globe",
-          title: "Global Awareness",
-          description: "Introduction to different cultures, languages, and global perspectives.",
+          icon: "Palette",
+          title: "Art Studio",
+          description: "Various art materials for creative expression and fine motor development.",
           show: true
         },
         {
-          icon: "TreePine",
-          title: "Eco Warriors",
-          description: "Environmental education and sustainability practices for young learners.",
+          icon: "Microscope",
+          title: "Discovery Table",
+          description: "Natural materials, magnifying glasses, and simple science exploration tools.",
           show: true
         }
       ],
-      annualEvents: [
-        { name: "Annual Day", description: "Cultural performance showcasing talents", show: true },
-        { name: "Sports Day", description: "Track and field events for all students", show: true },
-        { name: "Science Exhibition", description: "Showcasing scientific projects and experiments", show: true },
-        { name: "Reading Festival", description: "Celebration of books and reading", show: true },
-        { name: "Art Exhibition", description: "Display of student artwork", show: true },
-        { name: "Math Olympiad", description: "Inter-class mathematics competition", show: true }
+      specialEvents: [
+        { name: "Annual Day", description: "Cultural performances showcasing young talents", show: true },
+        { name: "Sports Day", description: "Fun races and motor skill activities", show: true },
+        { name: "Grandparents Day", description: "Special day with grandparents", show: true },
+        { name: "Fancy Dress", description: "Character dress-up and role play", show: true },
+        { name: "Nature Walk", description: "Exploring the school garden and surroundings", show: true },
+        { name: "Festival Celebrations", description: "Cultural festivals and special days", show: true }
       ],
-      parentInvolvement: [
+      parentPartnership: [
         {
           icon: "Users",
-          title: "Parent-Teacher Meetings",
-          description: "Regular meetings to discuss student progress and development",
+          title: "Parent Orientation",
+          description: "Initial meeting to understand the program and build partnership",
           show: true
         },
         {
           icon: "Book",
-          title: "Reading Partners",
-          description: "Parent participation in reading activities and library programs",
+          title: "Home-School Connection",
+          description: "Regular updates, newsletters, and suggested home activities",
           show: true
         },
         {
           icon: "Calendar",
-          title: "Class Events",
-          description: "Parents invited to special class presentations and celebrations",
+          title: "Classroom Visits",
+          description: "Parents invited for special events and celebrations",
           show: true
         },
         {
           icon: "Heart",
-          title: "Volunteer Opportunities",
-          description: "Parents can volunteer for field trips and special activities",
+          title: "Parent Workshops",
+          description: "Sessions on child development, parenting, and early learning",
           show: true
         }
       ]
     },
     facilities: {
       show: true,
-      title: "Primary School Facilities",
-      description: "Purpose-built spaces designed for young learners",
+      title: "Child-Friendly Facilities",
+      description: "Safe, secure, and stimulating environments designed for young children",
       classroomFeatures: [
-        "Age-appropriate furniture and learning materials",
-        "Interactive whiteboards and digital learning tools",
-        "Reading corners with classroom libraries",
-        "Display areas for student work",
-        "Ample natural light and ventilation",
-        "Safety features designed for young children"
+        "Child-sized furniture and equipment",
+        "Bright, cheerful, and well-ventilated classrooms",
+        "Learning centers with age-appropriate materials",
+        "Display areas for children's artwork",
+        "Soft flooring and safety corners",
+        "Adequate storage for personal belongings"
       ],
       specializedAreas: [
-        "Primary Science Lab with child-safe equipment",
-        "Computer Lab with educational software",
-        "Art Room with various creative materials",
-        "Music Room with instruments",
-        "Indoor Play Area for rainy days",
-        "Out Playground with age-appropriate equipment"
+        "Indoor Play Area with soft mats",
+        "Outdoor Playground with safe equipment",
+        "Splash Pool for water play (summer)",
+        "Sand Pit for sensory play",
+        "Quiet Room for rest time",
+        "Child-friendly washrooms"
       ],
       safetyMeasures: [
-        { title: "Secure Campus", description: "Controlled access and security personnel", show: true },
-        { title: "Health Room", description: "Staffed with trained nurse for first aid", show: true },
-        { title: "Hygiene Practices", description: "Regular cleaning and sanitization", show: true },
-        { title: "Nutrition", description: "Healthy meal options in cafeteria", show: true }
+        { title: "Secure Environment", description: "Controlled access, CCTV surveillance, and secure boundaries", show: true },
+        { title: "Health & Hygiene", description: "Regular sanitization, first-aid, and health checks", show: true },
+        { title: "Nutrition", description: "Healthy snacks and drinking water availability", show: true },
+        { title: "Staff Training", description: "Trained in child safety, first-aid, and emergency procedures", show: true }
       ],
       tourCta: {
-        title: "Schedule a Campus Tour",
-        description: "Experience our primary school facilities firsthand",
-        cta: { text: "Book a Tour", show: true, href: "/book-tour" },
+        title: "Schedule a Visit",
+        description: "Experience our warm, child-friendly environment",
+        cta: { text: "Book a Visit", show: true, href: "/book-visit" },
         show: true
       }
     },
     admissionsCta: {
       show: true,
-      title: "Begin Your Child's Educational Journey",
-      description: "Join our primary school community and give your child the foundation for a lifetime of learning and success.",
+      title: "Begin Your Child's Learning Journey",
+      description: "Join our nurturing pre-primary community and give your child the best start to their educational journey.",
       primaryCta: { text: "Apply for Admission", show: true, href: "/apply-admission" },
       secondaryCta: { text: "Download Prospectus", show: true, href: "/download-prospectus" }
     },
     contactInfo: {
       show: true,
-      title: "Have Questions About Our Primary Program?",
+      title: "Have Questions About Our Pre-Primary Program?",
       address: "1, Ashok Place, New Delhi - 110001, India",
       phone: "011 2336 3462\n011 2336 3134",
-      email: "primary@stcolumbas.edu.in",
-      hours: "Monday - Friday: 9:00 AM - 3:00 PM\nSaturday: 9:00 AM - 12:00 PM"
+      email: "preprimary@stcolumbas.edu.in",
+      hours: "Monday - Friday: 9:00 AM - 2:00 PM\nSaturday: 9:00 AM - 12:00 PM"
     },
     layout: {
       showHero: true,
       showTabs: true,
       showOverview: true,
-      showGradeLevels: true,
+      showAgeGroups: true,
       showCurriculum: true,
       showActivities: true,
       showFacilities: true,
@@ -352,7 +349,7 @@ const PrimarySchoolPage = () => {
     }
   };
 
-  // Icon mapping for rendering
+  // Icon mapping for rendering (including new icons)
   const iconMap = {
     BookOpen,
     Users,
@@ -382,7 +379,16 @@ const PrimarySchoolPage = () => {
     MapPin,
     Phone,
     Mail,
-    Settings
+    Settings,
+    Baby,
+    Blocks,
+    Gamepad2,
+    Sparkles,
+    Flower2,
+    Home,
+    Utensils,
+    Shirt,
+    Bed
   };
 
   // Layout key mapping
@@ -390,7 +396,7 @@ const PrimarySchoolPage = () => {
     tabs: 'showTabs',
     hero: 'showHero',
     overview: 'showOverview',
-    gradeLevels: 'showGradeLevels',
+    ageGroups: 'showAgeGroups',
     curriculum: 'showCurriculum',
     activities: 'showActivities',
     facilities: 'showFacilities',
@@ -416,7 +422,7 @@ const PrimarySchoolPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiRequest('save_data/get_all_primaryschool_data', {});
+        const res = await apiRequest('save_data/get_all_preprimaryschool_data', {});
         console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedRaw = res.data[0]?.Data || {};
@@ -513,14 +519,14 @@ const PrimarySchoolPage = () => {
     });
   };
 
-  // Handle change for string arrays (e.g., subjects in grade levels)
-  const handleStringArrayChange = (nestedKey, levelIndex, subjectIndex, value) => {
+  // Handle change for string arrays (e.g., activities in age groups)
+  const handleStringArrayChange = (nestedKey, levelIndex, activityIndex, value) => {
     setEditData(prev => {
       const updated = { ...prev };
       if (!updated[nestedKey]) updated[nestedKey] = [];
-      const subjects = [...updated[nestedKey][levelIndex].subjects];
-      subjects[subjectIndex] = value;
-      updated[nestedKey][levelIndex].subjects = subjects;
+      const activities = [...updated[nestedKey][levelIndex].activities];
+      activities[activityIndex] = value;
+      updated[nestedKey][levelIndex].activities = activities;
       return updated;
     });
   };
@@ -585,7 +591,7 @@ const PrimarySchoolPage = () => {
 
       // encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
-      const save_data = await apiRequest('save_data/save_primaryschool', { payload: encryptedPayload });
+      const save_data = await apiRequest('save_data/save_preprimaryschool', { payload: encryptedPayload });
       console.log('Save response:', save_data);
 
       if (save_data?.status === 200) {
@@ -621,14 +627,14 @@ const PrimarySchoolPage = () => {
   const filteredTabs = asArray(data.tabs).filter(tab => tab.show !== false);
   const filteredOverviewHighlights = (data.overview?.highlights || []).filter(highlight => highlight.show !== false);
   const filteredTeachingApproach = (data.overview?.teachingApproach || []).filter(approach => approach.show !== false);
-  const filteredGradeLevels = (data.gradeLevels?.levels || []).filter(level => level.show !== false);
-  const filteredCoreSubjects = (data.curriculum?.coreSubjects || []).filter(subject => subject.show !== false);
-  const filteredSpecialSubjects = (data.curriculum?.specialSubjects || []).filter(subject => subject.show !== false);
+  const filteredAgeGroups = (data.ageGroups?.groups || []).filter(group => group.show !== false);
+  const filteredLearningAreas = (data.curriculum?.learningAreas || []).filter(area => area.show !== false);
+  const filteredSpecialPrograms = (data.curriculum?.specialPrograms || []).filter(program => program.show !== false);
   const filteredAssessmentMethods = (data.curriculum?.assessmentMethods || []).filter(method => method.show !== false);
   const filteredSchedule = (data.curriculum?.dailySchedule?.schedule || []).filter(item => item.show !== false);
-  const filteredSpecialPrograms = (data.activities?.specialPrograms || []).filter(program => program.show !== false);
-  const filteredAnnualEvents = (data.activities?.annualEvents || []).filter(event => event.show !== false);
-  const filteredParentInvolvement = (data.activities?.parentInvolvement || []).filter(item => item.show !== false);
+  const filteredLearningCenters = (data.activities?.learningCenters || []).filter(center => center.show !== false);
+  const filteredSpecialEvents = (data.activities?.specialEvents || []).filter(event => event.show !== false);
+  const filteredParentPartnership = (data.activities?.parentPartnership || []).filter(item => item.show !== false);
   const filteredSafetyMeasures = (data.facilities?.safetyMeasures || []).filter(measure => measure.show !== false);
 
   // Safe access for rendering
@@ -639,7 +645,7 @@ const PrimarySchoolPage = () => {
     hero: 'Hero',
     tabs: 'Tabs',
     overview: 'Overview',
-    gradeLevels: 'Grade Levels',
+    ageGroups: 'Age Groups',
     curriculum: 'Curriculum',
     activities: 'Activities',
     facilities: 'Facilities',
@@ -696,7 +702,7 @@ const PrimarySchoolPage = () => {
       };
       // encrypt payload before sending
       const encrypted = await encryptObject(payload);
-      const res = await apiRequest('save_data/save_primaryschool', { payload: encrypted });
+      const res = await apiRequest('save_data/save_preprimaryschool', { payload: encrypted });
       if (res.status === 200) {
         setSectionVisibilityModal(false);
       } else {
@@ -779,14 +785,6 @@ const PrimarySchoolPage = () => {
                       <span>Show Hero</span>
                     </label>
                   </div>
-                  {/* <div>
-                    <label className="block text-sm font-medium mb-1">Hero Image</label>
-                    <FileUpload
-                      currentUrl={editData.image || ''}
-                      onUploadSuccess={(url) => handleObjectChange('image', url)}
-                      label="Upload Hero Image"
-                    />
-                  </div> */}
                   <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input
@@ -850,7 +848,6 @@ const PrimarySchoolPage = () => {
                       <span>Show CTA</span>
                     </label>
                   </div>
-                 
                 </div>
               )}
               {editSection === 'tabs' && (
@@ -946,13 +943,16 @@ const PrimarySchoolPage = () => {
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input
-                            type="text"
+                          <select
                             value={highlight.icon || ''}
                             onChange={(e) => handleSimpleArrayChange('highlights', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
-                            placeholder="e.g. Users"
-                          />
+                          >
+                            <option value="">Select icon</option>
+                            {Object.keys(iconMap).map((name) => (
+                              <option key={name} value={name}>{name}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Text</label>
@@ -983,13 +983,16 @@ const PrimarySchoolPage = () => {
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
-                          <input
-                            type="text"
+                          <select
                             value={approach.icon || ''}
                             onChange={(e) => handleNestedArrayChange('teachingApproach', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
-                            placeholder="e.g. Lightbulb"
-                          />
+                          >
+                            <option value="">Select icon</option>
+                            {Object.keys(iconMap).map((name) => (
+                              <option key={name} value={name}>{name}</option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Title</label>
@@ -1024,7 +1027,7 @@ const PrimarySchoolPage = () => {
                   ))}
                 </div>
               )}
-              {editSection === 'gradeLevels' && (
+              {editSection === 'ageGroups' && (
                 <div className="space-y-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-2">Section Visibility</h3>
@@ -1034,7 +1037,7 @@ const PrimarySchoolPage = () => {
                         checked={editData.showSection || false}
                         onChange={(e) => handleToggleSection(e.target.checked)}
                       />
-                      <span>Show Grade Levels</span>
+                      <span>Show Age Groups</span>
                     </label>
                   </div>
                   <div>
@@ -1055,17 +1058,17 @@ const PrimarySchoolPage = () => {
                       rows="3"
                     />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Levels</h3>
-                  {(editData.levels || []).map((level, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Age Groups</h3>
+                  {(editData.groups || []).map((group, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      <h4 className="text-md font-semibold mb-2">Level {index + 1}</h4>
+                      <h4 className="text-md font-semibold mb-2">Group {index + 1}</h4>
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-sm font-medium">Grade</label>
+                          <label className="block text-sm font-medium">Age Group</label>
                           <input
                             type="text"
-                            value={level.grade || ''}
-                            onChange={(e) => handleNestedArrayChange('levels', index, 'grade', e.target.value)}
+                            value={group.age || ''}
+                            onChange={(e) => handleNestedArrayChange('groups', index, 'age', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1073,28 +1076,28 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Focus</label>
                           <input
                             type="text"
-                            value={level.focus || ''}
-                            onChange={(e) => handleNestedArrayChange('levels', index, 'focus', e.target.value)}
+                            value={group.focus || ''}
+                            onChange={(e) => handleNestedArrayChange('groups', index, 'focus', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
-                            value={level.description || ''}
-                            onChange={(e) => handleNestedArrayChange('levels', index, 'description', e.target.value)}
+                            value={group.description || ''}
+                            onChange={(e) => handleNestedArrayChange('groups', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium">Subjects</label>
-                          {(level.subjects || []).map((subject, sIndex) => (
+                          <label className="block text-sm font-medium">Activities</label>
+                          {(group.activities || []).map((activity, aIndex) => (
                             <input
-                              key={sIndex}
+                              key={aIndex}
                               type="text"
-                              value={subject || ''}
-                              onChange={(e) => handleStringArrayChange('levels', index, sIndex, e.target.value)}
+                              value={activity || ''}
+                              onChange={(e) => handleStringArrayChange('groups', index, aIndex, e.target.value)}
                               className="w-full p-2 border rounded mb-1"
                             />
                           ))}
@@ -1103,10 +1106,10 @@ const PrimarySchoolPage = () => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={level.show !== false}
-                              onChange={(e) => handleNestedArrayChange('levels', index, 'show', e.target.checked)}
+                              checked={group.show !== false}
+                              onChange={(e) => handleNestedArrayChange('groups', index, 'show', e.target.checked)}
                             />
-                            <span>Show Level</span>
+                            <span>Show Group</span>
                           </label>
                         </div>
                       </div>
@@ -1145,17 +1148,17 @@ const PrimarySchoolPage = () => {
                       rows="3"
                     />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Core Subjects</h3>
-                  {(editData.coreSubjects || []).map((subject, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Learning Areas</h3>
+                  {(editData.learningAreas || []).map((area, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      <h4 className="text-md font-semibold mb-2">Core Subject {index + 1}</h4>
+                      <h4 className="text-md font-semibold mb-2">Learning Area {index + 1}</h4>
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
                           <input
                             type="text"
-                            value={subject.icon || ''}
-                            onChange={(e) => handleNestedArrayChange('coreSubjects', index, 'icon', e.target.value)}
+                            value={area.icon || ''}
+                            onChange={(e) => handleNestedArrayChange('learningAreas', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1163,16 +1166,16 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Name</label>
                           <input
                             type="text"
-                            value={subject.name || ''}
-                            onChange={(e) => handleNestedArrayChange('coreSubjects', index, 'name', e.target.value)}
+                            value={area.name || ''}
+                            onChange={(e) => handleNestedArrayChange('learningAreas', index, 'name', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
-                            value={subject.description || ''}
-                            onChange={(e) => handleNestedArrayChange('coreSubjects', index, 'description', e.target.value)}
+                            value={area.description || ''}
+                            onChange={(e) => handleNestedArrayChange('learningAreas', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
@@ -1181,26 +1184,26 @@ const PrimarySchoolPage = () => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={subject.show !== false}
-                              onChange={(e) => handleNestedArrayChange('coreSubjects', index, 'show', e.target.checked)}
+                              checked={area.show !== false}
+                              onChange={(e) => handleNestedArrayChange('learningAreas', index, 'show', e.target.checked)}
                             />
-                            <span>Show Subject</span>
+                            <span>Show Area</span>
                           </label>
                         </div>
                       </div>
                     </div>
                   ))}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Special Subjects</h3>
-                  {(editData.specialSubjects || []).map((subject, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Special Programs</h3>
+                  {(editData.specialPrograms || []).map((program, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      <h4 className="text-md font-semibold mb-2">Special Subject {index + 1}</h4>
+                      <h4 className="text-md font-semibold mb-2">Program {index + 1}</h4>
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
                           <input
                             type="text"
-                            value={subject.icon || ''}
-                            onChange={(e) => handleNestedArrayChange('specialSubjects', index, 'icon', e.target.value)}
+                            value={program.icon || ''}
+                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1208,16 +1211,16 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Name</label>
                           <input
                             type="text"
-                            value={subject.name || ''}
-                            onChange={(e) => handleNestedArrayChange('specialSubjects', index, 'name', e.target.value)}
+                            value={program.name || ''}
+                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'name', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
-                            value={subject.description || ''}
-                            onChange={(e) => handleNestedArrayChange('specialSubjects', index, 'description', e.target.value)}
+                            value={program.description || ''}
+                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
@@ -1226,10 +1229,10 @@ const PrimarySchoolPage = () => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={subject.show !== false}
-                              onChange={(e) => handleNestedArrayChange('specialSubjects', index, 'show', e.target.checked)}
+                              checked={program.show !== false}
+                              onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'show', e.target.checked)}
                             />
-                            <span>Show Subject</span>
+                            <span>Show Program</span>
                           </label>
                         </div>
                       </div>
@@ -1259,11 +1262,11 @@ const PrimarySchoolPage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium">Weightage</label>
+                          <label className="block text-sm font-medium">Frequency</label>
                           <input
                             type="text"
-                            value={method.weightage || ''}
-                            onChange={(e) => handleNestedArrayChange('assessmentMethods', index, 'weightage', e.target.value)}
+                            value={method.frequency || ''}
+                            onChange={(e) => handleNestedArrayChange('assessmentMethods', index, 'frequency', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1380,17 +1383,17 @@ const PrimarySchoolPage = () => {
                       rows="3"
                     />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Special Programs</h3>
-                  {(editData.specialPrograms || []).map((program, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Learning Centers</h3>
+                  {(editData.learningCenters || []).map((center, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      <h4 className="text-md font-semibold mb-2">Program {index + 1}</h4>
+                      <h4 className="text-md font-semibold mb-2">Center {index + 1}</h4>
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-medium">Icon</label>
                           <input
                             type="text"
-                            value={program.icon || ''}
-                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'icon', e.target.value)}
+                            value={center.icon || ''}
+                            onChange={(e) => handleNestedArrayChange('learningCenters', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1398,16 +1401,16 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Title</label>
                           <input
                             type="text"
-                            value={program.title || ''}
-                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'title', e.target.value)}
+                            value={center.title || ''}
+                            onChange={(e) => handleNestedArrayChange('learningCenters', index, 'title', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
-                            value={program.description || ''}
-                            onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'description', e.target.value)}
+                            value={center.description || ''}
+                            onChange={(e) => handleNestedArrayChange('learningCenters', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
@@ -1416,17 +1419,17 @@ const PrimarySchoolPage = () => {
                           <label className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              checked={program.show !== false}
-                              onChange={(e) => handleNestedArrayChange('specialPrograms', index, 'show', e.target.checked)}
+                              checked={center.show !== false}
+                              onChange={(e) => handleNestedArrayChange('learningCenters', index, 'show', e.target.checked)}
                             />
-                            <span>Show Program</span>
+                            <span>Show Center</span>
                           </label>
                         </div>
                       </div>
                     </div>
                   ))}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Annual Events</h3>
-                  {(editData.annualEvents || []).map((event, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Special Events</h3>
+                  {(editData.specialEvents || []).map((event, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <h4 className="text-md font-semibold mb-2">Event {index + 1}</h4>
                       <div className="space-y-2">
@@ -1435,7 +1438,7 @@ const PrimarySchoolPage = () => {
                           <input
                             type="text"
                             value={event.name || ''}
-                            onChange={(e) => handleNestedArrayChange('annualEvents', index, 'name', e.target.value)}
+                            onChange={(e) => handleNestedArrayChange('specialEvents', index, 'name', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1443,7 +1446,7 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
                             value={event.description || ''}
-                            onChange={(e) => handleNestedArrayChange('annualEvents', index, 'description', e.target.value)}
+                            onChange={(e) => handleNestedArrayChange('specialEvents', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
@@ -1453,7 +1456,7 @@ const PrimarySchoolPage = () => {
                             <input
                               type="checkbox"
                               checked={event.show !== false}
-                              onChange={(e) => handleNestedArrayChange('annualEvents', index, 'show', e.target.checked)}
+                              onChange={(e) => handleNestedArrayChange('specialEvents', index, 'show', e.target.checked)}
                             />
                             <span>Show Event</span>
                           </label>
@@ -1461,8 +1464,8 @@ const PrimarySchoolPage = () => {
                       </div>
                     </div>
                   ))}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Parent Involvement</h3>
-                  {(editData.parentInvolvement || []).map((item, index) => (
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Parent Partnership</h3>
+                  {(editData.parentPartnership || []).map((item, index) => (
                     <div key={index} className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <h4 className="text-md font-semibold mb-2">Item {index + 1}</h4>
                       <div className="space-y-2">
@@ -1471,7 +1474,7 @@ const PrimarySchoolPage = () => {
                           <input
                             type="text"
                             value={item.icon || ''}
-                            onChange={(e) => handleNestedArrayChange('parentInvolvement', index, 'icon', e.target.value)}
+                            onChange={(e) => handleNestedArrayChange('parentPartnership', index, 'icon', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1480,7 +1483,7 @@ const PrimarySchoolPage = () => {
                           <input
                             type="text"
                             value={item.title || ''}
-                            onChange={(e) => handleNestedArrayChange('parentInvolvement', index, 'title', e.target.value)}
+                            onChange={(e) => handleNestedArrayChange('parentPartnership', index, 'title', e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -1488,7 +1491,7 @@ const PrimarySchoolPage = () => {
                           <label className="block text-sm font-medium">Description</label>
                           <textarea
                             value={item.description || ''}
-                            onChange={(e) => handleNestedArrayChange('parentInvolvement', index, 'description', e.target.value)}
+                            onChange={(e) => handleNestedArrayChange('parentPartnership', index, 'description', e.target.value)}
                             className="w-full p-2 border rounded"
                             rows="3"
                           />
@@ -1498,7 +1501,7 @@ const PrimarySchoolPage = () => {
                             <input
                               type="checkbox"
                               checked={item.show !== false}
-                              onChange={(e) => handleNestedArrayChange('parentInvolvement', index, 'show', e.target.checked)}
+                              onChange={(e) => handleNestedArrayChange('parentPartnership', index, 'show', e.target.checked)}
                             />
                             <span>Show Item</span>
                           </label>
@@ -1630,15 +1633,16 @@ const PrimarySchoolPage = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">CTA File</label>
-                    <FileUpload
-                      currentUrl={editData.tourCta?.cta?.href || ''}
-                      onUploadSuccess={(url) => {
+                    <label className="block text-sm font-medium mb-1">CTA Link</label>
+                    <input
+                      type="text"
+                      value={editData.tourCta?.cta?.href || ''}
+                      onChange={(e) => {
                         const updated = { ...editData.tourCta };
-                        updated.cta = { ...updated.cta, href: url };
+                        updated.cta = { ...updated.cta, href: e.target.value };
                         handleObjectChange('tourCta', updated);
                       }}
-                      label="Upload Tour CTA File"
+                      className="w-full p-2 border rounded"
                     />
                   </div>
                   <div>
@@ -1951,34 +1955,34 @@ const PrimarySchoolPage = () => {
             )}
           </section>
 
-          {/* Grade Levels */}
-          {data.layout?.showGradeLevels && safeData('gradeLevels').show && filteredGradeLevels.length > 0 && (
+          {/* Age Groups */}
+          {data.layout?.showAgeGroups && safeData('ageGroups').show && filteredAgeGroups.length > 0 && (
             <section
-              id="gradeLevels"
+              id="ageGroups"
               className="py-16 bg-gray-50 relative animate-on-scroll"
             >
               <div className="max-w-7xl mx-auto px-4">
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('gradeLevels').title}</h2>
+                  <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('ageGroups').title}</h2>
                   <p className="text-lg text-gray-600">
-                    {safeData('gradeLevels').description}
+                    {safeData('ageGroups').description}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  {filteredGradeLevels.map((level, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {filteredAgeGroups.map((group, index) => (
                     <div key={index} className="bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow text-center">
                       <div className="bg-green-100 text-green-800 font-semibold text-sm px-3 py-1 rounded-full inline-block mb-4">
-                        {level.grade}
+                        {group.age}
                       </div>
-                      <h3 className="font-semibold text-gray-800 mb-2">{level.focus}</h3>
-                      <p className="text-gray-600 text-sm mb-4">{level.description}</p>
+                      <h3 className="font-semibold text-gray-800 mb-2">{group.focus}</h3>
+                      <p className="text-gray-600 text-sm mb-4">{group.description}</p>
                       <div className="bg-green-50 rounded-lg p-3">
-                        <h4 className="text-xs font-semibold text-green-800 mb-2">SUBJECTS</h4>
+                        <h4 className="text-xs font-semibold text-green-800 mb-2">ACTIVITIES</h4>
                         <div className="flex flex-wrap justify-center gap-1">
-                          {level.subjects.map((subject, sIndex) => (
-                            <span key={sIndex} className="bg-white text-green-700 text-xs px-2 py-1 rounded">
-                              {subject}
+                          {group.activities.map((activity, aIndex) => (
+                            <span key={aIndex} className="bg-white text-green-700 text-xs px-2 py-1 rounded">
+                              {activity}
                             </span>
                           ))}
                         </div>
@@ -1989,7 +1993,7 @@ const PrimarySchoolPage = () => {
               </div>
               {editMode && (
                 <button
-                  onClick={() => openEditModal('gradeLevels')}
+                  onClick={() => openEditModal('ageGroups')}
                   className="absolute top-4 right-4 bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
                 >
                   <Edit className="h-5 w-5" />
@@ -2016,14 +2020,14 @@ const PrimarySchoolPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Core Subjects</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Learning Areas</h3>
                 <div className="space-y-4">
-                  {filteredCoreSubjects.map((subject, index) => (
+                  {filteredLearningAreas.map((area, index) => (
                     <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
-                      {renderIcon(subject.icon, "h-5 w-5 text-green-600 mr-3 mt-1")}
+                      {renderIcon(area.icon, "h-5 w-5 text-green-600 mr-3 mt-1")}
                       <div>
-                        <h4 className="font-medium text-gray-800">{subject.name}</h4>
-                        <p className="text-gray-600 text-sm">{subject.description}</p>
+                        <h4 className="font-medium text-gray-800">{area.name}</h4>
+                        <p className="text-gray-600 text-sm">{area.description}</p>
                       </div>
                     </div>
                   ))}
@@ -2031,14 +2035,14 @@ const PrimarySchoolPage = () => {
               </div>
 
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Special Subjects</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Special Programs</h3>
                 <div className="space-y-4">
-                  {filteredSpecialSubjects.map((subject, index) => (
+                  {filteredSpecialPrograms.map((program, index) => (
                     <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
-                      {renderIcon(subject.icon, "h-5 w-5 text-green-600 mr-3 mt-1")}
+                      {renderIcon(program.icon, "h-5 w-5 text-green-600 mr-3 mt-1")}
                       <div>
-                        <h4 className="font-medium text-gray-800">{subject.name}</h4>
-                        <p className="text-gray-600 text-sm">{subject.description}</p>
+                        <h4 className="font-medium text-gray-800">{program.name}</h4>
+                        <p className="text-gray-600 text-sm">{program.description}</p>
                       </div>
                     </div>
                   ))}
@@ -2051,15 +2055,15 @@ const PrimarySchoolPage = () => {
               <div className="bg-green-50 rounded-lg p-6 mb-12">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Assessment Approach</h3>
                 <p className="text-gray-600 mb-6">
-                  We use a balanced approach to assessment that focuses on holistic development rather than just academic scores.
+                  We use developmentally appropriate assessment methods that focus on holistic growth and individual progress.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {filteredAssessmentMethods.map((method, index) => (
                     <div key={index} className="bg-white rounded-lg p-4">
                       <h4 className="font-semibold text-gray-800 mb-2">{method.term}</h4>
                       <p className="text-gray-600 text-sm mb-2">{method.description}</p>
                       <div className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full inline-block">
-                        Weightage: {method.weightage}
+                        {method.frequency}
                       </div>
                     </div>
                   ))}
@@ -2111,16 +2115,16 @@ const PrimarySchoolPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Special Programs</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Learning Centers</h3>
                 <div className="space-y-4">
-                  {filteredSpecialPrograms.map((program, index) => (
+                  {filteredLearningCenters.map((center, index) => (
                     <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg">
                       <div className="bg-green-100 rounded-full w-10 h-10 flex items-center justify-center mr-4 flex-shrink-0">
-                        {renderIcon(program.icon)}
+                        {renderIcon(center.icon)}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-800">{program.title}</h4>
-                        <p className="text-gray-600 text-sm">{program.description}</p>
+                        <h4 className="font-medium text-gray-800">{center.title}</h4>
+                        <p className="text-gray-600 text-sm">{center.description}</p>
                       </div>
                     </div>
                   ))}
@@ -2128,9 +2132,9 @@ const PrimarySchoolPage = () => {
               </div>
 
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Annual Events</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Special Events</h3>
                 <div className="space-y-4">
-                  {filteredAnnualEvents.map((event, index) => (
+                  {filteredSpecialEvents.map((event, index) => (
                     <div key={index} className="p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-medium text-gray-800">{event.name}</h4>
                       <p className="text-gray-600 text-sm">{event.description}</p>
@@ -2140,12 +2144,12 @@ const PrimarySchoolPage = () => {
               </div>
             </div>
 
-            {/* Parent Involvement */}
-            {filteredParentInvolvement.length > 0 && (
+            {/* Parent Partnership */}
+            {filteredParentPartnership.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-6">Parent Involvement</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-6">Parent Partnership</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {filteredParentInvolvement.map((item, index) => (
+                  {filteredParentPartnership.map((item, index) => (
                     <div key={index} className="bg-green-50 rounded-lg p-5 text-center">
                       <div className="bg-green-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
                         {renderIcon(item.icon, "h-6 w-6 text-green-600")}
@@ -2344,6 +2348,7 @@ const PrimarySchoolPage = () => {
           )}
         </section>
       )}
+
       {/* Manage Section Visibility Floating Button */}
       {editMode && (
         <>
@@ -2407,4 +2412,4 @@ const PrimarySchoolPage = () => {
   );
 };
 
-export default PrimarySchoolPage;
+export default PrePrimarySchoolPage;

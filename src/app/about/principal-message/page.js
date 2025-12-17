@@ -82,7 +82,9 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
       show: true,
       title: "Principal's Message",
       subtitle: "A message of inspiration and commitment to excellence",
-      height: "h-96"
+      height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true
     },
     principalInfo: {
       show: true,
@@ -639,14 +641,30 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">Height</label>
-                    <input
-                      type="text"
-                      value={editData.height || ''}
-                      onChange={(e) => handleObjectChange('height', e.target.value)}
-                      className="w-full p-2 border rounded"
+                  
+                    {editData.backgroundImage && (
+                      <div className="mt-2">
+                        <img src={editData.backgroundImage} alt="Preview" className="w-full h-32 object-cover rounded border" />
+                      </div>
+                    )}
+                    <label className="block text-sm font-medium mb-1 mt-3">Or Upload Background Image</label>
+                    <FileUpload
+                      currentUrl={editData.backgroundImage || ''}
+                      onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)}
+                      label="Hero Background Image"
                     />
+                    <div className="mt-3">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={editData.backgroundImageShow !== false}
+                          onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)}
+                        />
+                        <span>Show Background Image</span>
+                      </label>
+                    </div>
                   </div>
+                  
                 </div>
               )}
               {editSection === 'principalInfo' && (
@@ -1177,6 +1195,9 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
           id="hero"
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
+          {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
+            <img src={safeData('hero').backgroundImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
