@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "St. Columba's School - An Edmund Rice Educational Institution",
-  description: "St. Columba's School, New Delhi - Providing quality education since 1927. An Edmund Rice Educational Institution committed to excellence in learning.",
-  keywords: "St. Columba's School, New Delhi, Edmund Rice, Education, School Admissions",
+  title: "Abc School - An Edmund Rice Educational Institution",
+  description: "Abc School, Birgunj - Providing quality education since 1927. An Edmund Rice Educational Institution committed to excellence in learning.",
+  keywords: "Abc School, Birgunj, Edmund Rice, Education, School Admissions",
 };
 
 export default function RootLayout({ children }) {

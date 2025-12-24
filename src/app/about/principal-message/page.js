@@ -89,7 +89,7 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
     principalInfo: {
       show: true,
       name: "Dr. Mary Johnson",
-      role: "Principal, St. Columba's School",
+      role: "Principal, Abc School",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       experience: "25+ years in education",
       tenure: "Principal since 2015",
@@ -98,7 +98,7 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
         "M.Ed. Educational Leadership, Jamia Millia Islamia",
         "B.Ed. Teaching Methodology, Lady Shri Ram College"
       ],
-      description: "With over 25 years of experience in educational leadership and administration, Dr. Mary Johnson brings a wealth of knowledge and passion for student-centered learning to St. Columba's School.",
+      description: "With over 25 years of experience in educational leadership and administration, Dr. Mary Johnson brings a wealth of knowledge and passion for student-centered learning to Abc School.",
       show: true
     },
     message: {
@@ -106,7 +106,7 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
       title: "A Message of Commitment",
       quote: "Education is not just about imparting knowledge; it's about igniting a passion for learning, nurturing character, and empowering young minds to become compassionate leaders who will shape a better tomorrow.",
       content: [
-        "As I reflect on our journey at St. Columba's School, I am filled with immense pride and gratitude. Our institution stands as a testament to nearly a century of educational excellence, built on the solid foundation of Edmund Rice values that continue to guide us today.",
+        "As I reflect on our journey at Abc School, I am filled with immense pride and gratitude. Our institution stands as a testament to nearly a century of educational excellence, built on the solid foundation of Edmund Rice values that continue to guide us today.",
         "In today's rapidly evolving world, we face both unprecedented challenges and extraordinary opportunities. Our role as educators extends far beyond traditional academics. We are called to prepare students not just for examinations, but for life.",
         "Every day, I witness the incredible potential within our students. Our dedicated faculty works tirelessly to create an environment where this potential can flourish through personalized attention, innovative teaching methods, and a holistic approach."
       ],
@@ -147,7 +147,7 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
     achievements: {
       show: true,
       title: "Achievements Under My Leadership",
-      description: "Since joining St. Columba's as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
+      description: "Since joining Abc as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
       stats: [
         { value: "100%", label: "Board Pass Rate", show: true },
         { value: "95%", label: "College Admissions", show: true },
@@ -1293,7 +1293,7 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-800 mb-4">{safeData('message').title}</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                My vision for St. Columba's School and our journey together toward educational excellence.
+                My vision for Abc School and our journey together toward educational excellence.
               </p>
             </div>
 

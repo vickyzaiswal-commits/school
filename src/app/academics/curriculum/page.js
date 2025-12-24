@@ -89,7 +89,7 @@ const CurriculumPage = () => {
     philosophy: {
       show: true,
       title: "Our Educational Philosophy",
-      description: "At St. Columba's, we follow a holistic approach to education that balances academic excellence with character formation, inspired by the Edmund Rice educational tradition.",
+      description: "At Abc, we follow a holistic approach to education that balances academic excellence with character formation, inspired by the Edmund Rice educational tradition.",
       pillars: [
         {
           icon: "Brain",

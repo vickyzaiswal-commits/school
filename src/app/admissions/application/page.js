@@ -130,7 +130,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     hero: {
       show: true,
       title: "Admission Application",
-      subtitle: "Join the St. Columba's family - Begin your journey to excellence",
+      subtitle: "Join the Abc family - Begin your journey to excellence",
       height: "h-96",
       backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
       backgroundImageShow: true,

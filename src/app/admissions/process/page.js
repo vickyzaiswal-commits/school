@@ -107,7 +107,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     hero: {
       show: true,
       title: "Admission Process",
-      subtitle: "Join the St. Columba's family - Where excellence in education meets values for life",
+      subtitle: "Join the Abc family - Where excellence in education meets values for life",
       height: "h-96",
       backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
       backgroundImageShow: true,
@@ -126,7 +126,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     admissionSteps: {
       show: true,
       title: "Admission Process",
-      description: "Our streamlined 5-step process makes applying to St. Columba's simple and straightforward",
+      description: "Our streamlined 5-step process makes applying to Abc simple and straightforward",
       steps: [
         {
           step: 1,
@@ -386,7 +386,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
         },
         {
           name: "Alumni Scholarship",
-          eligibility: "Children of St. Columba's alumni",
+          eligibility: "Children of Abc alumni",
           coverage: "10% discount on tuition fees",
           show: true
         }
@@ -446,7 +446,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
         },
         {
           icon: "MapPin",
-          content: "1, Ashok Place, New Delhi - 110001",
+          content: "1, Ashok Place, Birgunj - 110001",
           show: true
         }
       ],

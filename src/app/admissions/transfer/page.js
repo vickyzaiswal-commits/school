@@ -562,7 +562,7 @@ const TransferCertificatePage = () => {
               <div className="space-y-2 text-sm text-gray-700">
                 <p>Email: tc@stcolumbas.edu.in</p>
                 <p>Phone: 011-2336-3462 (Ext. 115)</p>
-                <p>Address: Accounts Office, St. Columba's School, 1 Ashok Place, New Delhi</p>
+                <p>Address: Accounts Office, Abc School, 1 Ashok Place, Birgunj</p>
               </div>
             </div>
           </div>

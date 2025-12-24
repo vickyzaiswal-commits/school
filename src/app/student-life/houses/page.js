@@ -177,7 +177,7 @@ const HouseSystemPage = () => {
         show: true,
         title: "History & Tradition",
         content: [
-          "The House System at St. Columba's has been a cherished tradition since 1950, when the school was founded. The system was established to create smaller communities within our larger school family, fostering closer relationships between students of different ages and backgrounds.",
+          "The House System at Abc has been a cherished tradition since 1950, when the school was founded. The system was established to create smaller communities within our larger school family, fostering closer relationships between students of different ages and backgrounds.",
           "Each of our four houses—Ruby, Emerald, Sapphire, and Topaz—represents different values and strengths, but all share the common goal of developing well-rounded individuals who contribute positively to their community.",
           "Over the decades, the house system has evolved to include a wide range of competitions and activities, but its core purpose remains the same: to build character, leadership, and school spirit."
         ]

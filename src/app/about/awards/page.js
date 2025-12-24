@@ -165,9 +165,9 @@ const AwardsPage = () => {
     organization: "National Education Board",
     year: "2024",
     image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    description: "St. Columba's School received the prestigious 'Century of Excellence Award' for maintaining exceptional educational standards and producing outstanding alumni for nearly 100 years. This award recognizes our sustained commitment to academic excellence, character formation, and holistic development of students.",
+    description: "Abc School received the prestigious 'Century of Excellence Award' for maintaining exceptional educational standards and producing outstanding alumni for nearly 100 years. This award recognizes our sustained commitment to academic excellence, character formation, and holistic development of students.",
     significance: "Lifetime Achievement",
-    quote: "St. Columba's represents the gold standard in education, consistently producing leaders and change-makers for generations."
+    quote: "Abc represents the gold standard in education, consistently producing leaders and change-makers for generations."
   };
 
   return (
@@ -200,7 +200,7 @@ const AwardsPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">A Legacy of Excellence</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              For nearly a century, St. Columba's has been recognized for academic excellence, 
+              For nearly a century, Abc has been recognized for academic excellence, 
               sporting achievements, and contributions to the community.
             </p>
           </div>

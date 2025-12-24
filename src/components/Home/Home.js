@@ -165,7 +165,7 @@ const HomePage = ({ schoolData = {} }) => {
       show: true,
       name: "Dr. Mary Johnson",
       role: "Principal",
-      message: "At St. Columba's, we believe that education is not just about academic achievement, but about nurturing the whole person. Our commitment to Edmund Rice values ensures that each student develops not only intellectually but also morally and spiritually.",
+      message: "At Abc, we believe that education is not just about academic achievement, but about nurturing the whole person. Our commitment to Edmund Rice values ensures that each student develops not only intellectually but also morally and spiritually.",
       stats: [
         { value: "100%", label: "Board Pass Rate", show: true },
         { value: "95%", label: "College Admissions", show: true },
@@ -200,14 +200,14 @@ const HomePage = ({ schoolData = {} }) => {
       {
         name: "Dr. Rajesh Kumar",
         role: "Parent, Class XII",
-        content: "St. Columba's has provided my son with not just excellent education, but also strong moral values. The teachers are dedicated and caring.",
+        content: "Abc has provided my son with not just excellent education, but also strong moral values. The teachers are dedicated and caring.",
         rating: 5,
         show: true
       },
       {
         name: "Arjun Mehta",
         role: "Alumni, Batch 2020",
-        content: "The foundation I received at St. Columba's prepared me well for engineering college and life. Forever grateful to this institution.",
+        content: "The foundation I received at Abc prepared me well for engineering college and life. Forever grateful to this institution.",
         rating: 5,
         show: true
       },
@@ -221,7 +221,7 @@ const HomePage = ({ schoolData = {} }) => {
     ],
     contactInfo: {
       show: true,
-      address: "1, Ashok Place, New Delhi - 110001, India",
+      address: "1, Ashok Place, Birgunj - 110001, India",
       phone: "011 2336 3462\n011 2336 3134",
       email: "stcolumbas@stcolumbas.edu.in",
       hours: "Monday - Friday: 8:00 AM - 4:00 PM\nSaturday: 8:00 AM - 12:00 PM"

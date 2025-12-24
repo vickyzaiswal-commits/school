@@ -334,7 +334,7 @@ const PrimarySchoolPage = () => {
     contactInfo: {
       show: true,
       title: "Have Questions About Our Primary Program?",
-      address: "1, Ashok Place, New Delhi - 110001, India",
+      address: "1, Ashok Place, Birgunj - 110001, India",
       phone: "011 2336 3462\n011 2336 3134",
       email: "primary@stcolumbas.edu.in",
       hours: "Monday - Friday: 9:00 AM - 3:00 PM\nSaturday: 9:00 AM - 12:00 PM"

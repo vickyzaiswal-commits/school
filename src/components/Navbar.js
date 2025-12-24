@@ -64,6 +64,8 @@ const Navbar = ({ schoolData }) => {
     initRole();
   }, []);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navRef = useRef(null);
+  const [navHeight, setNavHeight] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
@@ -137,8 +139,8 @@ const Navbar = ({ schoolData }) => {
 
   // Default configuration
   const defaultConfig = {
-    name: "St. Columba's School",
-    address: "1, Ashok Place, New Delhi - 110001",
+    name: "Abc School",
+    address: "1, Ashok Place, Birgunj - 110001",
     tagline: "An Edmund Rice Educational Institution",
     establishedYear: "1927",
     yearsOfExistence: "97+",
@@ -334,10 +336,26 @@ const Navbar = ({ schoolData }) => {
   }, [role]);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const updateNavHeight = () => {
+      const h = navRef.current?.offsetHeight || 0;
+      setNavHeight(h);
+    };
+
+    const handleScroll = () => {
+      const threshold = window.innerHeight * 0.1; // 10% of viewport
+      setIsScrolled(window.scrollY > threshold);
+    };
+
+    // initial measurement and listeners
+    updateNavHeight();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateNavHeight);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateNavHeight);
+    };
+  }, [config, previewMode, editFormOpen]);
 
   const handleInputChange = (field, value) => {
     setConfig(prev => ({ ...prev, [field]: value }));
@@ -889,6 +907,9 @@ const Navbar = ({ schoolData }) => {
 
   const renderNavbar = () => (
     <>
+      {isScrolled && navHeight > 0 && (
+        <div style={{ height: navHeight }} aria-hidden="true" />
+      )}
       {/* Top Info Bar */}
       {config.showTopBar && (
         <div className="hidden lg:block bg-green-800 text-white">
@@ -917,7 +938,10 @@ const Navbar = ({ schoolData }) => {
       )}
 
       {/* Main Navbar */}
-      <nav className={`sticky top-0 left-0 z-50 bg-white transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}>
+      <nav
+        ref={navRef}
+        className={`${isScrolled ? 'fixed top-0 left-0 right-0 w-full z-50' : 'sticky top-0 left-0 z-50'} bg-white transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3 lg:py-4">
             <div className="flex items-center space-x-3 lg:space-x-4">

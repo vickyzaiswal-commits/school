@@ -114,7 +114,7 @@ const defaultData = {
   contactInfo: {
     show: true,
     title: "Connect with Us",
-    address: "1, Ashok Place, New Delhi - 110001, India",
+    address: "1, Ashok Place, Birgunj - 110001, India",
     addressShow: true,
     hours: "Monday - Friday: 9:00 AM - 3:00 PM\nSaturday: 9:00 AM - 12:00 PM",
     hoursShow: true,

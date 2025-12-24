@@ -31,7 +31,7 @@ const defaultData = {
   
   hero: {
     show: true,
-    title: "Join St. Columba's School",
+    title: "Join Abc School",
     subtitle: "Shape the future of education with us. We're looking for passionate educators and staff who want to make a difference in students' lives.",
     showImage: true,
     backgroundImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -242,7 +242,7 @@ const defaultData = {
         name: "Dr. Sarah Johnson",
         role: "Science Department Head",
         tenure: "8 years",
-        quote: "St. Columba's has provided me with unparalleled opportunities for professional growth while maintaining a perfect work-life balance.",
+        quote: "Abc has provided me with unparalleled opportunities for professional growth while maintaining a perfect work-life balance.",
         image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
         show: true
       },
@@ -1223,7 +1223,7 @@ const CareerPage = () => {
               <div className="md:w-2/5 bg-gradient-to-b from-green-700 to-green-600 p-8 text-white">
                 <h2 className="text-2xl font-bold mb-6">Submit Your Application</h2>
                 <p className="mb-8 opacity-90">
-                  Complete this form to apply for a position at St. Columba's School. We'll review your application and contact you for the next steps.
+                  Complete this form to apply for a position at Abc School. We'll review your application and contact you for the next steps.
                 </p>
                 
                 <div className="space-y-4">

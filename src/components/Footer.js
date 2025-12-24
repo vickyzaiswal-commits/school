@@ -7,7 +7,7 @@ const Footer = () => {
   const [editMode, setEditMode] = useState(false);
   const [role, setRole] = useState(null);
   const [footerData, setFooterData] = useState({
-    schoolName: "St. Columba's School",
+    schoolName: "Abc School",
     year: "2025",
     tagline: "An Edmund Rice Educational Institution"
   });
@@ -175,7 +175,7 @@ const Footer = () => {
       <footer className="bg-green-800 text-white py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center relative">
           <p className="text-sm">
-            © {footerData.year || '2025'} {footerData.schoolName || "St. Columba's School"}. All rights reserved.
+            © {footerData.year || '2025'} {footerData.schoolName || "Abc School"}. All rights reserved.
           </p>
           <p className="text-xs text-green-200 mt-1">
             {footerData.tagline || "An Edmund Rice Educational Institution"}

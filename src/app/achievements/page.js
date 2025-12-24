@@ -29,7 +29,7 @@ const defaultData = {
   
   hero: {
     show: true,
-    title: "Celebrating Excellence at St. Columba's School",
+    title: "Celebrating Excellence at Abc School",
     subtitle: "Discover the remarkable achievements, awards, and milestones that showcase our commitment to holistic education and student success.",
     showImage: true,
     backgroundImage: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",

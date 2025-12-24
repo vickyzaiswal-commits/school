@@ -26,7 +26,7 @@ const defaultData = {
   
   hero: {
     show: true,
-    title: "Contact St. Columba's School",
+    title: "Contact Abc School",
     subtitle: "We're here to answer your questions and help you connect with our school community. Reach out to us through any of the channels below.",
     showImage: true,
     backgroundImage: "https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
@@ -70,7 +70,7 @@ const defaultData = {
       {
         icon: "MapPin",
         title: "Address",
-        details: ["1, Ashok Place", "New Delhi - 110001"],
+        details: ["1, Ashok Place", "Birgunj - 110001"],
         description: "Visit our campus",
         link: "https://maps.google.com/?q=St.+Columba's+School+Ashok+Place+New+Delhi",
         show: true
@@ -88,7 +88,7 @@ const defaultData = {
   visitSection: {
     show: true,
     title: "Visit Our Campus",
-    description: "Our school is located in the heart of New Delhi, easily accessible by public and private transport. We welcome visitors during school hours with prior appointment.",
+    description: "Our school is located in the heart of Birgunj, easily accessible by public and private transport. We welcome visitors during school hours with prior appointment.",
     directions: {
       title: "Directions",
       items: [
@@ -900,8 +900,8 @@ const ContactUsPage = () => {
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="text-center p-6">
                       <MapPin className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-700 mb-2">St. Columba's School</h3>
-                      <p className="text-gray-600 mb-4">1, Ashok Place, New Delhi - 110001</p>
+                      <h3 className="text-xl font-semibold text-gray-700 mb-2">Abc School</h3>
+                      <p className="text-gray-600 mb-4">1, Ashok Place, Birgunj - 110001</p>
                       <div className="bg-white rounded-lg p-4 inline-block shadow-md">
                         <p className="text-sm text-gray-500">Google Maps integration</p>
                       </div>

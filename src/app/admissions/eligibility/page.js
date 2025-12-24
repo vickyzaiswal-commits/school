@@ -294,7 +294,7 @@ const EligibilityPage = () => {
     },
     {
       question: "Is there any special consideration for children of alumni?",
-      answer: "Yes, children of St. Columba's alumni receive special consideration in the admission process, though they must meet all eligibility requirements."
+      answer: "Yes, children of Abc alumni receive special consideration in the admission process, though they must meet all eligibility requirements."
     }
   ];
 
@@ -338,7 +338,7 @@ const EligibilityPage = () => {
           <div className="text-center text-white px-4 max-w-4xl">
             <h1 className="text-4xl font-bold mb-4">Eligibility Criteria</h1>
             <p className="text-xl mb-6 text-gray-200">
-              Admission requirements and criteria for different grade levels at St. Columba's School
+              Admission requirements and criteria for different grade levels at Abc School
             </p>
             <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
               Download Eligibility Guidelines
@@ -538,7 +538,7 @@ const EligibilityPage = () => {
                 </div>
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 text-green-600 mr-3" />
-                  <span>1, Ashok Place, New Delhi - 110001</span>
+                  <span>1, Ashok Place, Birgunj - 110001</span>
                 </div>
               </div>
             </div>

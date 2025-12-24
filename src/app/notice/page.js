@@ -16,7 +16,7 @@ const defaultData = {
   hero: {
     show: true,
     title: "School Notices & Announcements",
-    subtitle: "Stay updated with the latest circulars, events, and important information from St. Columba's School.",
+    subtitle: "Stay updated with the latest circulars, events, and important information from Abc School.",
     backgroundImage: "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     showImage: true,
     latestNotice: {
