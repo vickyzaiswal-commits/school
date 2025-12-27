@@ -27,7 +27,6 @@ const EcareLoginPage = () => {
     try {
       const payload = { email, password };
       const res = await apiRequest('users/login', { email, password });
-      console.log('Login response:', res);
       if (res.status == 200) {
         // Choose storage based on 'remember' checkbox
         const storage = remember ? localStorage : sessionStorage;

@@ -396,10 +396,8 @@ const GalleryPage = () => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_gallery_data', {});
-        console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data (raw):', fetchedData);
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -416,7 +414,6 @@ const GalleryPage = () => {
           }
           setData({ ...defaultData, ...fetchedData });
         } else {
-          console.log('No data or invalid response, using default');
           setData(defaultData);
         }
       } catch (error) {
@@ -500,7 +497,7 @@ const GalleryPage = () => {
     try {
       const payload = await encryptObject(data);
       await apiRequest('save_data/save_gallery_data', { payload });
-      console.log('Section visibility saved successfully (encrypted payload sent)');
+      // section visibility saved
     } catch (error) {
       console.error('Save failed', error);
     }
@@ -660,7 +657,7 @@ const GalleryPage = () => {
       showSection: data[layoutKey],
       ...data[section]
     };
-    console.log(`Opening ${section} modal with data:`, sectionData);
+    // opening modal (debug logs removed)
     setEditData(JSON.parse(JSON.stringify(sectionData)));
     setOriginalData(JSON.parse(JSON.stringify(sectionData)));
   };
@@ -670,7 +667,7 @@ const GalleryPage = () => {
     let newData = { ...data };
     const updatedData = editData;
     
-    console.log('Saving section:', editSection, 'with data:', updatedData);
+    // saving section (debug logs removed)
     
     const layoutKey = layoutMap[editSection];
     newData[layoutKey] = updatedData.showSection;
@@ -682,7 +679,7 @@ const GalleryPage = () => {
     try {
         const payload = await encryptObject(newData);
         await apiRequest('save_data/save_gallery_data', { payload });
-        console.log('Data saved successfully (encrypted payload sent)');
+        // data saved successfully
     } catch (error) {
       console.error('Save failed', error);
     }

@@ -466,10 +466,8 @@ const TransportPage = () => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_transport_data', {});
-        console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data (raw):', fetchedData);
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -486,7 +484,6 @@ const TransportPage = () => {
           }
           setData({ ...defaultData, ...fetchedData });
         } else {
-          console.log('No data or invalid response, using default');
           setData(defaultData);
         }
       } catch (error) {

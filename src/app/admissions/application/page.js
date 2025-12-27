@@ -279,10 +279,8 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_application_forms', {});
-        console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data (raw):', fetchedData);
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -304,7 +302,6 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
           }
           setConfig({ ...defaultConfig, ...fetchedData, ...schoolData });
         } else {
-          console.log('No data or invalid response, using default');
           setConfig({ ...defaultConfig, ...schoolData });
         }
       } catch (error) {
@@ -417,11 +414,9 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
         version: '1.0'
       };
 
-      console.log('Payload:', JSON.stringify(payload, null, 2));
       try {
         const encrypted = await encryptObject(payload);
         const save_data = await apiRequest('save_data/save_application_form', { payload: encrypted });
-        console.log(save_data);
         if (save_data.status === 200) {
           setConfig(editData);
         } else {
@@ -730,20 +725,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       }
     };
     
-    // Log the payload to console
-    console.log('📋 FORM SUBMISSION PAYLOAD:');
-    console.log('========================================');
-    console.log(JSON.stringify(formPayload, null, 2));
-    console.log('========================================');
-    
-    // Log individual sections for better readability
-    console.log('📝 Individual Sections:');
-    console.log('👤 Student Info:', formPayload.studentInfo);
-    console.log('📞 Contact Info:', formPayload.contactInfo);
-    console.log('👨‍👩‍👧‍👦 Parent Info:', formPayload.parentInfo);
-    console.log('📚 Academic Info:', formPayload.academicInfo);
-    console.log('📄 Documents:', formPayload.documents);
-    console.log('⚙️ Meta:', formPayload.meta);
+    // (debug logs removed)
     
     // For actual file uploads, you'd need to use FormData
     const formDataToSend = new FormData();
@@ -766,11 +748,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     formDataToSend.append('termsAccepted', formData.termsAccepted);
     formDataToSend.append('submissionDate', new Date().toISOString());
     
-    // Log FormData content
-    console.log('📤 FormData Contents:');
-    for (let pair of formDataToSend.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
+    // (debug logs removed)
     
     // Here you would typically send the data to your API
     try {
@@ -781,7 +759,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       // });
       
       // const result = await response.json();
-      // console.log('API Response:', result);
+    
       
       // For now, just show alert
       alert('Application submitted successfully! Check console for payload.');

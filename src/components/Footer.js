@@ -73,7 +73,6 @@ const Footer = () => {
       setIsLoading(true);
       try {
         const res = await apiRequest('save_data/get_all_footer_data', {});
-        console.log('Footer API Response:', res);
         
         if (res.status === 200 && res.data && Array.isArray(res.data) && res.data.length > 0) {
           let fetched = res.data[0]?.Data || {};
@@ -99,10 +98,9 @@ const Footer = () => {
             }
           }
           
-          console.log('Processed Footer Data:', fetched);
           setFooterData(prev => ({ ...prev, ...fetched }));
         } else {
-          console.log('No footer data found, using defaults');
+          // No footer data found; using defaults
         }
       } catch (error) {
         console.error('Footer fetch error:', error);
@@ -133,7 +131,7 @@ const Footer = () => {
         version: '1.0'
       };
 
-      console.log('Saving footer payload:', payload);
+      // saving footer payload
       
       // Encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
@@ -141,7 +139,7 @@ const Footer = () => {
         payload: encryptedPayload 
       });
       
-      console.log('Save response:', res);
+      // save response received
       
       if (res?.status === 200) {
         setFooterData(editData);

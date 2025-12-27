@@ -297,7 +297,6 @@ const HomePage = ({ schoolData = {} }) => {
       try {
         setIsLoading(true);
         const res = await apiRequest('save_data/get_all_homes', {});
-        console.log('Fetched data from DB:', res);
         
         if (res && res.status === 200 && res.data && res.data.length > 0) {
           // Get the first home record (assuming single record for home page)
@@ -322,23 +321,18 @@ const HomePage = ({ schoolData = {} }) => {
             }
 
             if (fetched && fetched.homeData) {
-              console.log('Using database data:', fetched.homeData);
               setData(fetched.homeData);
             } else if (fetched) {
-              console.log('Using database data (direct):', fetched);
               setData(fetched);
             } else {
-              console.log('No valid data in database, using default');
               setData(defaultData);
             }
           } else {
             // Fallback to default data
-            console.log('No valid data in database, using default');
             setData(defaultData);
           }
         } else {
           // No data in database, use default JSON data
-          console.log('No data in database, using default');
           setData(defaultData);
         }
       } catch (error) {
@@ -699,13 +693,13 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
       version: '1.0'
     };
 
-    console.log('Saving complete JSON payload:', JSON.stringify(payload, null, 2));
+    // Saving complete JSON payload
     
     try {
       // encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
       const res = await apiRequest('save_data/save_home', { payload: encryptedPayload });
-      console.log('Save response:', res);
+      // save response received
       
       if (res && res.status === 201) {
         // Update local state only after successful API call
@@ -1608,7 +1602,7 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
                 src={slide.image}
                 alt={slide.title}
                 className="w-full h-full object-cover"
-                onLoad={() => console.log(`Slide ${index} loaded`)} // Debug log
+                onLoad={() => {}} 
               />
               <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <div className="text-center text-white px-4 max-w-4xl">

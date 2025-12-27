@@ -435,10 +435,10 @@ const OurHistoryPage = () => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_history_data', {});
-        console.log('API Response:', res);
+       
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           const fetchedRaw = res.data[0]?.Data || {};
-          console.log('Fetched Raw Data:', fetchedRaw);
+          
 
           let fetchedData = fetchedRaw;
           // If server sent encrypted wrapper (object or JSON string), attempt to decrypt
@@ -457,10 +457,10 @@ const OurHistoryPage = () => {
             }
           }
 
-          console.log('Fetched Data (after decrypt/parse):', fetchedData);
+         
           setData({ ...defaultData, ...fetchedData });
         } else {
-          console.log('No data or invalid response, using default');
+        
           setData(defaultData);
         }
       } catch (error) {
@@ -561,12 +561,12 @@ const OurHistoryPage = () => {
         version: '1.0'
       };
 
-      console.log('Payload (pre-encrypt):', JSON.stringify(payload, null, 2));
+      
 
       // Encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
       const save_data = await apiRequest('save_data/save_history', { payload: encryptedPayload });
-      console.log('Save response:', save_data);
+      
 
       if (save_data?.status === 200) {
         setData(updatedData);

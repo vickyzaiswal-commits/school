@@ -528,7 +528,7 @@ const ContactUsPage = () => {
     
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Form submitted:', formData);
+      // form submitted (debug log removed)
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);

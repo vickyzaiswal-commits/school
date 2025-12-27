@@ -343,7 +343,6 @@ const Navigation = ({ schoolData = {} }) => {
   const handleSave = () => {
     if (validateConfig()) {
       const payload = preparePayload();
-      console.log('Navigation Configuration:', JSON.stringify(payload, null, 2));
       localStorage.setItem('navigationConfig', JSON.stringify(payload.navigationItems));
       setPreviewMode(false);
       setEditFormOpen(false);

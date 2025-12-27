@@ -271,10 +271,8 @@ const VisionMissionPage = () => {
     const fetchData = async () => {
       try {
           const res = await apiRequest('save_data/get_all_vision_mission_data', {});
-          console.log('API Response:', res);
           if (res.status == 200 && Array.isArray(res.data) && res.data.length > 0) {
             let fetchedRaw = res.data[0]?.Data || {};
-            console.log('Fetched Raw Data:', fetchedRaw);
 
             let fetchedData = fetchedRaw;
             if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
@@ -289,11 +287,8 @@ const VisionMissionPage = () => {
                 }
               }
             }
-
-            console.log('Fetched Data (after decrypt/parse):', fetchedData);
             setData({ ...defaultData, ...fetchedData });
           } else {
-            console.log('No data or invalid response, using default');
             setData(defaultData);
           }
       } catch (error) {
@@ -399,11 +394,9 @@ const VisionMissionPage = () => {
         version: '1.0'
       };
 
-      console.log('Payload:', JSON.stringify(payload, null, 2));
       // encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
       const save_data = await apiRequest('save_data/save_vision_mission', { payload: encryptedPayload });
-      console.log(save_data);
       
       if (save_data.status === 200) {
         setData(updatedData);

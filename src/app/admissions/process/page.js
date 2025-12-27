@@ -502,10 +502,8 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_admission_data', {});
-        console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data (raw):', fetchedData);
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -527,7 +525,6 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
           }
           setData({ ...defaultData, ...fetchedData, ...schoolData });
         } else {
-          console.log('No data or invalid response, using default');
           setData({ ...defaultData, ...schoolData });
         }
       } catch (error) {
@@ -709,11 +706,9 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
         version: '1.0'
       };
 
-      console.log('Payload:', JSON.stringify(payload, null, 2));
       try {
         const encrypted = await encryptObject(payload);
         const save_data = await apiRequest('save_data/save_admission_data', { payload: encrypted });
-        console.log('save result', save_data);
         if (save_data.status === 200) {
           setData(updatedData);
         } else {

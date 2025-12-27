@@ -648,7 +648,7 @@ const CareerPage = () => {
     
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Application submitted:', applicationForm);
+      // application submitted (debug log removed)
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);

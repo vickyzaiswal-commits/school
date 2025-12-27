@@ -565,10 +565,8 @@ const StudentCouncilPage = () => {
     const fetchData = async () => {
       try {
         const res = await apiRequest('save_data/get_all_student_council_data', {});
-        console.log('API Response:', res);
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
           let fetchedData = res.data[0]?.Data || {};
-          console.log('Fetched Data (raw):', fetchedData);
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -581,7 +579,6 @@ const StudentCouncilPage = () => {
           }
           setData({ ...defaultData, ...fetchedData });
         } else {
-          console.log('No data or invalid response, using default');
           setData(defaultData);
         }
       } catch (error) {
@@ -820,7 +817,7 @@ const StudentCouncilPage = () => {
         showAchievements: data.showAchievements,
         achievements: data.achievements
       };
-      console.log('Opening tabs modal with data:', tabsData);
+      // opening tabs modal (debug logs removed)
       setEditData(JSON.parse(JSON.stringify(tabsData)));
       setOriginalData(JSON.parse(JSON.stringify(tabsData)));
     } else {
@@ -829,7 +826,7 @@ const StudentCouncilPage = () => {
         showSection: data[layoutKey],
         ...data[section]
       };
-      console.log(`Opening ${section} modal with data:`, sectionData);
+      // opening section modal (debug logs removed)
       setEditData(JSON.parse(JSON.stringify(sectionData)));
       setOriginalData(JSON.parse(JSON.stringify(sectionData)));
     }
@@ -840,7 +837,7 @@ const StudentCouncilPage = () => {
     let newData = { ...data };
     const updatedData = editData;
     
-    console.log('Saving section:', editSection, 'with data:', updatedData);
+    // saving section (debug logs removed)
     
     if (editSection === 'tabs') {
       // Update all tab-related data
@@ -868,7 +865,7 @@ const StudentCouncilPage = () => {
     try {
       const payload = await encryptObject(newData);
       await apiRequest('save_data/save_student_council_data', { payload });
-      console.log('Data saved successfully (encrypted payload sent)');
+      // data saved successfully
     } catch (error) {
       console.error('Save failed', error);
     }

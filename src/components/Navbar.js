@@ -415,7 +415,6 @@ const Navbar = ({ schoolData }) => {
   const handleSave = () => {
     if (validateConfig()) {
       const payload = preparePayload();
-      // console.log('Navbar Configuration:', JSON.stringify(payload, null, 2));
       // localStorage.setItem('navbarConfig', JSON.stringify(payload));
       (async () => {
         try {
