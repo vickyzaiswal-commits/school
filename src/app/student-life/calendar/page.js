@@ -34,6 +34,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Spinner from '@components/Spinner/Spinner';
 
 const SchoolCalendarPage = ({  }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -551,7 +552,7 @@ const SchoolCalendarPage = ({  }) => {
   const sortedMonthEvents = [...currentMonthEvents].sort((a, b) => a.date - b.date);
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <Spinner />;
   }
 
   // Modal Header Component

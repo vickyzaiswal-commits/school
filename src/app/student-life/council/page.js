@@ -30,6 +30,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Spinner from '@components/Spinner/Spinner';
 
 const StudentCouncilPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -1019,7 +1020,7 @@ const StudentCouncilPage = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (

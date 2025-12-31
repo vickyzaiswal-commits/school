@@ -9,6 +9,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
+import Spinner from '@/components/Spinner/Spinner';
 
 const iconMap = {
   FileText, Shield, Users, BookOpen, GraduationCap, Download,
@@ -632,12 +633,7 @@ const SchoolPolicyPage = () => {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-        <div className="text-2xl text-gray-600">Loading policies...</div>
-      </div>
-    </div>
+   <Spinner />  
   );
 
   return (

@@ -7,7 +7,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
-
+import Spinner from '@/components/Spinner/Spinner';
 const iconMap = {
   Download, Search, FileText, BookOpen, Users, Award, MapPin, Heart, Clock,
   ChevronRight, Edit, Trash2, Plus, X, Eye, EyeOff, Utensils
@@ -343,7 +343,7 @@ const DownloadFormsPage = () => {
     </div>
   );
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen text-2xl text-gray-600">Loading forms...</div>;
+  if (loading) return <Spinner />;
 
   return (
     <div className="min-h-screen bg-gray-50">

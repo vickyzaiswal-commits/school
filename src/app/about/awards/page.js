@@ -25,6 +25,7 @@ import {
   TrendingUp,
   Clock
 } from 'lucide-react';
+import Spinner from '@components/Spinner/Spinner'; 
 
 const AwardsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');

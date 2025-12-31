@@ -32,6 +32,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Spinner from '@components/Spinner/Spinner';
 
 const CanteenPage = () => {
   const [activeTab, setActiveTab] = useState('menu');
@@ -587,7 +588,7 @@ const CanteenPage = () => {
   const cartTotal = cart.reduce((total, item) => total + item.price, 0);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   // Modal Header Component

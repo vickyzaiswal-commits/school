@@ -6,7 +6,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
-
+import Spinner from '@/components/Spinner/Spinner'; 
 const iconMap = {
   MapPin, Clock, Phone, Mail, ExternalLink, ChevronRight, ArrowRight, Users, Award, Globe, Heart, Building, Settings, X, Edit, Trash2, Plus
 };
@@ -439,9 +439,7 @@ const AlumniPage = () => {
     : filteredAlumniStories.filter(story => story.category === activeCategory);
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-    </div>
+    <Spinner /> 
   );
 
   return (
