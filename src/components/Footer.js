@@ -15,8 +15,6 @@ const Footer = () => {
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  
   // Role detection
   useEffect(() => {
     const initRole = async () => {
