@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   FileText, 
   BarChart3, 
@@ -279,11 +280,15 @@ const AssessmentPage = () => {
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
         <div className="absolute inset-0 bg-black/40 z-10"></div>
-        <img
-          src="https://images.unsplash.com/photo-1582573618381-c9a77c31f6f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
-          alt="Assessment & Evaluation"
-          className="w-full h-full object-cover"
-        />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1582573618381-c9a77c31f6f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
+            alt="Assessment & Evaluation"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div className="text-center text-white px-4 max-w-4xl">
             <h1 className="text-4xl font-bold mb-4">Assessment & Evaluation</h1>

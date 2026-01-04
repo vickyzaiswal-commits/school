@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import Image from 'next/image';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const SportsPage = () => {
@@ -1302,11 +1303,7 @@ const SportsPage = () => {
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.backgroundImageShow !== false && (
-            <img
-              src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'}
-              alt={data.hero.title}
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-            />
+            <Image src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'} alt={data.hero.title} fill unoptimized className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
@@ -1366,7 +1363,7 @@ const SportsPage = () => {
             
             {/* Team Navigation */}
             <div className="flex overflow-x-auto gap-2 mb-6 pb-2">
-              {filteredTeams.map(team => {
+                  {filteredTeams.map(team => {
                 const IconComponent = iconMap[team.icon];
                 return (
                   <button
@@ -1392,7 +1389,11 @@ const SportsPage = () => {
               return (
                 <div key={team.id} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    {team.image && <img src={team.image} alt={team.name} className="w-full h-48 object-cover rounded-lg mb-4" />}
+                    {team.image && (
+                      <div className="w-full h-48 relative mb-4">
+                        <Image src={team.image} alt={team.name} fill unoptimized className="object-cover rounded-lg" />
+                      </div>
+                    )}
                     <div className="flex items-center mb-4">
                       <div className="bg-green-100 rounded-lg p-3 mr-4">
                         <IconComponent className="h-8 w-8 text-green-600" />
@@ -1486,14 +1487,12 @@ const SportsPage = () => {
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.facilities.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filteredFacilities.map((facility, index) => (
+                  {filteredFacilities.map((facility, index) => (
                 <div key={index} className="group cursor-pointer">
                   <div className="relative overflow-hidden rounded-lg mb-3">
-                    <img
-                      src={facility.image}
-                      alt={facility.name}
-                      className="w-full h-48 object-cover transition-transform group-hover:scale-105"
-                    />
+                    <div className="w-full h-48 relative">
+                      <Image src={facility.image} alt={facility.name} fill unoptimized className="object-cover transition-transform group-hover:scale-105" />
+                    </div>
                     <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <Play className="h-8 w-8 text-white" />
                     </div>
@@ -1581,7 +1580,9 @@ const SportsPage = () => {
               {filteredCoaches.map((coach, index) => (
                 <div key={index} className="text-center">
                   {coach.image ? (
-                    <img src={coach.image} alt={coach.name} className="w-20 h-20 rounded-full mx-auto mb-4 object-cover" />
+                    <div className="w-20 h-20 rounded-full mx-auto mb-4 relative overflow-hidden">
+                      <Image src={coach.image} alt={coach.name} fill unoptimized className="object-cover" />
+                    </div>
                   ) : (
                     <div className="bg-green-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
                       <Users className="h-8 w-8 text-green-600" />

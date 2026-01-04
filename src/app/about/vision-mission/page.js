@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   Target,
   Compass,
@@ -593,11 +594,12 @@ const VisionMissionPage = () => {
                   <div>
                     
                     {editData.backgroundImage && (
-                      <div className="mt-2">
-                        <img
+                      <div className="mt-2 w-full h-32 relative rounded border overflow-hidden">
+                        <Image
                           src={editData.backgroundImage}
                           alt="Preview"
-                          className="w-full h-32 object-cover rounded border"
+                          fill
+                          className="object-cover"
                         />
                       </div>
                     )}
@@ -989,7 +991,9 @@ const VisionMissionPage = () => {
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
           {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
-            <img src={safeData('hero').backgroundImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0">
+              <Image src={safeData('hero').backgroundImage} alt="" fill className="object-cover" />
+            </div>
           )}
           <div className="absolute inset-0 bg-black/40"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">

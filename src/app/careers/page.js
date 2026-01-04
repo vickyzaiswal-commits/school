@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import Image from 'next/image';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@/components/Spinner/Spinner';
 
@@ -848,11 +849,7 @@ const CareerPage = () => {
         <section className="relative h-96 bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.showImage !== false && data.hero?.backgroundImage && (
-            <img 
-              src={data.hero.backgroundImage} 
-              alt="Hero Background" 
-              className="absolute inset-0 w-full h-full object-cover opacity-50" 
-            />
+            <Image src={data.hero.backgroundImage} alt="Hero Background" fill unoptimized className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
@@ -1184,11 +1181,9 @@ const CareerPage = () => {
                   className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-center mb-4">
-                    <img 
-                      src={testimonial.image} 
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover mr-4"
-                    />
+                    <div className="w-12 h-12 relative rounded-full overflow-hidden mr-4">
+                      <Image src={testimonial.image} alt={testimonial.name} fill unoptimized className="object-cover rounded-full" />
+                    </div>
                     <div>
                       <h4 className="font-semibold text-gray-800">{testimonial.name}</h4>
                       <div className="flex items-center text-sm text-gray-600">

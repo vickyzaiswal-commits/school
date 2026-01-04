@@ -1,6 +1,7 @@
 // components/FileUpload.jsx
 import React, { useState, useEffect } from 'react';
 import { Upload, CheckCircle, FileText, X } from 'lucide-react';
+import Image from 'next/image';
 
 const FileUpload = ({ 
   onUploadSuccess, // new name
@@ -237,14 +238,16 @@ const FileUpload = ({
       {previewType !== 'none' && previewUrl && (
         <div className="relative">
           {previewType === 'image' && (
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="w-full h-32 object-cover rounded-lg border"
-              onError={(e) => {
-                setPreviewType('none');
-              }}
-            />
+            <div className="w-full h-32 relative">
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                className="object-cover rounded-lg border"
+                fill
+                unoptimized
+                onError={() => setPreviewType('none')}
+              />
+            </div>
           )}
           {previewType === 'video' && (
             <video

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   MapPin, 
   Clock, 
@@ -1145,13 +1146,15 @@ const InfrastructurePage = ({ schoolData = {} }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredFacilities.map((facility) => (
                 <div key={facility.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                  <div className="h-48 overflow-hidden">
-                    <img 
-                      src={facility.image} 
-                      alt={facility.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                    />
-                  </div>
+                      <div className="h-48 overflow-hidden relative">
+                        <Image
+                          src={facility.image}
+                          alt={facility.title || 'Facility Image'}
+                          className="object-cover transition-transform hover:scale-105 duration-500"
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
                   <div className="p-5">
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{facility.title}</h3>
                     <p className="text-gray-600 mb-4">{facility.description}</p>

@@ -10,6 +10,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Image from 'next/image';
 
 const OurHistoryPage = () => {
   const [editMode, setEditMode] = useState(false);
@@ -397,11 +398,7 @@ const OurHistoryPage = () => {
           className={`relative ${data.hero?.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}
         >
           {data.hero?.backgroundImageShow !== false && data.hero?.backgroundImage && (
-            <img
-              src={data.hero.backgroundImage}
-              alt="hero-background"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <Image src={data.hero.backgroundImage} alt="hero-background" fill className="absolute inset-0 w-full h-full object-cover" />
           )}
           <div className="absolute inset-0 bg-black/30"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">

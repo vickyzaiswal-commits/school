@@ -8,6 +8,7 @@ import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 import Spinner from '@/components/Spinner/Spinner';
+import Image from 'next/image';
 const iconMap = {
   Download, Search, FileText, BookOpen, Users, Award, MapPin, Heart, Clock,
   ChevronRight, Edit, Trash2, Plus, X, Eye, EyeOff, Utensils
@@ -443,7 +444,9 @@ const DownloadFormsPage = () => {
       {data.showHero && data.hero?.show && (
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
-          {data.hero?.showImage !== false && data.hero?.backgroundImage && <img src={data.hero.backgroundImage} alt={data.hero.title || ''} className="absolute inset-0 w-full h-full object-cover opacity-50" />}
+          {data.hero?.showImage !== false && data.hero?.backgroundImage && (
+            <Image src={data.hero.backgroundImage} alt={data.hero.title || ''} fill className="absolute inset-0 w-full h-full object-cover opacity-50" />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.hero.title}</h1>

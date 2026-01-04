@@ -1,6 +1,7 @@
 
 "use client";
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { 
   MapPin, 
@@ -587,9 +588,9 @@ const Navbar = ({ schoolData }) => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Logo (optional)</label>
                 <div className="flex items-center space-x-3">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border relative">
                     {config.logo ? (
-                      <img src={config.logo} alt="Logo preview" className="w-full h-full object-cover" />
+                      <Image src={config.logo} alt="Logo preview" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <GraduationCap className="w-6 h-6" />
@@ -944,10 +945,10 @@ const Navbar = ({ schoolData }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3 lg:py-4">
             <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="flex-shrink-0">
-                <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600">
+                <div className="flex-shrink-0">
+                <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600 relative">
                     {config.logo ? (
-                      <img src={config.logo} alt="Logo" className="w-full h-full object-cover" />
+                      <Image src={config.logo} alt="Logo" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-green-600">
                         <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />

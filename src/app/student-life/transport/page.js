@@ -30,6 +30,7 @@ import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@components/Spinner/Spinner';
+import Image from 'next/image';
 
 const TransportPage = () => {
   const [activeTab, setActiveTab] = useState('routes');
@@ -1077,11 +1078,7 @@ const TransportPage = () => {
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.showImage !== false && data.hero?.backgroundImage && (
-            <img
-              src={data.hero.backgroundImage}
-              alt={data.hero.title || ''}
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-            />
+            <Image src={data.hero.backgroundImage} alt={data.hero.title || ''} fill className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

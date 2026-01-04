@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import Image from 'next/image';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 
 const ArtsCulturePage = () => {
@@ -1445,11 +1446,7 @@ const ArtsCulturePage = () => {
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.backgroundImageShow !== false && (
-            <img
-              src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'}
-              alt={data.hero.title}
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-            />
+            <Image src={data.hero.backgroundImage || 'https://via.placeholder.com/1920x400'} alt={data.hero.title} fill unoptimized className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
@@ -1580,11 +1577,9 @@ const ArtsCulturePage = () => {
               {filteredFacilities.map((facility, index) => (
                 <div key={index} className="group cursor-pointer">
                   <div className="relative overflow-hidden rounded-lg mb-3">
-                    <img
-                      src={facility.image || 'https://via.placeholder.com/300'}
-                      alt={facility.name}
-                      className="w-full h-48 object-cover transition-transform group-hover:scale-105"
-                    />
+                    <div className="w-full h-48 relative">
+                      <Image src={facility.image || 'https://via.placeholder.com/300'} alt={facility.name} fill unoptimized className="object-cover transition-transform group-hover:scale-105" />
+                    </div>
                     <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <Play className="h-8 w-8 text-white" />
                     </div>
@@ -1707,8 +1702,8 @@ const ArtsCulturePage = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{data.gallery.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {filteredGalleryItems.map((item, index) => (
-                <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                  <img src={item.image} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden relative">
+                  <Image src={item.image} alt={`Gallery ${index + 1}`} fill unoptimized className="object-cover" />
                 </div>
               ))}
             </div>

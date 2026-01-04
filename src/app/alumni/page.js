@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   MapPin, Clock, Phone, Mail, ExternalLink, ChevronRight, ArrowRight, Users, Award, Globe, Heart, Building, Settings, X, Edit, Trash2, Plus, Loader2, Eye, EyeOff
 } from 'lucide-react';
@@ -580,7 +581,7 @@ const AlumniPage = () => {
       {data.hero?.show && (
         <section className="relative h-96 bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden" id="hero">
           {data.hero.showImage !== false && data.hero.backgroundImage && (
-            <img src={data.hero.backgroundImage} alt="Alumni Hero" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+            <Image src={data.hero.backgroundImage} alt="Alumni Hero" fill className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="absolute inset-0 bg-black/20" />
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
@@ -655,7 +656,9 @@ const AlumniPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedAlumniStories.map((story) => (
                 <div key={story.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                  <img src={story.image} alt={story.name} className="w-full h-48 object-cover rounded-t-lg" />
+                  <div className="w-full h-48 relative">
+                    <Image src={story.image} alt={story.name} fill className="object-cover rounded-t-lg" />
+                  </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{story.name}</h3>
                     <p className="text-gray-600 mb-4">{story.description}</p>

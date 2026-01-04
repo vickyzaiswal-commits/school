@@ -37,6 +37,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import Image from 'next/image';
 
 const FeesPage = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -1219,11 +1220,7 @@ const FeesPage = () => {
         >
           <div className="absolute inset-0 bg-black/20"></div>
           {safeData('hero').backgroundImageShow !== false && (
-            <img
-              src={safeData('hero').backgroundImage || 'https://via.placeholder.com/1920x400'}
-              alt={safeData('hero').title}
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-            />
+            <Image src={safeData('hero').backgroundImage || 'https://via.placeholder.com/1920x400'} alt={safeData('hero').title} fill unoptimized className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">

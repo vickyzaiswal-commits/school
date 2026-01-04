@@ -26,6 +26,7 @@ import {
   Ban,
   Send
 } from 'lucide-react';
+import Image from 'next/image';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
@@ -1237,7 +1238,15 @@ const OurHistoryPage = () => {
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
           {data.hero?.backgroundImageShow !== false && data.hero?.backgroundImage && (
-            <img src={data.hero.backgroundImage} alt="history-hero" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 z-0">
+              <Image
+                src={data.hero.backgroundImage}
+                alt="history-hero"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
           )}
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
@@ -1368,12 +1377,16 @@ const OurHistoryPage = () => {
                 </div>
                 <div>
                   <div className="relative rounded-lg overflow-hidden shadow-xl">
-                    <img
-                      src={filteredTimelineEvents[activeTimeline]?.image || ''}
-                      alt={filteredTimelineEvents[activeTimeline]?.title || ''}
-                      className="w-full h-80 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    <div className="relative w-full h-80">
+                      <Image
+                        src={filteredTimelineEvents[activeTimeline]?.image || ''}
+                        alt={filteredTimelineEvents[activeTimeline]?.title || ''}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    </div>
                   </div>
                 </div>
               </div>

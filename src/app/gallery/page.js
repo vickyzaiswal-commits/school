@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
+import Image from 'next/image';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@/components/Spinner/Spinner';
 
@@ -918,11 +919,7 @@ const GalleryPage = () => {
         <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden ${editMode ? 'pr-12' : ''}`}>
           {/* Background image placed first so overlay sits above it */}
           {data.hero.showImage && data.hero.backgroundImage && (
-            <img
-              src={data.hero.backgroundImage}
-              alt="Gallery Background"
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-            />
+            <Image src={data.hero.backgroundImage} alt="Gallery Background" fill className="absolute inset-0 w-full h-full object-cover opacity-50" />
           )}
           {/* Dark overlay on top of image to control opacity and improve text contrast (match other pages) */}
           <div className="absolute inset-0 bg-black/20"></div>
@@ -1021,7 +1018,9 @@ const GalleryPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {filteredAlbums.map((album, index) => (
                     <div key={index} className="bg-white rounded-lg p-5 shadow-md hover:shadow-lg transition-shadow duration-300">
-                      <img src={album.cover} alt={album.title} className="w-full h-48 object-cover rounded-md mb-4" />
+                      <div className="w-full h-48 relative mb-4">
+                        <Image src={album.cover} alt={album.title} fill className="object-cover rounded-md" />
+                      </div>
                       <h4 className="font-semibold text-gray-800 mb-2">{album.title}</h4>
                       <p className="text-sm text-gray-600">{album.count} items • {album.date}</p>
                     </div>
@@ -1069,7 +1068,9 @@ const GalleryPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredGalleryMedia.map((media, index) => (
                       <div key={index} className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow duration-300" onClick={() => openLightbox(media, index)}>
-                        <img src={media.image} alt={media.title} className="w-full h-48 object-cover rounded-md mb-2" />
+                        <div className="w-full h-48 relative mb-2">
+                          <Image src={media.image} alt={media.title} fill className="object-cover rounded-md" />
+                        </div>
                         <h5 className="font-semibold text-gray-800">{media.title}</h5>
                         <p className="text-sm text-gray-600">{media.description}</p>
                         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
@@ -1083,7 +1084,9 @@ const GalleryPage = () => {
                   <div className="space-y-4">
                     {filteredGalleryMedia.map((media, index) => (
                       <div key={index} className="bg-gray-50 rounded-lg p-4 flex items-center cursor-pointer hover:shadow-md transition-shadow duration-300" onClick={() => openLightbox(media, index)}>
-                        <img src={media.image} alt={media.title} className="w-32 h-32 object-cover rounded-md mr-4" />
+                        <div className="w-32 h-32 relative mr-4">
+                          <Image src={media.image} alt={media.title} fill className="object-cover rounded-md" />
+                        </div>
                         <div className="flex-1">
                           <h5 className="font-semibold text-gray-800">{media.title}</h5>
                           <p className="text-sm text-gray-600 mb-2">{media.description}</p>
@@ -1155,7 +1158,7 @@ const GalleryPage = () => {
             <ChevronRight className="h-8 w-8" />
           </button>
           <div className="max-w-4xl w-full p-4">
-            <img src={selectedMedia.image} alt={selectedMedia.title} className="w-full rounded-lg" />
+            <Image src={selectedMedia.image} alt={selectedMedia.title} width={1200} height={800} unoptimized className="w-full rounded-lg object-contain" />
             <h3 className="text-white text-xl mt-4">{selectedMedia.title}</h3>
             <p className="text-white/80 mt-2">{selectedMedia.description}</p>
           </div>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import {
   ChevronRight,
   Award,
@@ -1598,11 +1599,12 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
                 }`}
             >
               <div className="absolute inset-0 bg-black/40 z-10"></div>
-              <img
+              <Image
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-cover"
-                onLoad={() => {}} 
+                fill
+                className="object-cover w-full h-full"
+                onLoadingComplete={() => {}}
               />
               <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <div className="text-center text-white px-4 max-w-4xl">

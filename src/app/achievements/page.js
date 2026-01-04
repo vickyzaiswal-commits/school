@@ -10,6 +10,7 @@ import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@/components/Spinner/Spinner';
+import Image from 'next/image';
 
 const iconMap = {
   Trophy, Award, Star, TrendingUp, Calendar, Users, Target, Globe,
@@ -754,11 +755,7 @@ const AchievementsPage = () => {
         <section className="relative h-96 bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero?.showImage !== false && data.hero?.backgroundImage && (
-            <img
-              src={data.hero.backgroundImage}
-              alt="Achievements Hero"
-              className="absolute inset-0 w-full h-full object-cover opacity-60"
-            />
+            <Image src={data.hero.backgroundImage} alt="Achievements Hero" fill unoptimized className="absolute inset-0 w-full h-full object-cover opacity-60" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
@@ -1027,12 +1024,8 @@ const AchievementsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {data.alumni.achievements?.filter(a => a.show !== false).map((alum, index) => (
                 <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
-                  <div className="h-48 overflow-hidden">
-                    <img 
-                      src={alum.image} 
-                      alt={alum.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="h-48 overflow-hidden relative">
+                    <Image src={alum.image} alt={alum.name} fill unoptimized className="w-full h-full object-cover" />
                     <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm">
                       Batch {alum.batch}
                     </div>
@@ -1073,12 +1066,8 @@ const AchievementsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.gallery.images?.filter(img => img.show !== false).map((image, index) => (
                 <div key={index} className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="h-64 overflow-hidden relative">
-                    <img 
-                      src={image.url} 
-                      alt={image.caption}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    <div className="h-64 overflow-hidden relative">
+                    <Image src={image.url} alt={image.caption} fill unoptimized className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     <div className="absolute top-4 left-4">
                       <span className="inline-block bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm">
                         {image.category}

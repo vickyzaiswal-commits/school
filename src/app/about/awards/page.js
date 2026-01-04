@@ -26,6 +26,7 @@ import {
   Clock
 } from 'lucide-react';
 import Spinner from '@components/Spinner/Spinner'; 
+import Image from 'next/image';
 
 const AwardsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -176,10 +177,12 @@ const AwardsPage = () => {
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
         <div className="absolute inset-0 bg-black/40 z-10"></div>
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
           alt="Awards and Achievements"
-          className="w-full h-full object-cover"
+          fill
+          unoptimized
+          className="object-cover"
         />
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div className="text-center text-white px-4 max-w-4xl">
@@ -257,11 +260,9 @@ const AwardsPage = () => {
             </div>
             
             <div className="relative">
-              <img 
-                src={featuredAchievement.image} 
-                alt={featuredAchievement.title}
-                className="rounded-lg shadow-xl w-full h-96 object-cover"
-              />
+              <div className="rounded-lg shadow-xl w-full h-96 overflow-hidden relative">
+                <Image src={featuredAchievement.image} alt={featuredAchievement.title} fill unoptimized className="object-cover" />
+              </div>
               <div className="absolute -top-3 -right-3 bg-yellow-400 text-green-800 rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
                 <Trophy className="h-6 w-6" />
               </div>
@@ -321,11 +322,7 @@ const AwardsPage = () => {
             {filteredAwards.map((award) => (
               <div key={award.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-gray-100">
                 <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={award.image} 
-                    alt={award.title}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                  />
+                  <Image src={award.image} alt={award.title} fill unoptimized className="object-cover transition-transform hover:scale-105 duration-500" />
                   <div className="absolute top-4 left-4 bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold">
                     {award.year}
                   </div>

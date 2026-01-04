@@ -32,6 +32,7 @@ import {
   Ban,
   Send
 } from 'lucide-react';
+import Image from 'next/image';
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
@@ -638,7 +639,15 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
                   
                     {editData.backgroundImage && (
                       <div className="mt-2">
-                        <img src={editData.backgroundImage} alt="Preview" className="w-full h-32 object-cover rounded border" />
+                        <div className="relative w-full h-32 rounded overflow-hidden border">
+                          <Image
+                            src={editData.backgroundImage}
+                            alt="Preview"
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
                       </div>
                     )}
                     <label className="block text-sm font-medium mb-1 mt-3">Or Upload Background Image</label>
@@ -1190,7 +1199,15 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
           {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
-            <img src={safeData('hero').backgroundImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 z-0">
+              <Image
+                src={safeData('hero').backgroundImage}
+                alt=""
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
           )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
@@ -1250,11 +1267,17 @@ const PrincipalMessagePage = ({ schoolData = {} }) => {
 
               <div>
                 <div className="relative rounded-lg overflow-hidden shadow-2xl">
-                  {safeData('principalInfo').image && <img
-                    src={safeData('principalInfo').image}
-                    alt={safeData('principalInfo').name}
-                    className="w-full h-96 object-cover"
-                  />}
+                  {safeData('principalInfo').image && (
+                    <div className="relative w-full h-96">
+                      <Image
+                        src={safeData('principalInfo').image}
+                        alt={safeData('principalInfo').name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  )}
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
                       <h3 className="font-semibold text-gray-800">{safeData('principalInfo').name}</h3>

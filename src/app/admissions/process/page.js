@@ -35,6 +35,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
+import Image from 'next/image';
 
 const AdmissionProcessPage = ({ schoolData = {} }) => {
   const [openFaq, setOpenFaq] = useState(null);
@@ -1458,7 +1459,7 @@ const AdmissionProcessPage = ({ schoolData = {} }) => {
       {data.layout?.showHero && safeData('hero').show && (
         <section className={`relative ${safeData('hero').height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} id="hero">
           {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
-            <img src={safeData('hero').backgroundImage} alt="Hero background" className="absolute inset-0 w-full h-full object-cover" />
+            <Image src={safeData('hero').backgroundImage} alt="Hero background" fill unoptimized className="absolute inset-0 w-full h-full object-cover" />
           )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">

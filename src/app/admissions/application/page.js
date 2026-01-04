@@ -1756,11 +1756,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       {config.hero.show && (
         <section className={`relative ${config.hero.height} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden`}>
           {config.hero?.backgroundImageShow !== false && config.hero?.backgroundImage && (
-            <img
-              src={config.hero.backgroundImage}
-              alt="Hero background"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <Image src={config.hero.backgroundImage} alt="Hero background" fill unoptimized className="absolute inset-0 w-full h-full object-cover" />
           )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
