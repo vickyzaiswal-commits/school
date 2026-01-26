@@ -945,17 +945,17 @@ const Navbar = ({ schoolData }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3 lg:py-4">
             <div className="flex items-center space-x-3 lg:space-x-4">
-                <div className="flex-shrink-0">
-                <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600 relative">
-                    {config.logo ? (
-                      <Image src={config.logo} alt="Logo" fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-green-600">
-                        <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />
-                      </div>
-                    )}
-                  </div>
-              </div>
+                <Link href="/" className="flex-shrink-0">
+                  <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600 relative">
+                      {config.logo ? (
+                        <Image src={config.logo} alt="Logo" fill className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-green-600">
+                          <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />
+                        </div>
+                      )}
+                    </div>
+                </Link>
               <div>
                 <h1 className="text-lg lg:text-2xl font-bold text-green-700 leading-tight">
                   {config.name}
