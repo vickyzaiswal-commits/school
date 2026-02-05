@@ -590,7 +590,11 @@ const Navbar = ({ schoolData }) => {
                 <div className="flex items-center space-x-3">
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border relative">
                     {config.logo ? (
-                      <Image src={config.logo} alt="Logo preview" fill className="object-cover" />
+                      (config.logo && (typeof config.logo === 'string') && config.logo.startsWith('http')) ? (
+                        <img src={config.logo} alt="Logo preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <Image src={config.logo} alt="Logo preview" fill className="object-cover" />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <GraduationCap className="w-6 h-6" />
@@ -948,7 +952,11 @@ const Navbar = ({ schoolData }) => {
                 <Link href="/" className="flex-shrink-0">
                   <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600 relative">
                       {config.logo ? (
-                        <Image src={config.logo} alt="Logo" fill className="object-cover" />
+                        (config.logo && (typeof config.logo === 'string') && config.logo.startsWith('http')) ? (
+                          <img src={config.logo} alt="Logo" className="w-full h-full object-cover" />
+                        ) : (
+                          <Image src={config.logo} alt="Logo" fill className="object-cover" />
+                        )
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-green-600">
                           <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />

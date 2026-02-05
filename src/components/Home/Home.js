@@ -700,20 +700,27 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
       // encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
       const res = await apiRequest('save_data/save_home', { payload: encryptedPayload });
-      // save response received
+      // API response: { status: 200, message: "...", data: ... }
       
-      if (res && res.status === 201) {
+      console.log('Save response:', res);
+      
+      if (res && res.status && res.status >= 200 && res.status < 300) {
         // Update local state only after successful API call
         setData(updatedData);
-        setEditFormOpen(false);
-        setOriginalData(null);
-        toast.success('Data saved successfully!');
+        toast.success(res.message || 'Data saved successfully!');
       } else {
-        toast.error('Failed to save data. Please try again.');
+        console.error('Unexpected response:', res);
+        toast.error(res?.message || 'Failed to save data. Please try again.');
       }
     } catch (error) {
       console.error('Failed to save data:', error);
-      toast.error('Error saving data. Please try again.');
+      toast.error(error?.response?.data?.message || error.message || 'Error saving data. Please try again.');
+    } finally {
+      // Always close modal after save attempt
+      setEditFormOpen(false);
+      setEditSection(null);
+      setPreviewMode(false);
+      setOriginalData(null);
     }
   };
 
@@ -723,6 +730,7 @@ const handleDownload = async (url, filename = 'prospectus.pdf') => {
       setEditData(originalData);
     }
     setEditFormOpen(false);
+    setEditSection(null);
     setPreviewMode(false);
     setOriginalData(null);
   };

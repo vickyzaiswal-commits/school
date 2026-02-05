@@ -3,26 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --primary: #3080ff;
 }
 
 @media (prefers-color-scheme: dark) {
- :root {
-  --primary: #00a544; /* green (old) */
-  --primary: #3080ff; /* blue (new) */
-  --background: #ffffff;
-  --foreground: #171717;
-}
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+  }
 }

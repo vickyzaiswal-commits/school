@@ -9,6 +9,10 @@ const FileUpload = ({
   // legacy names supported for compatibility with other pages
   initialValue, 
   onUpload,
+  // When false, don't upload immediately on file select. Parent will upload on save/submit.
+  uploadOnSelect = true,
+  // Called when a file is selected (before upload) or when selection is cleared: (file | null)
+  onFileSelected,
   accept = "image/*", 
   label = "Upload Image", 
   uploadPreset = "Upload_file", 
@@ -114,28 +118,30 @@ const FileUpload = ({
         setPreviewFileName('');
       }
     }
+    // If upload should be deferred, just notify parent and keep local preview.
+    if (!uploadOnSelect) {
+      if (onFileSelected) {
+        try { onFileSelected(file); } catch (e) { /* swallow */ }
+      }
+      // Do not upload now; return early.
+      return;
+    }
 
-    // Upload to Cloudinary
+    // Upload to internal API which saves files to public/img
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
-    formData.append('folder', folder);
-    formData.append('resource_type', 'auto');
 
     try {
       setIsUploading(true);
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
+      const response = await fetch(`/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
 
       const data = await response.json();
 
-      if (data.secure_url) {
-        const newUrl = data.secure_url;
+      if (data && data.url) {
+        const newUrl = data.url;
         if (isDocument) {
           setPreviewType('document');
           setPreviewUrl(newUrl);
@@ -162,7 +168,7 @@ const FileUpload = ({
           try { onUpload(newUrl); } catch (e) { /* swallow */ }
         }
       } else {
-        throw new Error(data.error?.message || 'Upload failed');
+        throw new Error(data.error || 'Upload failed');
       }
     } catch (err) {
       console.error('Upload failed:', err);
@@ -195,6 +201,9 @@ const FileUpload = ({
     }
     if (onUpload) {
       try { onUpload(null); } catch (e) { /* swallow */ }
+    }
+    if (!uploadOnSelect && onFileSelected) {
+      try { onFileSelected(null); } catch (e) { /* swallow */ }
     }
   };
 
