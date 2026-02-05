@@ -50,3 +50,17 @@ if (sequelize) {
 }
 
 module.exports = db;
+
+// Optionally sync models to the database when requested (useful for quickly provisioning tables in dev).
+// Enable by setting DB_SYNC=true in your environment (do NOT enable in production).
+if (db.sequelize && process.env.DB_SYNC === 'true' && process.env.NODE_ENV !== 'production') {
+    (async () => {
+        try {
+            console.log('DB_SYNC is enabled — syncing models to the database (alter)...');
+            await db.sequelize.sync({ alter: true });
+            console.log('Database sync complete');
+        } catch (err) {
+            console.error('Error during database sync:', err);
+        }
+    })();
+}
