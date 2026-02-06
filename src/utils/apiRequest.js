@@ -10,8 +10,9 @@ export const supabase = NEXT_PUBLIC_SUPABASE_URL && NEXT_PUBLIC_SUPABASE_ANON_KE
   : null;
 
 // Use relative URL in production so calls go to the same origin (avoids CORS).
-// Locally you may set NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+// Locally you may set NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
+// Default to `/api` when the env var is empty so deployed app calls internal API routes.
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || '').trim() || '/api';
 
 // Simple apiRequest for internal API calls (fallback to same-origin routes)
 export const apiRequest = async (endpoint, payload = {}) => {
