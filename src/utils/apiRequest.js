@@ -1,9 +1,19 @@
 // api.js
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api"; // Next.js internal API
+// Initialize Supabase client if env vars are present (preferred for DB access)
+const NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const NEXT_PUBLIC_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export const supabase = NEXT_PUBLIC_SUPABASE_URL && NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ? createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  : null;
 
-// Simple apiRequest for Next.js internal API calls (no authentication needed)
+// Use relative URL in production so calls go to the same origin (avoids CORS).
+// Locally you may set NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+// Simple apiRequest for internal API calls (fallback to same-origin routes)
 export const apiRequest = async (endpoint, payload = {}) => {
   // Convert save_data/action_name to data?action=action_name format
   let url = endpoint;
@@ -21,7 +31,12 @@ export const apiRequest = async (endpoint, payload = {}) => {
     body = { action, ...payload };
   }
 
-  const fullUrl = `${API_BASE_URL}/${url}`;
+  // If you're using Supabase directly for DB queries, prefer the `supabase` client
+  // elsewhere in the app (import { supabase } from 'src/utils/apiRequest' or
+  // create a dedicated `supabaseClient.js`). This file keeps backward
+  // compatibility by calling internal API routes relative to the current origin.
+
+  const fullUrl = `${API_BASE_URL}/${url}`.replace(/([^:]\/)\/+/, '$1/').replace(/([^:]\/)\/+/, '$1/');
 
   try {
     const response = await axios.post(fullUrl, body, {
