@@ -2,6 +2,63 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/models';
 import supabaseClient from '@/utils/supabaseClient';
 
+const supabase = supabaseClient;
+
+async function trySupabaseGetAll(modelName) {
+  if (!supabase) return { status: 500, message: 'Supabase client not configured' };
+
+  const tableCandidates = [modelName, modelName.toLowerCase(), `${modelName.toLowerCase()}s`];
+  for (const table of tableCandidates) {
+    try {
+      const { data, error } = await supabase.from(table).select('*');
+      if (!error) {
+        return { status: 200, message: `${modelName} retrieved from Supabase`, data };
+      }
+    } catch (err) {
+      // try next candidate
+    }
+  }
+  return { status: 500, message: `Supabase: table for ${modelName} not found` };
+}
+
+async function trySupabaseSaveSingle(modelName, payload) {
+  if (!supabase) return { status: 500, message: 'Supabase client not configured' };
+  const tableCandidates = [modelName, modelName.toLowerCase(), `${modelName.toLowerCase()}s`];
+  for (const table of tableCandidates) {
+    try {
+      // try to find existing single record
+      const { data: existing, error: selErr } = await supabase.from(table).select('*').limit(1).maybeSingle();
+      if (selErr) continue;
+      if (existing) {
+        const { error: updErr } = await supabase.from(table).update({ Data: payload }).eq('id', existing.id);
+        if (updErr) continue;
+        return { status: 200, message: `${modelName} saved to Supabase`, data: { ...existing, Data: payload } };
+      } else {
+        const { data: insData, error: insErr } = await supabase.from(table).insert([{ Data: payload }]);
+        if (insErr) continue;
+        return { status: 200, message: `${modelName} created in Supabase`, data: insData };
+      }
+    } catch (err) {
+      // try next candidate
+    }
+  }
+  return { status: 500, message: `Supabase: failed to save ${modelName}` };
+}
+
+async function trySupabaseDelete(modelName, id) {
+  if (!supabase) return { status: 500, message: 'Supabase client not configured' };
+  const tableCandidates = [modelName, modelName.toLowerCase(), `${modelName.toLowerCase()}s`];
+  for (const table of tableCandidates) {
+    try {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (!error) return { status: 200, message: `${modelName} deleted from Supabase` };
+    } catch (err) {
+      // try next
+    }
+  }
+  return { status: 500, message: `Supabase: failed to delete ${modelName}` };
+}
+
 // Generic handler for save/get/delete operations
 const handlers = {
   save_home: saveSingleRecord('Home'),
@@ -172,16 +229,15 @@ const handlers = {
 function saveSingleRecord(modelName) {
   return async (body) => {
     try {
-      if (!db || !db[modelName]) {
-        const msg = `Model ${modelName} not available on server (DB not initialized).`;
-        console.error(msg);
-        return { status: 500, message: msg };
-      }
       const { payload } = body;
+      if (!db || !db[modelName]) {
+        // fallback to Supabase if available
+        return await trySupabaseSaveSingle(modelName, payload);
+      }
+
       const Model = db[modelName];
-      
       const existingRecord = await Model.findOne();
-      
+
       let result;
       if (existingRecord) {
         await existingRecord.update({ Data: payload });
@@ -210,9 +266,8 @@ function getAllRecords(modelName) {
   return async () => {
     try {
       if (!db || !db[modelName]) {
-        const msg = `Model ${modelName} not available on server (DB not initialized).`;
-        console.error(msg);
-        return { status: 500, message: msg };
+        // fallback to Supabase if available
+        return await trySupabaseGetAll(modelName);
       }
       const Model = db[modelName];
       const records = await Model.findAll();
@@ -236,12 +291,11 @@ function getAllRecords(modelName) {
 function deleteRecord(modelName) {
   return async (body) => {
     try {
-      if (!db || !db[modelName]) {
-        const msg = `Model ${modelName} not available on server (DB not initialized).`;
-        console.error(msg);
-        return { status: 500, message: msg };
-      }
       const { id } = body;
+      if (!db || !db[modelName]) {
+        // fallback to Supabase if available
+        return await trySupabaseDelete(modelName, id);
+      }
       const Model = db[modelName];
       
       const deletedCount = await Model.destroy({ where: { id } });
