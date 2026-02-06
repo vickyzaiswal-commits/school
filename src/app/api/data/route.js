@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/models';
+import supabaseClient from '@/utils/supabaseClient';
 
 // Generic handler for save/get/delete operations
 const handlers = {
@@ -171,6 +172,11 @@ const handlers = {
 function saveSingleRecord(modelName) {
   return async (body) => {
     try {
+      if (!db || !db[modelName]) {
+        const msg = `Model ${modelName} not available on server (DB not initialized).`;
+        console.error(msg);
+        return { status: 500, message: msg };
+      }
       const { payload } = body;
       const Model = db[modelName];
       
@@ -203,6 +209,11 @@ function saveSingleRecord(modelName) {
 function getAllRecords(modelName) {
   return async () => {
     try {
+      if (!db || !db[modelName]) {
+        const msg = `Model ${modelName} not available on server (DB not initialized).`;
+        console.error(msg);
+        return { status: 500, message: msg };
+      }
       const Model = db[modelName];
       const records = await Model.findAll();
 
@@ -225,6 +236,11 @@ function getAllRecords(modelName) {
 function deleteRecord(modelName) {
   return async (body) => {
     try {
+      if (!db || !db[modelName]) {
+        const msg = `Model ${modelName} not available on server (DB not initialized).`;
+        console.error(msg);
+        return { status: 500, message: msg };
+      }
       const { id } = body;
       const Model = db[modelName];
       
