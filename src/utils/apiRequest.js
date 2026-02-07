@@ -1,7 +1,16 @@
 // api.js
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""; // Use relative /api in production when empty
+const getBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // If running in browser and env URL is localhost but current origin is not localhost, use relative path
+  if (typeof window !== 'undefined' && envUrl && envUrl.includes('localhost') && !window.location.hostname.includes('localhost')) {
+    return '';
+  }
+  return envUrl || "";
+};
+
+const API_BASE_URL = getBaseUrl();
 
 // Simple apiRequest for Next.js internal API calls (no authentication needed)
 export const apiRequest = async (endpoint, payload = {}) => {
@@ -9,7 +18,7 @@ export const apiRequest = async (endpoint, payload = {}) => {
   let url = endpoint;
   let body = { ...payload };
 
-  
+
   if (endpoint.startsWith('save_data/')) {
     const action = endpoint.replace('save_data/', '');
     url = 'data';
