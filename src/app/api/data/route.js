@@ -246,10 +246,11 @@ function getAllRecords(modelName) {
       };
     } catch (error) {
       console.error(`Error retrieving ${modelName}:`, error);
+      const debugApi = process.env.DEBUG_API === 'true';
       return {
         status: 500,
         message: `Failed to retrieve ${modelName}`,
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: debugApi ? (`${error.message}` + (error.stack ? `\n${error.stack}` : '')) : undefined
       };
     }
   };
