@@ -63,3 +63,5 @@ async function run() {
 }
 
 run();
+
+// node src/lib/seeders/seedUser.js
