@@ -20,7 +20,11 @@ try {
                 }
             }
         });
-        console.log('Database initialized using DATABASE_URL');
+        console.log('Database initialized using DATABASE_URL (present)');
+        // Attempt a quick authentication to surface connection errors in deployment logs
+        sequelize.authenticate()
+            .then(() => console.log('Database authentication succeeded'))
+            .catch(err => console.error('Database authentication failed:', err && err.stack ? err.stack : err));
 
     // Fall back to individual DB_* env vars for local dev if needed
     } else if (process.env.DB_HOST && process.env.DB_USER && process.env.DB_PASS && process.env.DB_DATABASE) {
@@ -37,10 +41,13 @@ try {
                 dialectModule: pg
             }
         );
-        console.log('Database initialized using DB_* environment variables');
+        console.log('Database initialized using DB_* environment variables (present)');
+        sequelize.authenticate()
+            .then(() => console.log('Database authentication succeeded'))
+            .catch(err => console.error('Database authentication failed:', err && err.stack ? err.stack : err));
     }
 } catch (error) {
-    console.error('Database initialization error:', error.message);
+    console.error('Database initialization error:', error && error.stack ? error.stack : error);
     sequelize = null;
 }
 
