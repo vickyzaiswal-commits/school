@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "node src/lib/scripts/createTables.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
