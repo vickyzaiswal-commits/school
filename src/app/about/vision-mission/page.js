@@ -273,7 +273,7 @@ const VisionMissionPage = () => {
       try {
           const res = await apiRequest('save_data/get_all_vision_mission_data', {});
           if (res.status == 200 && Array.isArray(res.data) && res.data.length > 0) {
-            let fetchedRaw = res.data[0]?.Data || {};
+            let fetchedRaw = res.data[0]?.data || {};
 
             let fetchedData = fetchedRaw;
             if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {

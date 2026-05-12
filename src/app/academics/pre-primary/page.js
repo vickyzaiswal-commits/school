@@ -422,9 +422,9 @@ const PrePrimarySchoolPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiRequest('save_data/get_all_preprimaryschool_data', {});
+        const res = await apiRequest('save_data/get_all_pre_primary_school', {});
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedRaw = res.data[0]?.Data || {};
+          let fetchedRaw = res.data[0]?.data || {};
 
           let fetchedData = fetchedRaw;
           if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
@@ -585,7 +585,7 @@ const PrePrimarySchoolPage = () => {
 
       // encrypt payload before sending
       const encryptedPayload = await encryptObject(payload);
-      const save_data = await apiRequest('save_data/save_preprimaryschool', { payload: encryptedPayload });
+      const save_data = await apiRequest('save_data/save_pre_primary_school', { payload: encryptedPayload });
 
       if (save_data?.status === 200) {
         setData(updatedData);
@@ -695,7 +695,7 @@ const PrePrimarySchoolPage = () => {
       };
       // encrypt payload before sending
       const encrypted = await encryptObject(payload);
-      const res = await apiRequest('save_data/save_preprimaryschool', { payload: encrypted });
+      const res = await apiRequest('save_data/save_pre_primary_school', { payload: encrypted });
       if (res.status === 200) {
         setSectionVisibilityModal(false);
       } else {

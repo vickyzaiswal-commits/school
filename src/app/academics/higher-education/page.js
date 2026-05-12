@@ -601,9 +601,9 @@ const HigherEducationPage = ({ schoolData = {} }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiRequest('save_data/get_all_highereducation_data', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.Data || {};
+        const res = await apiRequest('save_data/get_all_higher_education', {});
+            if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+              let fetchedData = res.data[0]?.data || {};
           try {
             if (fetchedData && typeof fetchedData === 'object' && fetchedData.encrypted) {
               const dec = await decryptObject(fetchedData);
@@ -675,7 +675,7 @@ const HigherEducationPage = ({ schoolData = {} }) => {
       };
       try {
         const encrypted = await encryptObject(payload);
-        await apiRequest('save_data/save_highereducation', { payload: encrypted });
+        await apiRequest('save_data/save_higher_education', { payload: encrypted });
       } catch (encErr) {
         console.error('Encryption/Save error:', encErr);
       }
@@ -816,7 +816,7 @@ const HigherEducationPage = ({ schoolData = {} }) => {
 
       try {
         const encrypted = await encryptObject(payload);
-        const save_data = await apiRequest('save_data/save_highereducation', { payload: encrypted });
+        const save_data = await apiRequest('save_data/save_higher_education', { payload: encrypted });
         if (save_data.status === 200) {
           setData(updatedData);
         }

@@ -481,7 +481,7 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
       try {
         const res = await apiRequest('save_data/get_all_seniorschool_data', {});
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.Data || {};
+          let fetchedData = res.data[0]?.data || {};
           try {
             if (fetchedData && typeof fetchedData === 'object' && fetchedData.encrypted) {
               const dec = await decryptObject(fetchedData);
@@ -729,8 +729,13 @@ const SeniorSchoolPage = ({ schoolData = {} }) => {
       if (layoutKey && 'showSection' in editData) {
         updatedData.layout[layoutKey] = editData.showSection;
       }
-      const { showSection, ...sectionUpdates } = editData;
-      updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+      // Handle tabs (array) specially to avoid converting array into object
+      if (editSection === 'tabs') {
+        updatedData[editSection] = Array.isArray(editData) ? editData : [];
+      } else {
+        const { showSection, ...sectionUpdates } = editData || {};
+        updatedData[editSection] = { ...data[editSection], ...sectionUpdates };
+      }
 
       const payload = {
         ...updatedData,

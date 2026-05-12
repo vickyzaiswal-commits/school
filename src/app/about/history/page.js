@@ -439,7 +439,7 @@ const OurHistoryPage = () => {
         const res = await apiRequest('save_data/get_all_history_data', {});
        
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedRaw = res.data[0]?.Data || {};
+          const fetchedRaw = res.data[0]?.data || {};
           
 
           let fetchedData = fetchedRaw;

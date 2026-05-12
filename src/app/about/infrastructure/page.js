@@ -83,7 +83,9 @@ const InfrastructurePage = ({ schoolData = {} }) => {
       show: true,
       title: "Campus Infrastructure",
       subtitle: "State-of-the-art facilities designed to inspire learning and growth",
-      height: "h-96"
+      height: "h-96",
+      backgroundImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      backgroundImageShow: true
     },
     introduction: {
       show: true,
@@ -284,7 +286,7 @@ const InfrastructurePage = ({ schoolData = {} }) => {
         const res = await apiRequest('save_data/get_all_infrastructure_data', {});
        
         if (res.status == 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedRaw = res.data[0]?.Data || {};
+          let fetchedRaw = res.data[0]?.data || {};
 
           let fetchedData = fetchedRaw;
           if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
@@ -615,6 +617,22 @@ const InfrastructurePage = ({ schoolData = {} }) => {
                     />
                   </div>
                   
+                  <label className="block text-sm font-medium mb-1 mt-3">Or Upload Background Image</label>
+                  <FileUpload
+                    currentUrl={editData.backgroundImage || ''}
+                    onUploadSuccess={(url) => handleObjectChange('backgroundImage', url)}
+                    label="Hero Background Image"
+                  />
+                  <div className="mt-3">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.backgroundImageShow !== false}
+                        onChange={(e) => handleObjectChange('backgroundImageShow', e.target.checked)}
+                      />
+                      <span>Show Background Image</span>
+                    </label>
+                  </div>
                 </div>
               )}
               {editSection === 'introduction' && (
@@ -1076,6 +1094,17 @@ const InfrastructurePage = ({ schoolData = {} }) => {
           id="hero"
           className={`relative ${safeData('hero').height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden animate-on-scroll ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         >
+          {safeData('hero').backgroundImageShow !== false && safeData('hero').backgroundImage && (
+            <div className="absolute inset-0 z-0">
+              <Image
+                src={safeData('hero').backgroundImage}
+                alt=""
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
             <div className="max-w-3xl">
