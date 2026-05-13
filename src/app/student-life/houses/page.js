@@ -136,6 +136,7 @@ const HouseSystemPage = () => {
     showLabels: true,
     hero: {
       show: true,
+      height: "h-96",
       title: "Our House System",
       subtitle: "Fostering camaraderie, competition, and character development through our vibrant house system since 1950.",
       showImage: false,
@@ -551,7 +552,7 @@ const HouseSystemPage = () => {
       try {
         const res = await apiRequest('save_data/get_all_house_data', {});
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.Data || {};
+          let fetchedData = res.data[0]?.data || {};
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);
@@ -1448,7 +1449,7 @@ const HouseSystemPage = () => {
 
       {/* Hero Section */}
       {data.showHero && data.hero?.show && (
-  <section className={`relative ${data.hero.height || ''} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden ${editMode ? 'pr-12' : ''}`}>
+  <section className={`relative ${data.hero.height || 'h-96'} bg-gradient-to-r from-green-800 to-green-600 text-white overflow-hidden ${editMode ? 'pr-12' : ''}`}>
           <div className="absolute inset-0 bg-black/20"></div>
           {data.hero.showImage && data.hero.backgroundImage && (
             <Image src={data.hero.backgroundImage} alt="Background" fill className="absolute inset-0 w-full h-full object-cover opacity-50" />

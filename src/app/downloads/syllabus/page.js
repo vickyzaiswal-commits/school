@@ -192,7 +192,7 @@ const DownloadSyllabusPage = () => {
       try {
         const res = await apiRequest('save_data/get_all_syllabus_data', {});
         if (res.status === 200 && res.data?.length > 0) {
-          const raw = res.data[0].Data;
+          const raw = res.data[0].data;
           let fetched = raw;
           try {
             if (raw?.encrypted) {

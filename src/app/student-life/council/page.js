@@ -567,7 +567,7 @@ const StudentCouncilPage = () => {
       try {
         const res = await apiRequest('save_data/get_all_student_council_data', {});
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.Data || {};
+          let fetchedData = res.data[0]?.data || {};
           try {
             if (fetchedData && fetchedData.encrypted) {
               fetchedData = await decryptObject(fetchedData);

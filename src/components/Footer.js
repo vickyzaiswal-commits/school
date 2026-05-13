@@ -74,7 +74,7 @@ const Footer = () => {
         const res = await apiRequest('save_data/get_all_footer_data', {});
         
         if (res.status === 200 && res.data && Array.isArray(res.data) && res.data.length > 0) {
-          let fetched = res.data[0]?.Data || {};
+          let fetched = res.data[0]?.data || {};
           
           // Handle decryption if needed
           if (typeof fetched === 'string' || (fetched && fetched.encrypted)) {

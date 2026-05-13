@@ -273,7 +273,7 @@ const Navbar = ({ schoolData }) => {
         try {
           const res = await apiRequest('save_data/get_navbar_data', {});
           const remoteData = Array.isArray(res.data) && res.data.length > 0
-            ? res.data[0].Data
+            ? res.data[0].data
             : res.data?.Data || res.data;
           return { timeout: false, remoteData };
         } catch (err) {

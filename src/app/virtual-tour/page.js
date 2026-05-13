@@ -106,7 +106,7 @@ const OurHistoryPage = () => {
       try {
         const res = await apiRequest('save_data/get_all_virtual_tour', {});
         if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedRaw = res.data[0]?.Data || {};
+          const fetchedRaw = res.data[0]?.data || {};
 
           let fetchedData = fetchedRaw;
           if (typeof fetchedRaw === 'string' || (fetchedRaw && fetchedRaw.encrypted)) {
