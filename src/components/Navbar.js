@@ -253,6 +253,7 @@ const Navbar = ({ schoolData }) => {
     logo: ''
   };
 
+  
   // Icon mapping
   const iconMap = {
     MapPin, Phone, Mail, Clock, GraduationCap, User, CreditCard,
