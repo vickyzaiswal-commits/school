@@ -16,6 +16,14 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    localPatterns: [
+      {
+        pathname: '/api/temp-file*',
+      },
+      {
+        pathname: '/img/**',
+      },
+    ],
   },
 };
 
