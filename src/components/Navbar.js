@@ -246,6 +246,7 @@ const Navbar = ({ schoolData }) => {
       }
     ],
     
+    
     admissionsOpen: true,
     emergencyNotice: null
     ,
