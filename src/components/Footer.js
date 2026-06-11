@@ -172,7 +172,7 @@ const Footer = () => {
       <footer className="bg-green-800 text-white py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center relative">
           <p className="text-sm">
-            © {footerData.year || '2025'} {footerData.schoolName || "Abc School"}. All rights reserved.
+            © {footerData.year || new Date().getFullYear()} {footerData.schoolName || "Abc School"}. All rights reserved.
           </p>
           <p className="text-xs text-green-200 mt-1">
             {footerData.tagline || "An Edmund Rice Educational Institution"}
@@ -181,7 +181,7 @@ const Footer = () => {
           {/* Edit Icon - visible for admin only */}
           {editMode && (
             <button
-              onClick={openEditModal}
+              onClick={() => { window.location.href = '/admin/footer'; }}
               className="absolute top-1/2 -translate-y-1/2 right-4 bg-white text-green-800 p-2 rounded-full shadow-xl hover:bg-gray-100 hover:scale-110 transition-all duration-200"
               title="Edit Footer"
             >

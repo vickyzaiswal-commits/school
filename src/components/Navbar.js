@@ -262,6 +262,21 @@ const Navbar = ({ schoolData }) => {
     Calendar, Award
   };
 
+  // Normalize logo paths: allow absolute urls, data/blob, and files under public/img
+  const normalizeLogo = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return url;
+    const trimmed = url.trim();
+    // External or protocol-relative URLs
+    if (/^(https?:)?\/\//.test(trimmed) || trimmed.startsWith('/') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+      return trimmed;
+    }
+    // If already starts with img/ prefix, ensure leading slash
+    if (trimmed.startsWith('img/')) return `/${trimmed}`;
+    // Otherwise assume filename stored and point to public/img
+    return `/img/${trimmed}`;
+  };
+
   // Initialize config: prefer remote data but fallback to static after timeout
   useEffect(() => {
     let mounted = true;
@@ -423,12 +438,8 @@ const Navbar = ({ schoolData }) => {
         try {
           await apiRequest('save_data/save_navbar_data', { payload });
         } catch (err) {
-          console.warn('Failed to save navbar remotely, falling back to localStorage', err);
-          try {
-            localStorage.setItem('navbarConfig', JSON.stringify(payload));
-          } catch (e) {
-            console.error('Failed to persist navbar locally', e);
-          }
+          console.warn('Failed to save navbar remotely', err);
+          // we do not persist to localStorage; inform admin to retry
         }
         setPreviewMode(false);
         setEditFormOpen(false);
@@ -592,11 +603,13 @@ const Navbar = ({ schoolData }) => {
                 <div className="flex items-center space-x-3">
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border relative">
                     {config.logo ? (
-                      (config.logo && (typeof config.logo === 'string') && config.logo.startsWith('http')) ? (
-                        <img src={config.logo} alt="Logo preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <Image src={config.logo} alt="Logo preview" fill className="object-cover" />
-                      )
+                      (() => {
+                        const src = normalizeLogo(config.logo);
+                        if (typeof src === 'string' && src) {
+                          return <img src={src} alt="Logo preview" className="w-full h-full object-cover" />;
+                        }
+                        return <Image src={src} alt="Logo preview" fill unoptimized className="object-cover" />;
+                      })()
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <GraduationCap className="w-6 h-6" />
@@ -954,11 +967,13 @@ const Navbar = ({ schoolData }) => {
                 <Link href="/" className="flex-shrink-0">
                   <div className="h-12 w-12 lg:h-16 lg:w-16 rounded-full flex items-center justify-center border-3 border-green-500 shadow-lg overflow-hidden bg-green-600 relative">
                       {config.logo ? (
-                        (config.logo && (typeof config.logo === 'string') && config.logo.startsWith('http')) ? (
-                          <img src={config.logo} alt="Logo" className="w-full h-full object-cover" />
-                        ) : (
-                          <Image src={config.logo} alt="Logo" fill className="object-cover" />
-                        )
+                        (() => {
+                          const src = normalizeLogo(config.logo);
+                          if (typeof src === 'string' && src) {
+                            return <img src={src} alt="Logo" className="w-full h-full object-cover" />;
+                          }
+                          return <Image src={src} alt="Logo" fill unoptimized className="object-cover" />;
+                        })()
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-green-600">
                           <GraduationCap className="h-6 w-6 lg:h-8 lg:w-8 text-yellow-400" />

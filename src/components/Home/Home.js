@@ -352,6 +352,15 @@ const HomePage = ({ schoolData = {} }) => {
     },
   };
 
+  const normalizeImageUrl = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return url;
+    const t = url.trim();
+    if (t.startsWith('/') || /^https?:\/\//.test(t) || t.startsWith('data:') || t.startsWith('blob:')) return t;
+    if (t.startsWith('img/')) return `/${t}`;
+    return `/img/${t}`;
+  };
+
   // Icon mapping for rendering
   const iconMap = {
     Trophy,
@@ -373,6 +382,18 @@ const HomePage = ({ schoolData = {} }) => {
   const [data, setData] = useState(
     Object.keys(schoolData || {}).length ? schoolData : defaultData,
   );
+
+  const normalizeDataImages = (d) => {
+    if (!d || typeof d !== 'object') return d;
+    const copy = JSON.parse(JSON.stringify(d));
+    if (Array.isArray(copy.heroSlides)) {
+      copy.heroSlides = copy.heroSlides.map((s) => ({
+        ...s,
+        image: typeof s.image === 'string' ? normalizeImageUrl(s.image) : s.image,
+      }));
+    }
+    return copy;
+  };
 
   // Fetch data from database on component mount
   useEffect(() => {
@@ -407,11 +428,11 @@ const HomePage = ({ schoolData = {} }) => {
             }
 
             if (fetched && fetched.homeData) {
-              setData(fetched.homeData);
+              setData(normalizeDataImages(fetched.homeData));
             } else if (fetched) {
-              setData(fetched);
+              setData(normalizeDataImages(fetched));
             } else {
-              setData(defaultData);
+              setData(normalizeDataImages(defaultData));
             }
           } else {
             // Fallback to default data
@@ -419,12 +440,12 @@ const HomePage = ({ schoolData = {} }) => {
           }
         } else {
           // No data in database, use default JSON data
-          setData(defaultData);
+            setData(normalizeDataImages(defaultData));
         }
       } catch (error) {
         console.error("Failed to fetch school data:", error);
         // Fallback to default data if fetch fails
-        setData(defaultData);
+        setData(normalizeDataImages(defaultData));
       } finally {
         setIsLoading(false);
       }
@@ -2264,13 +2285,23 @@ const HomePage = ({ schoolData = {} }) => {
               }`}
             >
               <div className="absolute inset-0 bg-black/40 z-10"></div>
-              <Image
-                src={slide.image}
-                alt={slide.title}
-                fill
-                className="object-cover w-full h-full"
-                onLoadingComplete={() => {}}
-              />
+              {slide.image && typeof slide.image === 'string' ? (
+                // Use plain img for dynamic or external URLs to avoid Next/Image domain or blob/data issues
+                <img
+                  src={normalizeImageUrl(slide.image)}
+                  alt={slide.title}
+                  className="object-cover w-full h-full"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              ) : (
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  className="object-cover w-full h-full"
+                  onLoadingComplete={() => {}}
+                />
+              )}
               <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <div className="text-center text-white px-4 max-w-4xl">
                   <h1 className="text-2xl md:text-4xl font-bold mb-4 leading-tight">

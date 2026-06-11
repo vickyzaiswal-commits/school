@@ -174,10 +174,6 @@ const handlers = {
   get_all_contact_us: getAllRecords("ContactUs"),
   save_contact_us: saveSingleRecord("ContactUs"),
   delete_contact_us: deleteRecord("ContactUs"),
-  // Aliases matching frontend action names
-  get_all_contact_data: getAllRecords("ContactUs"),
-  save_contact_data: saveSingleRecord("ContactUs"),
-  delete_contact_data: deleteRecord("ContactUs"),
 
   get_all_navbar: getAllRecords("Navbar"),
   save_navbar: saveSingleRecord("Navbar"),
@@ -190,26 +186,14 @@ const handlers = {
   get_all_alumni: getAllRecords("Alumni"),
   save_alumni: saveSingleRecord("Alumni"),
   delete_alumni: deleteRecord("Alumni"),
-  // Aliases matching frontend action names for alumni
-  get_all_alumni_data: getAllRecords("Alumni"),
-  save_alumni_data: saveSingleRecord("Alumni"),
-  delete_alumni_data: deleteRecord("Alumni"),
 
   get_all_career: getAllRecords("Career"),
   save_career: saveSingleRecord("Career"),
   delete_career: deleteRecord("Career"),
-  // Aliases matching frontend action names for careers
-  get_all_career_data: getAllRecords("Career"),
-  save_career_data: saveSingleRecord("Career"),
-  delete_career_data: deleteRecord("Career"),
 
   get_all_achievements: getAllRecords("Achievements"),
   save_achievements: saveSingleRecord("Achievements"),
   delete_achievements: deleteRecord("Achievements"),
-  // Aliases matching frontend action names for achievements
-  get_all_achievement_data: getAllRecords("Achievements"),
-  save_achievement_data: saveSingleRecord("Achievements"),
-  delete_achievement_data: deleteRecord("Achievements"),
 
   get_all_virtual_tour: getAllRecords("Virtual_Tour"),
   save_virtual_tour: saveSingleRecord("Virtual_Tour"),
