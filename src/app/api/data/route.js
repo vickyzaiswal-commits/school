@@ -16,6 +16,7 @@ const tableMappings = {
   AdmissionProcess: "admission_processes",
   ApplicationForm: "application_forms",
   Fees: "fees",
+  Footer: "footer",
   Sports: "sports",
   Arts: "arts",
   Music: "musics",
@@ -212,8 +213,8 @@ const handlers = {
   save_navbar_data: saveSingleRecord("Navbar"),
 
   // Aliases for footer (called from frontend)
-  get_all_footer_data: getAllRecords("Navbar"), // Footer uses Navbar model
-  save_footer: saveSingleRecord("Navbar"),
+  get_all_footer_data: getAllRecords("Footer"), // Footer uses Footer model
+  save_footer: saveSingleRecord("Footer"),
 
   // Aliases for notice (called from frontend)
   get_all_notice_data: getAllRecords("Notice"),

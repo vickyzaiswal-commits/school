@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Edit, X, Send, Ban } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
@@ -8,13 +9,14 @@ const Footer = () => {
   const [role, setRole] = useState(null);
   const [footerData, setFooterData] = useState({
     schoolName: "Abc School",
-    year: "2025",
+    year: "2026",
     tagline: "An Edmund Rice Educational Institution"
   });
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [canEdit, setCanEdit] = useState(false);
   // Role detection
   useEffect(() => {
     const initRole = async () => {
@@ -65,6 +67,18 @@ const Footer = () => {
 
     initRole();
   }, []);
+
+  // Determine whether to show edit controls (admin || override || url flag)
+  useEffect(() => {
+    // run only on client
+    try {
+      const override = typeof window !== 'undefined' && (localStorage.getItem('ecareAdminOverride') === 'true');
+      const urlFlag = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('editFooter') === '1';
+      setCanEdit(editMode || override || urlFlag);
+    } catch (e) {
+      setCanEdit(editMode);
+    }
+  }, [editMode]);
 
   // Fetch footer data from backend
   useEffect(() => {
@@ -178,18 +192,37 @@ const Footer = () => {
             {footerData.tagline || "An Edmund Rice Educational Institution"}
           </p>
 
-          {/* Edit Icon - visible for admin only */}
-          {editMode && (
+          {/* Edit Icon - visible when allowed (admin, override or URL flag) */}
+          {canEdit && (
             <button
-              onClick={() => { window.location.href = '/admin/footer'; }}
+              onClick={openEditModal}
               className="absolute top-1/2 -translate-y-1/2 right-4 bg-white text-green-800 p-2 rounded-full shadow-xl hover:bg-gray-100 hover:scale-110 transition-all duration-200"
               title="Edit Footer"
             >
               <Edit className="h-5 w-5" />
             </button>
           )}
+
+          {/* Link to dedicated admin editor page (like other admin pages) */}
+          {canEdit && (
+            <Link href="/admin/footer" className="absolute top-1/2 -translate-y-1/2 right-20 bg-white text-green-800 px-3 py-1 rounded shadow hover:bg-gray-100 text-sm">
+              Admin Editor
+            </Link>
+          )}
         </div>
       </footer>
+
+      {/* Floating edit button as a fallback and more visible control */}
+      {canEdit && (
+        <button
+          onClick={openEditModal}
+          aria-label="Edit Footer"
+          className="fixed bottom-6 right-6 z-50 bg-green-700 text-white p-3 rounded-full shadow-2xl hover:scale-105 transition transform"
+          title="Edit Footer"
+        >
+          <Edit className="h-5 w-5" />
+        </button>
+      )}
 
       {/* Edit Modal */}
       {editFormOpen && (
@@ -227,7 +260,7 @@ const Footer = () => {
                   value={editData.year || ''}
                   onChange={(e) => handleChange('year', e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                  placeholder="e.g. 2025"
+                  placeholder="e.g. 2026"
                 />
               </div>
 
