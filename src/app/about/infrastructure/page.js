@@ -37,8 +37,11 @@ import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 
+import defaultData from '@/data/infrastructure.json';
+
 const InfrastructurePage = ({ schoolData = {} }) => {
   const [isVisible, setIsVisible] = useState({});
+  const [activeCategory, setActiveCategory] = useState('all');
   const [editMode, setEditMode] = useState(false);
   const [editSection, setEditSection] = useState(null);
   const [editFormOpen, setEditFormOpen] = useState(false);
@@ -48,13 +51,26 @@ const InfrastructurePage = ({ schoolData = {} }) => {
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const [role, setRole] = useState(null); // Will be derived from stored user
 
+  // Initialize role from stored `ecareUser` (localStorage or sessionStorage)
   useEffect(() => {
     const initRole = async () => {
       try {
         const raw = localStorage.getItem('ecareUser') || sessionStorage.getItem('ecareUser');
-        if (!raw) { setRole(null); return; }
+        if (!raw) {
+          setRole(null);
+          return;
+        }
+
         let parsed;
-        try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          // Not JSON — can't parse
+          setRole(null);
+          return;
+        }
+
+        // If it's an encrypted wrapper, attempt to decrypt
         if (parsed && parsed.encrypted) {
           try {
             const decrypted = await decryptObject(parsed);
@@ -76,155 +92,6 @@ const InfrastructurePage = ({ schoolData = {} }) => {
     };
     initRole();
   }, []);
-
-  // Default data structure - Consistent with other pages
-  const defaultData = {
-    hero: {
-      show: true,
-      title: "Campus Infrastructure",
-      subtitle: "State-of-the-art facilities designed to inspire learning and growth",
-      height: "h-96",
-      backgroundImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      backgroundImageShow: true
-    },
-    introduction: {
-      show: true,
-      title: "World-Class Learning Environment",
-      description: "Our school boasts a sprawling campus with modern infrastructure that provides students with an ideal environment for academic excellence and holistic development.",
-      stats: [
-        { icon: "Building", value: "10-acre", label: "Spacious Campus", description: "Dedicated areas for academics, sports, and arts", show: true },
-        { icon: "Users", value: "2,000+", label: "Student Capacity", description: "Optimal teacher-student ratio", show: true },
-        { icon: "GraduationCap", value: "60+", label: "Modern Classrooms", description: "Smart classrooms with digital learning tools", show: true }
-      ]
-    },
-    facilityCategories: [
-      { id: 'all', name: 'All Facilities', icon: "Building", show: true },
-      { id: 'academic', name: 'Academic', icon: "BookOpen", show: true },
-      { id: 'science', name: 'Science Labs', icon: "Microscope", show: true },
-      { id: 'technology', name: 'Technology', icon: "Computer", show: true },
-      { id: 'sports', name: 'Sports', icon: "Dumbbell", show: true },
-      { id: 'arts', name: 'Arts & Culture', icon: "Palette", show: true },
-    ],
-    facilities: [
-      {
-        id: 1,
-        title: "Smart Classrooms",
-        description: "Digitally equipped classrooms with interactive whiteboards, projectors, and audio-visual learning aids.",
-        image: "https://images.unsplash.com/photo-1588072432836-4b4f2ca5fdd5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "academic",
-        features: ["Interactive Whiteboards", "Digital Projectors", "Audio Systems", "Climate Controlled"],
-        show: true
-      },
-      {
-        id: 2,
-        title: "Science Laboratories",
-        description: "Well-equipped physics, chemistry and biology laboratories for practical experimentation and learning.",
-        image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "science",
-        features: ["Modern Equipment", "Safety Systems", "Demonstration Areas", "Research Resources"],
-        show: true
-      },
-      {
-        id: 3,
-        title: "Computer Labs",
-        description: "State-of-the-art computer laboratories with high-speed internet and latest software resources.",
-        image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "technology",
-        features: ["High-Speed Computers", "Programming Software", "Internet Access", "IT Support"],
-        show: true
-      },
-      {
-        id: 4,
-        title: "Library & Resource Center",
-        description: "Spacious library with vast collection of books, periodicals, and digital learning resources.",
-        image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2053&q=80",
-        category: "academic",
-        features: ["Extensive Collection", "Reading Areas", "Digital Resources", "Research Assistance"],
-        show: true
-      },
-      {
-        id: 5,
-        title: "Sports Complex",
-        description: "Comprehensive sports facilities including indoor and outdoor arenas for various sports activities.",
-        image: "https://images.unsplash.com/photo-1549060279-7e168fce7090?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "sports",
-        features: ["Basketball Court", "Football Field", "Cricket Ground", "Indoor Games"],
-        show: true
-      },
-      {
-        id: 6,
-        title: "Auditorium",
-        description: "Modern auditorium with seating capacity of 500+ for events, performances, and assemblies.",
-        image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2012&q=80",
-        category: "arts",
-        features: ["Sound System", "Lighting", "Stage", "Green Rooms"],
-        show: true
-      }
-    ],
-    campusFeatures: [
-      {
-        icon: "Shield",
-        title: "Security",
-        description: "24/7 security with CCTV surveillance, access control, and trained security personnel",
-        show: true
-      },
-      {
-        icon: "TreePine",
-        title: "Green Campus",
-        description: "Eco-friendly campus with lush greenery, rainwater harvesting, and waste management systems",
-        show: true
-      },
-      {
-        icon: "Wifi",
-        title: "Wi-Fi Enabled",
-        description: "Complete campus Wi-Fi coverage with controlled access for educational purposes",
-        show: true
-      },
-      {
-        icon: "Car",
-        title: "Ample Parking",
-        description: "Spacious parking facilities for staff, visitors, and school buses",
-        show: true
-      },
-      {
-        icon: "Utensils",
-        title: "Cafeteria",
-        description: "Hygienic cafeteria serving nutritious meals and snacks for students and staff",
-        show: true
-      },
-      {
-        icon: "HeartPulse",
-        title: "Health & Safety",
-        description: "Regular safety drills, fire safety systems, and comprehensive health policies",
-        show: true
-      }
-    ],
-    virtualTour: {
-      show: true,
-      title: "Experience Our Campus Virtually",
-      description: "Can't visit in person? Take our virtual tour to explore our facilities from anywhere in the world.",
-      primaryCta: "Start Virtual Tour",
-      secondaryCta: "Schedule Campus Visit"
-    },
-    contactInfo: {
-      show: true,
-      title: "Plan Your Visit",
-      address: "1, Ashok Place, Birgunj - 110001, India",
-      hours: "Monday - Friday: 9:00 AM - 3:00 PM\nSaturday: 9:00 AM - 12:00 PM\n(Prior appointment recommended)",
-      phone: "011 2336 3462\n011 2336 3134",
-      email: "infrastructure@stcolumbas.edu.in",
-      mapTitle: "Campus Location",
-      mapDescription: "Find our campus easily using the interactive map below.",
-      googleMapsLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.774530832456!2d77.20685231508316!3d28.63264498241683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd5b347eb62d%3A0x52c2b7494e204dce!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1647851558805!5m2!1sen!2sin",
-      mapDownloadLink: "/campus-map.pdf"
-    },
-    showHero: true,
-    showIntroduction: true,
-    showFacilities: true,
-    showCampusFeatures: true,
-    showVirtualTour: true,
-    showContact: true
-  };
 
   // Icon mapping for rendering
   const iconMap = {

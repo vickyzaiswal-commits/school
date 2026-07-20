@@ -1,0 +1,164 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Principal's Message",
+    "subtitle": "A message of inspiration and commitment to excellence",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true
+  },
+  "principalInfo": {
+    "show": true,
+    "name": "Dr. Mary Johnson",
+    "role": "Principal, Abc School",
+    "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    "experience": "25+ years in education",
+    "tenure": "Principal since 2015",
+    "education": [
+      "Ph.D. Educational Administration, Delhi University",
+      "M.Ed. Educational Leadership, Jamia Millia Islamia",
+      "B.Ed. Teaching Methodology, Lady Shri Ram College"
+    ],
+    "description": "With over 25 years of experience in educational leadership and administration, Dr. Mary Johnson brings a wealth of knowledge and passion for student-centered learning to Abc School."
+  },
+  "message": {
+    "show": true,
+    "title": "A Message of Commitment",
+    "quote": "Education is not just about imparting knowledge; it's about igniting a passion for learning, nurturing character, and empowering young minds to become compassionate leaders who will shape a better tomorrow.",
+    "content": [
+      "As I reflect on our journey at Abc School, I am filled with immense pride and gratitude. Our institution stands as a testament to nearly a century of educational excellence, built on the solid foundation of Edmund Rice values that continue to guide us today.",
+      "In today's rapidly evolving world, we face both unprecedented challenges and extraordinary opportunities. Our role as educators extends far beyond traditional academics. We are called to prepare students not just for examinations, but for life.",
+      "Every day, I witness the incredible potential within our students. Our dedicated faculty works tirelessly to create an environment where this potential can flourish through personalized attention, innovative teaching methods, and a holistic approach."
+    ]
+  },
+  "educationalPriorities": {
+    "show": true,
+    "title": "Our Educational Priorities",
+    "description": "The key areas where we focus our efforts to ensure comprehensive development of every student.",
+    "priorities": [
+      {
+        "icon": "BookOpen",
+        "title": "Academic Excellence",
+        "description": "Fostering intellectual curiosity and critical thinking skills that prepare students for higher education and lifelong learning.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Character Development",
+        "description": "Nurturing moral values, integrity, and compassion based on Edmund Rice's educational philosophy.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Community Building",
+        "description": "Creating an inclusive environment where diversity is celebrated and every voice is heard and valued.",
+        "show": true
+      },
+      {
+        "icon": "Globe",
+        "title": "Global Citizenship",
+        "description": "Preparing students to be responsible global citizens who can contribute meaningfully to society.",
+        "show": true
+      }
+    ]
+  },
+  "achievements": {
+    "show": true,
+    "title": "Achievements Under My Leadership",
+    "description": "Since joining Abc as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
+    "stats": [
+      { "value": "100%", "label": "Board Pass Rate", "show": true },
+      { "value": "95%", "label": "College Admissions", "show": true },
+      { "value": "85%", "label": "Above 90% Scores", "show": true },
+      { "value": "50+", "label": "Awards Won", "show": true }
+    ],
+    "highlights": [
+      {
+        "icon": "Trophy",
+        "title": "ISO 9001:2015 Certification",
+        "description": "Quality management system recognition",
+        "show": true
+      },
+      {
+        "icon": "Award",
+        "title": "Best Principal Award 2022",
+        "description": "Delhi Education Excellence Awards",
+        "show": true
+      },
+      {
+        "icon": "Star",
+        "title": "Green School Certification",
+        "description": "Environmental sustainability initiative",
+        "show": true
+      }
+    ]
+  },
+  "leadershipPrinciples": {
+    "show": true,
+    "title": "Leadership Philosophy",
+    "principles": [
+      {
+        "icon": "Target",
+        "title": "Vision-Driven Leadership",
+        "description": "Leading with a clear vision that inspires excellence and innovation in education.",
+        "show": true
+      },
+      {
+        "icon": "Handshake",
+        "title": "Collaborative Approach",
+        "description": "Working together with teachers, parents, and students to create the best learning environment.",
+        "show": true
+      },
+      {
+        "icon": "Shield",
+        "title": "Ethical Foundation",
+        "description": "Upholding the highest standards of integrity and moral leadership in all decisions.",
+        "show": true
+      },
+      {
+        "icon": "Lightbulb",
+        "title": "Continuous Innovation",
+        "description": "Embracing new ideas and methodologies to enhance educational outcomes.",
+        "show": true
+      }
+    ]
+  },
+  "contact": {
+    "show": true,
+    "title": "Connect With Me",
+    "description": "I believe in open communication and welcome the opportunity to connect with parents, students, and community members.",
+    "info": [
+      {
+        "icon": "Clock",
+        "title": "Office Hours",
+        "content": "Monday - Friday: 9:00 AM - 5:00 PM",
+        "show": true
+      },
+      {
+        "icon": "Mail",
+        "title": "Email",
+        "content": "principal@stcolumbas.edu.in",
+        "show": true
+      },
+      {
+        "icon": "MapPin",
+        "title": "Principal's Office",
+        "content": "Administrative Block, First Floor",
+        "show": true
+      }
+    ],
+    "buttons": [
+      { "label": "Schedule Appointment", "icon": "ExternalLink", "link": "/appointment", "show": true },
+      { "label": "Admission Information", "icon": "FileText", "link": "/admissions", "show": true },
+      { "label": "Academic Programs", "icon": "BookOpen", "link": "/academics", "show": true },
+      { "label": "Vision & Mission", "icon": "Target", "link": "/about/vision-mission", "show": true }
+    ]
+  },
+  "showHero": true,
+  "showPrincipalInfo": true,
+  "showMessage": true,
+  "showPriorities": true,
+  "showAchievements": true,
+  "showLeadership": true,
+  "showContact": true
+}

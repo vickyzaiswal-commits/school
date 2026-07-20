@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { 
-  Menu, 
-  X, 
-  ChevronDown, 
-  ArrowRight, 
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ArrowRight,
   Home,
   Users,
   BookOpen,
@@ -95,7 +95,7 @@ const Navigation = ({ schoolData = {} }) => {
 
   const defaultNavItems = [
     { name: 'Home', href: '/', icon: 'Home', show: true },
-    { 
+    {
       name: 'About Us', href: '/about', icon: 'Users', show: true,
       dropdown: [
         { name: 'Our History', href: '/about/history', desc: 'School legacy', icon: 'Clock', show: true },
@@ -104,7 +104,7 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'School Infrastructure', href: '/about/infrastructure', desc: 'Campus facilities', icon: 'Building', show: true }
       ]
     },
-    { 
+    {
       name: 'Academics', href: '/academics', icon: 'BookOpen', show: true,
       dropdown: [
         { name: 'Curriculum', href: '/academics/curriculum', desc: 'Academic framework', icon: 'Book', show: true },
@@ -115,7 +115,7 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'Higher Education', href: '/academics/higher-education', desc: 'Undergraduate & postgraduate', icon: 'GraduationCap', show: true }
       ]
     },
-    { 
+    {
       name: 'Admissions', href: '/admissions', icon: 'FileText', show: true,
       dropdown: [
         { name: 'Admission Process', href: '/admissions/process', desc: 'Step-by-step guide', icon: 'ArrowRight', show: true },
@@ -123,7 +123,7 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'Fee Structure', href: '/admissions/fees', desc: 'Financial information', icon: 'Calculator', show: true }
       ]
     },
-    { 
+    {
       name: 'Co-Curricular', href: '/co-curricular', icon: 'Palette', show: true,
       dropdown: [
         { name: 'Sports', href: '/co-curricular/sports', desc: 'Physical education programs', icon: 'Activity', show: true },
@@ -134,7 +134,7 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'Annual Events', href: '/co-curricular/events', desc: 'School celebrations', icon: 'Star', show: true }
       ]
     },
-    { 
+    {
       name: 'Student Life', href: '/student-life', icon: 'Users', show: true,
       dropdown: [
         { name: 'School Timings', href: '/student-life/timings', desc: 'Daily schedule', icon: 'Clock', show: true },
@@ -145,10 +145,10 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'Student Council', href: '/student-life/council', desc: 'Leadership opportunities', icon: 'Award', show: true }
       ]
     },
-    { 
+    {
       name: 'Gallery', href: '/gallery', icon: 'Camera', show: true
     },
-    { 
+    {
       name: 'Downloads', href: '/downloads', icon: 'DownloadIcon', show: true,
       dropdown: [
         { name: 'Forms & Applications', href: '/downloads/forms', desc: 'Official documents', icon: 'FileText', show: true },
@@ -157,7 +157,7 @@ const Navigation = ({ schoolData = {} }) => {
         { name: 'School Policies', href: '/downloads/policies', desc: 'Rules & guidelines', icon: 'ShieldCheck', show: true }
       ]
     },
-    { 
+    {
       name: 'Contact Us', href: '/contact', icon: 'Phone', show: true
     }
   ];
@@ -206,7 +206,7 @@ const Navigation = ({ schoolData = {} }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const isOutside = Object.values(dropdownRefs.current).every(ref => 
+      const isOutside = Object.values(dropdownRefs.current).every(ref =>
         ref && !ref.contains(event.target)
       );
       if (isOutside) setDesktopActiveDropdown(null);
@@ -573,7 +573,7 @@ const Navigation = ({ schoolData = {} }) => {
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75" onClick={handleCancel}></div>
-            
+
             <div className="relative inline-block w-full max-w-4xl text-left align-bottom bg-white rounded-lg shadow-xl transform transition-all sm:my-8 sm:align-middle">
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white rounded-t-lg">
                 <div className="flex items-center space-x-2">

@@ -1,0 +1,255 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Academic Curriculum",
+    "subtitle": "A comprehensive educational framework designed to nurture intellectual growth and character development",
+    "cta": { "text": "Download Curriculum Overview", "show": true, "href": "/download-curriculum" },
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true
+  },
+  "philosophy": {
+    "show": true,
+    "title": "Our Educational Philosophy",
+    "description": "At Abc, we follow a holistic approach to education that balances academic excellence with character formation, inspired by the Edmund Rice educational tradition.",
+    "pillars": [
+      {
+        "icon": "Brain",
+        "title": "Cognitive Development",
+        "description": "Developing critical thinking, problem-solving, and analytical skills through challenging academic content.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Character Building",
+        "description": "Fostering values, ethics, and social responsibility through our Edmund Rice education philosophy.",
+        "show": true
+      },
+      {
+        "icon": "Lightbulb",
+        "title": "Creative Expression",
+        "description": "Encouraging innovation, creativity, and artistic expression across all disciplines.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Collaborative Learning",
+        "description": "Promoting teamwork, communication, and interpersonal skills through group activities.",
+        "show": true
+      }
+    ]
+  },
+  "academicLevels": {
+    "show": true,
+    "title": "Academic Programs",
+    "description": "Explore our comprehensive curriculum across different educational stages",
+    "levels": [
+      { "id": "primary", "name": "Primary School", "icon": "Book", "grades": "Classes I-V", "show": true },
+      { "id": "middle", "name": "Middle School", "icon": "Calculator", "grades": "Classes VI-VIII", "show": true },
+      { "id": "secondary", "name": "Secondary School", "icon": "GraduationCap", "grades": "Classes IX-X", "show": true },
+      { "id": "senior", "name": "Senior Secondary", "icon": "Target", "grades": "Classes XI-XII", "show": true }
+    ]
+  },
+  "subjects": {
+    "primary": [
+      { "name": "English Language", "icon": "BookOpen", "show": true },
+      { "name": "Mathematics", "icon": "Calculator", "show": true },
+      { "name": "Environmental Studies", "icon": "Globe", "show": true },
+      { "name": "Hindi", "icon": "Languages", "show": true },
+      { "name": "Art Education", "icon": "Palette", "show": true },
+      { "name": "Physical Education", "icon": "Heart", "show": true },
+      { "name": "Value Education", "icon": "Shield", "show": true },
+      { "name": "Computer Basics", "icon": "Code", "show": true }
+    ],
+    "middle": [
+      { "name": "English", "icon": "BookOpen", "show": true },
+      { "name": "Hindi", "icon": "Languages", "show": true },
+      { "name": "Mathematics", "icon": "Calculator", "show": true },
+      { "name": "Science", "icon": "Microscope", "show": true },
+      { "name": "Social Science", "icon": "Globe", "show": true },
+      { "name": "Computer Science", "icon": "Code", "show": true },
+      { "name": "Art Education", "icon": "Palette", "show": true },
+      { "name": "Physical Education", "icon": "Heart", "show": true },
+      { "name": "Value Education", "icon": "Shield", "show": true }
+    ],
+    "secondary": [
+      { "name": "English Communicative", "icon": "BookOpen", "show": true },
+      { "name": "Hindi Course A/B", "icon": "Languages", "show": true },
+      { "name": "Mathematics Standard/Basic", "icon": "Calculator", "show": true },
+      { "name": "Science", "icon": "Microscope", "show": true },
+      { "name": "Social Science", "icon": "Globe", "show": true },
+      { "name": "Information Technology", "icon": "Code", "show": true },
+      { "name": "Art Education", "icon": "Palette", "show": true },
+      { "name": "Health & Physical Education", "icon": "Heart", "show": true }
+    ],
+    "senior": [
+      {
+        "stream": "Science Stream",
+        "subjects": [
+          { "name": "Physics", "icon": "Microscope", "show": true },
+          { "name": "Chemistry", "icon": "Microscope", "show": true },
+          { "name": "Mathematics", "icon": "Calculator", "show": true },
+          { "name": "Biology/Computer Science", "icon": "Code", "show": true },
+          { "name": "English Core", "icon": "BookOpen", "show": true }
+        ],
+        "show": true
+      },
+      {
+        "stream": "Commerce Stream",
+        "subjects": [
+          { "name": "Accountancy", "icon": "BarChart3", "show": true },
+          { "name": "Business Studies", "icon": "Target", "show": true },
+          { "name": "Economics", "icon": "Globe", "show": true },
+          { "name": "Mathematics/Informatics Practices", "icon": "Calculator", "show": true },
+          { "name": "English Core", "icon": "BookOpen", "show": true }
+        ],
+        "show": true
+      },
+      {
+        "stream": "Humanities Stream",
+        "subjects": [
+          { "name": "History", "icon": "Book", "show": true },
+          { "name": "Political Science", "icon": "Globe", "show": true },
+          { "name": "Economics", "icon": "BarChart3", "show": true },
+          { "name": "Psychology/Mathematics", "icon": "Brain", "show": true },
+          { "name": "English Core", "icon": "BookOpen", "show": true }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "assessment": {
+    "show": true,
+    "title": "Assessment Structure",
+    "description": "Comprehensive evaluation system designed to measure holistic development",
+    "cta": { "text": "View Grading Policy", "show": true, "href": "/grading-policy" },
+    "levels": [
+      {
+        "level": "Primary (I-V)",
+        "pattern": "Continuous and Comprehensive Evaluation (CCE)",
+        "components": ["Formative Assessments", "Project Work", "Class Participation", "Skill Development", "Summative Tests"],
+        "show": true
+      },
+      {
+        "level": "Middle (VI-VIII)",
+        "pattern": "Grading System with Periodic Tests",
+        "components": ["Periodic Tests", "Notebook Submission", "Subject Enrichment", "Multiple Assessment", "Half-Yearly & Annual Exams"],
+        "show": true
+      },
+      {
+        "level": "Secondary (IX-X)",
+        "pattern": "CBSE Board Pattern Preparation",
+        "components": ["Periodic Tests", "Pre-Board Exams", "Practical Assessments", "Project Work", "Board Exam Preparation"],
+        "show": true
+      },
+      {
+        "level": "Senior Secondary (XI-XII)",
+        "pattern": "CBSE Board Examination",
+        "components": ["Unit Tests", "Practical Exams", "Project Submission", "Pre-Board Exams", "Board Examinations"],
+        "show": true
+      }
+    ],
+    "grading": {
+      "show": true,
+      "title": "Grading System",
+      "description": "We follow the CBSE grading system that emphasizes continuous comprehensive evaluation rather than just examination results.",
+      "weightage": [
+        { "component": "Periodic Tests", "percentage": "20%", "show": true },
+        { "component": "Notebook Submission", "percentage": "5%", "show": true },
+        { "component": "Subject Enrichment", "percentage": "5%", "show": true },
+        { "component": "Term-End Exam", "percentage": "70%", "show": true }
+      ]
+    }
+  },
+  "specialPrograms": {
+    "show": true,
+    "title": "Special Academic Programs",
+    "description": "Enhancing learning beyond the conventional curriculum",
+    "programs": [
+      {
+        "icon": "Code",
+        "title": "STEM Education",
+        "description": "Integrated Science, Technology, Engineering and Mathematics program with hands-on learning and robotics.",
+        "show": true
+      },
+      {
+        "icon": "Globe",
+        "title": "Global Perspectives",
+        "description": "International exchange programs, model UN, and global citizenship education.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Social Outreach",
+        "description": "Community service programs and social awareness initiatives as part of value education.",
+        "show": true
+      },
+      {
+        "icon": "Lightbulb",
+        "title": "Innovation Lab",
+        "description": "Dedicated space for innovation, design thinking, and entrepreneurial projects.",
+        "show": true
+      }
+    ]
+  },
+  "resources": {
+    "show": true,
+    "title": "Curriculum Resources",
+    "description": "Download detailed curriculum documents and academic planners",
+    "cta": { "text": "View Complete Curriculum Repository", "show": true, "href": "/curriculum-repository" },
+    "items": [
+      {
+        "title": "Primary School Curriculum Guide",
+        "description": "Detailed syllabus and learning objectives for Classes I-V",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "icon": "FileText",
+        "show": true,
+        "cta": { "text": "Download Resource", "show": true, "href": "/download-resource/primary" }
+      },
+      {
+        "title": "Middle School Academic Planner",
+        "description": "Yearly academic plan and assessment schedule for Classes VI-VIII",
+        "format": "PDF",
+        "size": "1.8 MB",
+        "icon": "FileText",
+        "show": true,
+        "cta": { "text": "Download Resource", "show": true, "href": "/download-resource/middle" }
+      },
+      {
+        "title": "CBSE Secondary Curriculum",
+        "description": "Complete syllabus for Classes IX-X as prescribed by CBSE",
+        "format": "PDF",
+        "size": "3.2 MB",
+        "icon": "FileText",
+        "show": true,
+        "cta": { "text": "Download Resource", "show": true, "href": "/download-resource/secondary" }
+      },
+      {
+        "title": "Senior Secondary Stream Options",
+        "description": "Detailed information about Science, Commerce and Humanities streams",
+        "format": "PDF",
+        "size": "2.5 MB",
+        "icon": "FileText",
+        "show": true,
+        "cta": { "text": "Download Resource", "show": true, "href": "/download-resource/senior" }
+      }
+    ]
+  },
+  "academicCalendar": {
+    "show": true,
+    "title": "Academic Calendar 2024-25",
+    "description": "Download our comprehensive academic calendar containing important dates, examination schedules, holidays, and school events for the current academic year.",
+    "primaryCta": { "text": "Download Calendar", "show": true, "href": "/download-calendar" },
+    "secondaryCta": { "text": "View Online Version", "show": true, "href": "/online-calendar" }
+  },
+  "layout": {
+    "showHero": true,
+    "showPhilosophy": true,
+    "showAcademicLevels": true,
+    "showAssessment": true,
+    "showSpecialPrograms": true,
+    "showResources": true,
+    "showAcademicCalendar": true
+  }
+}

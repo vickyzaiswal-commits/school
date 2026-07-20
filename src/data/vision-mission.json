@@ -1,0 +1,134 @@
+{
+  "hero": {
+    "show": true,
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "title": "Vision & Mission",
+    "subtitle": "Guided by Edmund Rice values for nearly a century",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true
+  },
+  "vision": {
+    "show": true,
+    "title": "Our Vision",
+    "quote": "To be a beacon of educational excellence, nurturing compassionate leaders who transform communities through knowledge, service, and unwavering commitment to justice.",
+    "points": [
+      {
+        "icon": "Crown",
+        "title": "Academic Excellence",
+        "description": "To be recognized as a premier educational institution setting the highest standards in academic achievement.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Character Formation",
+        "description": "Develop individuals of integrity, compassion, and moral courage who contribute positively to society.",
+        "show": true
+      },
+      {
+        "icon": "Globe",
+        "title": "Global Citizens",
+        "description": "Nurture students who think globally, act locally, and embrace diversity in an interconnected world.",
+        "show": true
+      },
+      {
+        "icon": "Lightbulb",
+        "title": "Innovation & Leadership",
+        "description": "Foster creative thinking, entrepreneurial spirit, and ethical leadership in all students.",
+        "show": true
+      }
+    ]
+  },
+  "mission": {
+    "show": true,
+    "title": "Our Mission",
+    "description": "To provide holistic education rooted in Edmund Rice values, fostering academic excellence, character formation, and global citizenship in a nurturing, inclusive community that empowers students to serve humanity with distinction.",
+    "pillars": [
+      {
+        "icon": "BookOpen",
+        "title": "Quality Education",
+        "description": "Comprehensive, innovative education that challenges students intellectually and prepares them for higher learning.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Inclusive Community",
+        "description": "A welcoming, diverse environment where every student feels valued and empowered to reach their potential.",
+        "show": true
+      },
+      {
+        "icon": "Shield",
+        "title": "Edmund Rice Values",
+        "description": "Core values of compassion, justice, respect, and liberation through daily practices and education.",
+        "show": true
+      },
+      {
+        "icon": "Star",
+        "title": "Holistic Development",
+        "description": "Nurture intellectual, emotional, physical, social, and spiritual growth through comprehensive programs.",
+        "show": true
+      }
+    ]
+  },
+  "coreValues": {
+    "show": true,
+    "title": "Core Values",
+    "description": "The foundational principles that guide every aspect of our educational mission.",
+    "values": [
+      {
+        "icon": "Heart",
+        "title": "Compassion",
+        "description": "Teaching empathy, kindness, and care for others in all relationships.",
+        "show": true
+      },
+      {
+        "icon": "Shield",
+        "title": "Justice",
+        "description": "Promoting fairness, equality, and courage to stand up for what is right.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Respect",
+        "description": "Honoring the dignity of every individual and celebrating diversity.",
+        "show": true
+      },
+      {
+        "icon": "Award",
+        "title": "Excellence",
+        "description": "Striving for the highest standards in all endeavors and continuous improvement.",
+        "show": true
+      }
+    ]
+  },
+  "callToAction": {
+    "show": true,
+    "title": "Join Our Educational Community",
+    "description": "Experience education that combines academic excellence with strong values and character formation.",
+    "buttons": [
+      { "label": "Apply for Admission", "icon": "FileText", "link": "/admissions", "show": true },
+      { "label": "Take Virtual Tour", "icon": "Camera", "link": "/virtual-tour", "show": true }
+    ]
+  },
+  "layout": {
+    "showHero": true,
+    "showVision": true,
+    "showMission": true,
+    "showCoreValues": true,
+    "showCTA": true
+  },
+  "titles": {
+    "vision": {
+      "title": "Our Vision"
+    },
+    "mission": {
+      "title": "Our Mission"
+    },
+    "coreValues": {
+      "title": "Core Values"
+    },
+    "callToAction": {
+      "title": "Join Our Educational Community"
+    }
+  }
+}

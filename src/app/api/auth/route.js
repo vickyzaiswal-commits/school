@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/supabase";
+import fs from "fs/promises";
+import path from "path";
 import bcrypt from "bcryptjs";
+
+const LOGIN_FILE_PATH = path.join(process.cwd(), "src/data/login.json");
 
 const FAILED_LOGINS = new Map();
 const MAX_ATTEMPTS = 5;
@@ -36,6 +39,22 @@ function clearFailedAttempts(key) {
   FAILED_LOGINS.delete(key);
 }
 
+// Helper to read users
+async function readUsers() {
+  try {
+    const data = await fs.readFile(LOGIN_FILE_PATH, "utf-8");
+    return JSON.parse(data);
+  } catch (err) {
+    console.error("Error reading login.json, returning empty list:", err);
+    return [];
+  }
+}
+
+// Helper to write users
+async function writeUsers(users) {
+  await fs.writeFile(LOGIN_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
+}
+
 export async function POST(request) {
   try {
     const { action, ...body } = await request.json();
@@ -67,13 +86,11 @@ async function handleSignUp(body) {
       );
     }
 
-    // Check if user exists
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("id")
-      .eq("email", email)
-      .single();
+    const emailNormalized = email.trim().toLowerCase();
+    const users = await readUsers();
 
+    // Check if user exists
+    const existingUser = users.find((u) => u.email.trim().toLowerCase() === emailNormalized);
     if (existingUser) {
       return NextResponse.json(
         { message: "Email already in use" },
@@ -84,18 +101,16 @@ async function handleSignUp(body) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const { data: newUser, error } = await supabase
-      .from("users")
-      .insert({
-        name,
-        email,
-        password: hashedPassword,
-        role: role || "user",
-      })
-      .select()
-      .single();
+    const newUser = {
+      id: String(Date.now()),
+      name,
+      email: emailNormalized,
+      password: hashedPassword,
+      role: role || "user",
+    };
 
-    if (error) throw error;
+    users.push(newUser);
+    await writeUsers(users);
 
     const userObj = { ...newUser };
     delete userObj.password;
@@ -140,15 +155,12 @@ async function handleLogin(body) {
       );
     }
 
-    // Find user in Supabase
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", emailNormalized)
-      .single();
+    // Read from login.json
+    const users = await readUsers();
+    const user = users.find((u) => u.email.trim().toLowerCase() === emailNormalized);
 
-    console.log("Supabase query result:", { user, error });
-    if (error || !user) {
+    console.log("JSON user query result:", { user });
+    if (!user) {
       await bcrypt.compare(password, DUMMY_HASH);
       recordFailedAttempt(emailNormalized);
       return NextResponse.json(
@@ -158,7 +170,16 @@ async function handleLogin(body) {
     }
 
     console.log(password, user.password);
-    const isPasswordValid = password === user.password;
+    
+    // Check password: support both plain text and bcrypt
+    let isPasswordValid = password === user.password;
+    if (!isPasswordValid) {
+      try {
+        isPasswordValid = await bcrypt.compare(password, user.password);
+      } catch (err) {
+        isPasswordValid = false;
+      }
+    }
     console.log("Password validation result:", isPasswordValid);
 
     if (!isPasswordValid) {

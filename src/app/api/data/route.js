@@ -1,47 +1,48 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/supabase";
+import fs from "fs/promises";
+import path from "path";
 
-// Table name mappings
-const tableMappings = {
-  Home: "home",
-  History: "histories",
-  VisionMission: "vision_missions",
-  PrincipalMessage: "principal_messages",
-  Infrastructure: "infrastructures",
-  Curriculum: "curricula",
-  PrePrimarySchool: "pre_primary_schools",
-  PrimarySchool: "primary_schools",
-  MiddleSchool: "middle_schools",
-  SeniorSchool: "senior_schools",
-  AdmissionProcess: "admission_processes",
-  ApplicationForm: "application_forms",
-  Fees: "fees",
-  Footer: "footer",
-  Sports: "sports",
-  Arts: "arts",
-  Music: "musics",
-  Clubs: "clubs",
-  Competitions: "competitions",
-  Events: "events",
-  SchoolTimings: "school_timings",
-  SchoolCalendar: "school_calendars",
-  Transport: "transports",
-  Canteen: "canteens",
-  HouseSystem: "house_systems",
-  StudentCouncil: "student_councils",
-  Gallery: "galleries",
-  Forms: "forms",
-  Syllabus: "syllabi",
-  FeeStructure: "fee_structures",
-  Policies: "policies",
-  ContactUs: "contact_us",
-  Navbar: "navbars",
-  Notice: "notices",
-  Alumni: "alumni",
-  Career: "careers",
-  Achievements: "achievements",
-  Virtual_Tour: "virtual_tours",
-  HigherEducation: "higher_educations",
+// File name mappings
+const fileMappings = {
+  Home: "home.json",
+  History: "history.json",
+  VisionMission: "vision-mission.json",
+  PrincipalMessage: "principal-message.json",
+  Infrastructure: "infrastructure.json",
+  Curriculum: "curriculum.json",
+  PrePrimarySchool: "pre-primary.json",
+  PrimarySchool: "primary.json",
+  MiddleSchool: "middle.json",
+  SeniorSchool: "senior.json",
+  AdmissionProcess: "admission-process.json",
+  ApplicationForm: "application-form.json",
+  Fees: "fees.json",
+  Footer: "footer.json",
+  Sports: "sports.json",
+  Arts: "arts.json",
+  Music: "music.json",
+  Clubs: "clubs.json",
+  Competitions: "competitions.json",
+  Events: "events.json",
+  SchoolTimings: "school-timings.json",
+  SchoolCalendar: "school-calendar.json",
+  Transport: "transport.json",
+  Canteen: "canteen.json",
+  HouseSystem: "house-system.json",
+  StudentCouncil: "student-council.json",
+  Gallery: "gallery.json",
+  Forms: "forms.json",
+  Syllabus: "syllabus.json",
+  FeeStructure: "fee-structure.json",
+  Policies: "policies.json",
+  ContactUs: "contact-us.json",
+  Navbar: "navbar.json",
+  Notice: "notice.json",
+  Alumni: "alumni.json",
+  Career: "career.json",
+  Achievements: "achievements.json",
+  Virtual_Tour: "virtual-tour.json",
+  HigherEducation: "higher-education.json",
 };
 
 // Generic handler for save/get/delete operations
@@ -153,7 +154,6 @@ const handlers = {
   get_all_forms_data: getAllRecords("Forms"),
   save_forms_data: saveSingleRecord("Forms"),
   delete_forms_data: deleteRecord("Forms"),
-  // Aliases for downloads frontend routes
   get_all_downloads_data: getAllRecords("Forms"),
   save_downloads_data: saveSingleRecord("Forms"),
 
@@ -208,72 +208,43 @@ const handlers = {
   save_pre_primary_school: saveSingleRecord("PrePrimarySchool"),
   delete_pre_primary_school: deleteRecord("PrePrimarySchool"),
 
-  // Aliases for navbar (called from frontend)
   get_navbar_data: getAllRecords("Navbar"),
   save_navbar_data: saveSingleRecord("Navbar"),
 
-  // Aliases for footer (called from frontend)
-  get_all_footer_data: getAllRecords("Footer"), // Footer uses Footer model
+  get_all_footer_data: getAllRecords("Footer"),
   save_footer: saveSingleRecord("Footer"),
 
-  // Aliases for notice (called from frontend)
   get_all_notice_data: getAllRecords("Notice"),
   save_notice_data: saveSingleRecord("Notice"),
 };
 
 function saveSingleRecord(modelName) {
   return async (body) => {
-    const table = tableMappings[modelName];
-    if (!table) {
-      return {
-        status: 500,
-        message: `Table mapping not found for ${modelName}`,
-      };
-    }
+    const filename = fileMappings[modelName] || `${modelName.toLowerCase()}.json`;
+    const filePath = path.join(process.cwd(), "src/data", filename);
     try {
       const { payload } = body;
-      // Check if record exists
-      const { data: existing, error: selectError } = await supabase
-        .from(table)
-        .select("id")
-        .limit(1);
-      if (selectError && selectError.code !== "PGRST116") {
-        throw selectError;
-      }
-      const exists = existing && existing.length > 0;
-      if (exists) {
-        const { data, error } = await supabase
-          .from(table)
-          .update({ data: payload })
-          .eq("id", existing[0].id)
-          .select()
-          .single();
-        if (error) throw error;
-        return {
-          status: 200,
-          message: `${modelName} saved successfully`,
-          data,
-        };
-      } else {
-        const { data, error } = await supabase
-          .from(table)
-          .insert({ data: payload })
-          .select()
-          .single();
-        if (error) throw error;
-        return {
-          status: 200,
-          message: `${modelName} saved successfully`,
-          data,
-        };
-      }
+      
+      // Ensure the directory exists
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      
+      // Write JSON to file
+      await fs.writeFile(filePath, JSON.stringify(payload, null, 2), "utf-8");
+      
+      return {
+        status: 200,
+        message: `${modelName} saved successfully`,
+        data: {
+          id: 1,
+          data: payload,
+        },
+      };
     } catch (error) {
       console.error(`Error saving ${modelName}:`, error);
       return {
         status: 500,
         message: `Failed to save ${modelName}`,
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+        error: error.message,
       };
     }
   };
@@ -281,30 +252,27 @@ function saveSingleRecord(modelName) {
 
 function getAllRecords(modelName) {
   return async () => {
-    const table = tableMappings[modelName];
-    if (!table) {
-      return {
-        status: 500,
-        message: `Table mapping not found for ${modelName}`,
-      };
-    }
+    const filename = fileMappings[modelName] || `${modelName.toLowerCase()}.json`;
+    const filePath = path.join(process.cwd(), "src/data", filename);
     try {
-      const { data, error } = await supabase.from(table).select("*");
-      if (error) throw error;
+      const fileContent = await fs.readFile(filePath, "utf-8");
+      const payload = JSON.parse(fileContent);
       return {
         status: 200,
         message: `${modelName} retrieved successfully`,
-        data,
+        data: [
+          {
+            id: 1,
+            data: payload,
+          },
+        ],
       };
     } catch (error) {
-      console.error(`Error retrieving ${modelName}:`, error);
-      const debugApi = process.env.DEBUG_API === "true";
+      console.warn(`File not found or empty for ${modelName}:`, filePath);
       return {
-        status: 500,
-        message: `Failed to retrieve ${modelName}`,
-        error: debugApi
-          ? `${error.message}` + (error.stack ? `\n${error.stack}` : "")
-          : undefined,
+        status: 200,
+        message: `${modelName} retrieved successfully`,
+        data: [],
       };
     }
   };
@@ -312,28 +280,19 @@ function getAllRecords(modelName) {
 
 function deleteRecord(modelName) {
   return async (body) => {
-    const table = tableMappings[modelName];
-    if (!table) {
-      return {
-        status: 500,
-        message: `Table mapping not found for ${modelName}`,
-      };
-    }
+    const filename = fileMappings[modelName] || `${modelName.toLowerCase()}.json`;
+    const filePath = path.join(process.cwd(), "src/data", filename);
     try {
-      const { id } = body;
-      const { error } = await supabase.from(table).delete().eq("id", id);
-      if (error) throw error;
+      await fs.unlink(filePath);
       return {
         status: 200,
         message: `${modelName} deleted successfully`,
       };
     } catch (error) {
-      console.error(`Error deleting ${modelName}:`, error);
+      console.warn(`Failed to delete file or file doesn't exist for ${modelName}:`, filePath);
       return {
-        status: 500,
-        message: `Failed to delete ${modelName}`,
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+        status: 200,
+        message: `${modelName} deleted successfully`,
       };
     }
   };
