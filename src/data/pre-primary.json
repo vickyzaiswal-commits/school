@@ -92,9 +92,9 @@
     ],
     "specialPrograms": [
       { "icon": "Music", "name": "Music & Movement", "description": "Developing rhythm, coordination, and expression through songs and dance", "show": true },
-      { "icon": "Gamepad2", "name": "Play Time", description: "Structured and free play for social, emotional, and physical development", "show": true },
-      { "icon": "TreePine", "name": "Outdoor Learning", description: "Nature walks, gardening, and outdoor exploration", "show": true },
-      { "icon": "Sparkles", "name": "Celebrations", description: "Cultural festivals, birthdays, and special events", "show": true }
+      { "icon": "Gamepad2", "name": "Play Time", "description": "Structured and free play for social, emotional, and physical development", "show": true },
+      { "icon": "TreePine", "name": "Outdoor Learning", "description": "Nature walks, gardening, and outdoor exploration", "show": true },
+      { "icon": "Sparkles", "name": "Celebrations", "description": "Cultural festivals, birthdays, and special events", "show": true }
     ],
     "assessmentMethods": [
       {
