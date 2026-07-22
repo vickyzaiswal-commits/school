@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/utils/apiRequest';
-import { encryptObject } from '@/utils/encryption';
 
 const EcareLoginPage = () => {
   const router = useRouter();
@@ -25,34 +24,18 @@ const EcareLoginPage = () => {
 
     setLoading(true);
     try {
-      const payload = { email, password };
       const res = await apiRequest('users/login', { email, password });
       if (res.status == 200) {
         // Choose storage based on 'remember' checkbox
         const storage = remember ? localStorage : sessionStorage;
 
-        // Save token if provided
-        // if (res.data.token) {
-        //   try {
-        //     storage.setItem('ecareToken', res.data.token);
-        //   } catch (err) {
-        //     console.warn('Failed to save token:', err);
-        //   }
-        // }
-
-        // Save user object if returned (encrypted)
         const userObj = res.user;
         if (userObj) {
           try {
-            const encrypted = await encryptObject(userObj);
-            storage.setItem('ecareUser', JSON.stringify(encrypted));
-            // notify other components in same tab
+            storage.setItem('ecareUser', JSON.stringify(userObj));
             try { window.dispatchEvent(new Event('ecareUserChanged')); } catch (e) {}
           } catch (err) {
-            console.warn('Failed to encrypt/save user object:', err);
-            // Fallback to plain save if encryption fails
-            try { storage.setItem('ecareUser', JSON.stringify(userObj)); } catch (e) {}
-            try { window.dispatchEvent(new Event('ecareUserChanged')); } catch (e) {}
+            console.warn('Failed to save user object:', err);
           }
         }
 

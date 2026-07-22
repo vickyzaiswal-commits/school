@@ -2,11 +2,11 @@
   "hero": {
     "show": true,
     "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "title": "Vision & Mission",
+    "title": "Vision & Mission abc",
     "subtitle": "Guided by Edmund Rice values for nearly a century",
     "height": "h-96",
     "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "backgroundImageShow": true
+    "backgroundImageShow": false
   },
   "vision": {
     "show": true,
@@ -106,8 +106,18 @@
     "title": "Join Our Educational Community",
     "description": "Experience education that combines academic excellence with strong values and character formation.",
     "buttons": [
-      { "label": "Apply for Admission", "icon": "FileText", "link": "/admissions", "show": true },
-      { "label": "Take Virtual Tour", "icon": "Camera", "link": "/virtual-tour", "show": true }
+      {
+        "label": "Apply for Admission",
+        "icon": "FileText",
+        "link": "/admissions",
+        "show": true
+      },
+      {
+        "label": "Take Virtual Tour",
+        "icon": "Camera",
+        "link": "/virtual-tour",
+        "show": true
+      }
     ]
   },
   "layout": {
@@ -130,5 +140,8 @@
     "callToAction": {
       "title": "Join Our Educational Community"
     }
-  }
+  },
+  "lastUpdated": "2026-07-22T15:53:19.960Z",
+  "updatedBy": "admin",
+  "version": "1.0"
 }

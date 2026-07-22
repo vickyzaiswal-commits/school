@@ -1,0 +1,512 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Arts & Culture",
+    "subtitle": "Nurturing creativity, expression, and cultural appreciation through comprehensive arts education",
+    "stats": [
+      {
+        "value": "15+",
+        "label": "Arts Programs",
+        "show": true
+      },
+      {
+        "value": "200+",
+        "label": "Annual Events",
+        "show": true
+      },
+      {
+        "value": "50+",
+        "label": "National Awards",
+        "show": true
+      }
+    ],
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80",
+    "backgroundImageShow": true
+  },
+  "categories": {
+    "show": true,
+    "title": "Arts Programs",
+    "items": [
+      {
+        "id": "all",
+        "name": "All Programs",
+        "icon": "Palette",
+        "show": true
+      },
+      {
+        "id": "visual-arts",
+        "name": "Visual Arts",
+        "icon": "Brush",
+        "show": true
+      },
+      {
+        "id": "performing-arts",
+        "name": "Performing Arts",
+        "icon": "Theater",
+        "show": true
+      },
+      {
+        "id": "literary-arts",
+        "name": "Literary Arts",
+        "icon": "BookOpen",
+        "show": true
+      },
+      {
+        "id": "media-arts",
+        "name": "Media Arts",
+        "icon": "Camera",
+        "show": true
+      }
+    ]
+  },
+  "programs": {
+    "show": true,
+    "title": "Program Details",
+    "offeringsTitle": "Program Offerings",
+    "achievementsTitle": "Recent Achievements",
+    "joinButton": {
+      "label": "Join This Program",
+      "link": "#",
+      "show": true
+    },
+    "items": {
+      "visual-arts": {
+        "title": "Visual Arts Program",
+        "description": "Exploring creativity through various visual media and techniques",
+        "activities": [
+          {
+            "name": "Drawing & Painting",
+            "description": "Techniques in pencil, charcoal, watercolor, oil, and acrylic",
+            "schedule": "Mon & Wed, 3:30 PM - 5:30 PM",
+            "instructor": "Ms. Ananya Roy",
+            "level": "All levels welcome",
+            "show": true
+          },
+          {
+            "name": "Sculpture & Pottery",
+            "description": "3D art forms including clay modeling and ceramics",
+            "schedule": "Tue & Thu, 4:00 PM - 6:00 PM",
+            "instructor": "Mr. Ravi Verma",
+            "level": "Intermediate to Advanced",
+            "show": true
+          },
+          {
+            "name": "Digital Art",
+            "description": "Digital painting and graphic design using modern software",
+            "schedule": "Fri, 3:30 PM - 5:30 PM",
+            "instructor": "Ms. Divya Mehta",
+            "level": "Basic computer skills required",
+            "show": true
+          }
+        ],
+        "achievements": [
+          "National Art Competition - 3 Gold Medals",
+          "Annual Art Exhibition - 200+ artworks displayed",
+          "Student artwork featured in local galleries",
+          "Scholarships to art institutes"
+        ],
+        "show": true
+      },
+      "performing-arts": {
+        "title": "Performing Arts Program",
+        "description": "Developing talent in music, dance, drama, and theater",
+        "activities": [
+          {
+            "name": "Western Music",
+            "description": "Vocal training and instrument lessons (piano, guitar, violin)",
+            "schedule": "Mon, Wed, Fri - 4:00 PM - 6:00 PM",
+            "instructor": "Mr. Karan Mehra",
+            "level": "Beginner to Advanced",
+            "show": true
+          },
+          {
+            "name": "Indian Classical Music",
+            "description": "Hindustani and Carnatic vocal and instrumental training",
+            "schedule": "Tue & Thu, 4:00 PM - 6:00 PM",
+            "instructor": "Ms. Sunita Devi",
+            "level": "All levels welcome",
+            "show": true
+          },
+          {
+            "name": "Dance",
+            "description": "Indian classical, contemporary, and western dance forms",
+            "schedule": "Mon - Fri, 4:30 PM - 6:30 PM",
+            "instructor": "Ms. Priya Sharma",
+            "level": "Various levels available",
+            "show": true
+          },
+          {
+            "name": "Drama & Theater",
+            "description": "Acting, stagecraft, and production skills",
+            "schedule": "Tue & Thu, 4:00 PM - 6:00 PM",
+            "instructor": "Mr. Rajiv Kapoor",
+            "level": "All levels welcome",
+            "show": true
+          }
+        ],
+        "achievements": [
+          "National Youth Theater Festival - Best Production",
+          "Inter-School Music Competition - 5 First Prizes",
+          "Annual Cultural Night - 500+ audience",
+          "Broadway Workshop collaboration"
+        ],
+        "show": true
+      },
+      "literary-arts": {
+        "title": "Literary Arts Program",
+        "description": "Fostering creativity in writing, poetry, and literary expression",
+        "activities": [
+          {
+            "name": "Creative Writing",
+            "description": "Fiction, non-fiction, and poetry writing workshops",
+            "schedule": "Mon & Wed, 4:00 PM - 5:30 PM",
+            "instructor": "Dr. Meera Desai",
+            "level": "All levels welcome",
+            "show": true
+          },
+          {
+            "name": "Debate & Public Speaking",
+            "description": "Rhetoric, argumentation, and presentation skills",
+            "schedule": "Tue & Thu, 4:00 PM - 6:00 PM",
+            "instructor": "Mr. Rohan Malhotra",
+            "level": "Competitive team selection",
+            "show": true
+          },
+          {
+            "name": "Journalism",
+            "description": "School newspaper and digital media publishing",
+            "schedule": "Fri, 3:30 PM - 5:30 PM",
+            "instructor": "Ms. Neha Gupta",
+            "level": "Application required",
+            "show": true
+          }
+        ],
+        "achievements": [
+          "National Debating Championship - Winners",
+          "Student poetry published in literary magazines",
+          "School newspaper award for excellence",
+          "Creative writing scholarships"
+        ],
+        "show": true
+      },
+      "media-arts": {
+        "title": "Media Arts Program",
+        "description": "Exploring digital creativity through photography, film, and design",
+        "activities": [
+          {
+            "name": "Photography",
+            "description": "Digital and film photography techniques and editing",
+            "schedule": "Mon & Wed, 4:00 PM - 6:00 PM",
+            "instructor": "Mr. Alok Singh",
+            "level": "Camera required",
+            "show": true
+          },
+          {
+            "name": "Videography & Film",
+            "description": "Short film production, editing, and storytelling",
+            "schedule": "Tue & Thu, 4:00 PM - 6:00 PM",
+            "instructor": "Ms. Sneha Reddy",
+            "level": "Intermediate to Advanced",
+            "show": true
+          },
+          {
+            "name": "Graphic Design",
+            "description": "Digital design, branding, and visual communication",
+            "schedule": "Fri, 3:30 PM - 5:30 PM",
+            "instructor": "Mr. Vikram Joshi",
+            "level": "Basic computer skills required",
+            "show": true
+          }
+        ],
+        "achievements": [
+          "Student Film Festival - Best Documentary",
+          "Photography exhibitions in city galleries",
+          "Graphic design commissions for local businesses",
+          "Media arts scholarships"
+        ],
+        "show": true
+      }
+    }
+  },
+  "facilities": {
+    "show": true,
+    "title": "Arts Facilities",
+    "items": [
+      {
+        "name": "Art Studio",
+        "description": "Fully equipped studio with natural lighting and various media supplies",
+        "image": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80",
+        "features": [
+          "Natural lighting",
+          "Pottery wheels",
+          "Printing press",
+          "Drying racks"
+        ],
+        "show": true
+      },
+      {
+        "name": "Music Rooms",
+        "description": "Soundproof practice rooms with various instruments and recording equipment",
+        "image": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+        "features": [
+          "Grand piano",
+          "Recording equipment",
+          "Practice rooms",
+          "Instrument storage"
+        ],
+        "show": true
+      },
+      {
+        "name": "Theater Auditorium",
+        "description": "300-seat professional theater with stage lighting and sound systems",
+        "image": "https://images.unsplash.com/photo-1542327897-d73d4ec2f6f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80",
+        "features": [
+          "Professional lighting",
+          "Sound system",
+          "Green room",
+          "Costume storage"
+        ],
+        "show": true
+      },
+      {
+        "name": "Media Lab",
+        "description": "Computer lab with professional software for digital arts and media production",
+        "image": "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&auto=format&fit=crop&w=2086&q=80",
+        "features": [
+          "iMac workstations",
+          "Adobe Creative Suite",
+          "Recording booth",
+          "Editing stations"
+        ],
+        "show": true
+      }
+    ]
+  },
+  "upcomingEvents": {
+    "show": true,
+    "title": "Upcoming Events",
+    "registerButton": {
+      "label": "Register",
+      "link": "#",
+      "show": true
+    },
+    "items": [
+      {
+        "date": "2024-04-20",
+        "title": "Annual Art Exhibition",
+        "time": "10:00 AM - 4:00 PM",
+        "venue": "School Art Gallery",
+        "description": "Showcasing student artwork from all visual arts programs",
+        "category": "visual-arts",
+        "show": true
+      },
+      {
+        "date": "2024-05-05",
+        "title": "Spring Music Concert",
+        "time": "6:00 PM - 8:00 PM",
+        "venue": "School Auditorium",
+        "description": "Performance by music students featuring various genres",
+        "category": "performing-arts",
+        "show": true
+      },
+      {
+        "date": "2024-05-15",
+        "title": "Drama Production: \"The Tempest\"",
+        "time": "7:00 PM - 9:00 PM",
+        "venue": "Main Auditorium",
+        "description": "Shakespearean play performed by drama students",
+        "category": "performing-arts",
+        "show": true
+      },
+      {
+        "date": "2024-05-25",
+        "title": "Poetry Slam Competition",
+        "time": "4:00 PM - 6:00 PM",
+        "venue": "Library Amphitheater",
+        "description": "Inter-school poetry performance competition",
+        "category": "literary-arts",
+        "show": true
+      },
+      {
+        "date": "2024-06-05",
+        "title": "Student Film Festival",
+        "time": "5:00 PM - 8:00 PM",
+        "venue": "Media Center",
+        "description": "Screening of student-produced short films and documentaries",
+        "category": "media-arts",
+        "show": true
+      }
+    ]
+  },
+  "achievements": {
+    "show": true,
+    "title": "Arts Achievements",
+    "items": [
+      {
+        "year": "2023",
+        "items": [
+          "National Art Competition - 5 Gold Medals",
+          "All-India Music Festival - Best Choir Award",
+          "Youth Theater Festival - Best Original Script",
+          "National Debating Championship - Runners-up"
+        ],
+        "show": true
+      },
+      {
+        "year": "2022",
+        "items": [
+          "Student film selected for International Children's Film Festival",
+          "Art students received scholarships to prestigious art schools",
+          "Dance team won regional classical dance competition",
+          "School newspaper awarded \"Best Layout Design\""
+        ],
+        "show": true
+      },
+      {
+        "year": "2021",
+        "items": [
+          "Music students performed with Symphony Orchestra",
+          "Art exhibition featured in city art gallery",
+          "Drama production invited to national theater festival",
+          "Creative writing published in national literary magazine"
+        ],
+        "show": true
+      }
+    ]
+  },
+  "faculty": {
+    "show": true,
+    "title": "Arts Faculty",
+    "items": [
+      {
+        "name": "Ms. Ananya Roy",
+        "role": "Visual Arts Director",
+        "qualification": "MFA in Painting, College of Art, Delhi",
+        "specialty": "Oil Painting, Mixed Media",
+        "experience": "15 years",
+        "show": true
+      },
+      {
+        "name": "Mr. Karan Mehra",
+        "role": "Music Director",
+        "qualification": "Sangeet Visharad, Trinity College Certified",
+        "specialty": "Western Classical, Piano",
+        "experience": "12 years",
+        "show": true
+      },
+      {
+        "name": "Ms. Priya Sharma",
+        "role": "Dance Instructor",
+        "qualification": "Kathak Visharad, Contemporary Dance Certification",
+        "specialty": "Kathak, Contemporary Fusion",
+        "experience": "10 years",
+        "show": true
+      },
+      {
+        "name": "Dr. Meera Desai",
+        "role": "Literary Arts Coordinator",
+        "qualification": "Ph.D. in English Literature",
+        "specialty": "Creative Writing, Poetry",
+        "experience": "18 years",
+        "show": true
+      }
+    ]
+  },
+  "gallery": {
+    "show": true,
+    "title": "Student Gallery",
+    "items": [
+      {
+        "image": "https://via.placeholder.com/300?text=Art+1",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+2",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+3",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+4",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+5",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+6",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+7",
+        "show": true
+      },
+      {
+        "image": "https://via.placeholder.com/300?text=Art+8",
+        "show": true
+      }
+    ],
+    "fullGalleryButton": {
+      "label": "View Full Gallery",
+      "link": "#",
+      "show": true
+    }
+  },
+  "cta": {
+    "show": true,
+    "title": "Join Our Creative Community",
+    "description": "Discover your artistic potential and be part of our vibrant arts community. Whether you're a beginner or advanced artist, we have programs to nurture your talent.",
+    "buttons": [
+      {
+        "label": "Apply for Arts Program",
+        "link": "#",
+        "show": true
+      },
+      {
+        "label": "Schedule Audition",
+        "link": "#",
+        "show": true
+      }
+    ]
+  },
+  "contact": {
+    "show": true,
+    "title": "Arts Department Contact",
+    "items": [
+      {
+        "icon": "Phone",
+        "label": "Phone",
+        "value": "011-2336-3462 (Ext. 330)",
+        "show": true
+      },
+      {
+        "icon": "Mail",
+        "label": "Email",
+        "value": "arts@stcolumbas.edu.in",
+        "show": true
+      },
+      {
+        "icon": "Clock",
+        "label": "Office Hours",
+        "value": "Mon-Fri: 9:00 AM - 5:00 PM",
+        "show": true
+      }
+    ]
+  },
+  "layout": {
+    "showHero": true,
+    "showCategories": true,
+    "showPrograms": true,
+    "showFacilities": true,
+    "showUpcomingEvents": true,
+    "showAchievements": true,
+    "showFaculty": true,
+    "showGallery": true,
+    "showCta": true,
+    "showContact": true
+  }
+}

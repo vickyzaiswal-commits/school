@@ -1,0 +1,275 @@
+{
+  "showHero": true,
+  "showStats": true,
+  "showAcademic": true,
+  "showSports": true,
+  "showCultural": true,
+  "showAlumni": true,
+  "showTimeline": true,
+  "showGallery": true,
+  "hero": {
+    "show": true,
+    "title": "Celebrating Excellence at Abc School",
+    "subtitle": "Discover the remarkable achievements, awards, and milestones that showcase our commitment to holistic education and student success.",
+    "showImage": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "stats": [
+      { "value": "150+", "label": "National Awards", "show": true },
+      { "value": "98%", "label": "Board Results", "show": true },
+      { "value": "500+", "label": "Students in Sports", "show": true },
+      { "value": "75", "label": "Cultural Events", "show": true }
+    ],
+    "ctaButton": {
+      "label": "View Our Gallery",
+      "show": true,
+      "link": "#achievement-gallery"
+    },
+    "secondaryButton": {
+      "label": "Download Report",
+      "show": true,
+      "link": "/achievements-report.pdf"
+    }
+  },
+  "stats": {
+    "show": true,
+    "title": "Our Achievement Highlights",
+    "subtitle": "A comprehensive look at our accomplishments across various domains",
+    "items": [
+      {
+        "icon": "GraduationCap",
+        "title": "Academic Excellence",
+        "value": "98.5%",
+        "description": "Average board results over the last 5 years",
+        "trend": "+2.3%",
+        "show": true
+      },
+      {
+        "icon": "Trophy",
+        "title": "Sports Championships",
+        "value": "42",
+        "description": "National level championships won",
+        "trend": "+8 this year",
+        "show": true
+      },
+      {
+        "icon": "Award",
+        "title": "Cultural Awards",
+        "value": "75+",
+        "description": "Awards in music, dance, and arts",
+        "trend": "Record high",
+        "show": true
+      },
+      {
+        "icon": "Globe",
+        "title": "International Recognition",
+        "value": "12",
+        "description": "International competitions participated",
+        "trend": "New regions",
+        "show": true
+      }
+    ]
+  },
+  "academic": {
+    "show": true,
+    "title": "Academic Achievements",
+    "subtitle": "Celebrating scholastic excellence and intellectual accomplishments",
+    "categories": [
+      {
+        "id": "board-results",
+        "name": "Board Results",
+        "description": "Outstanding performance in CBSE examinations",
+        "achievements": [
+          { "year": "2024", "description": "School Topper: 98.6% in CBSE Class XII", "highlight": true },
+          { "year": "2023", "description": "Perfect 100 in Mathematics: 15 students", "highlight": true },
+          { "year": "2022", "description": "100% pass rate for 10th consecutive year", "highlight": true }
+        ],
+        "show": true
+      },
+      {
+        "id": "olympiads",
+        "name": "Olympiads & Competitions",
+        "description": "Success in national and international competitions",
+        "achievements": [
+          { "year": "2024", "description": "NTSE: 5 students selected for national camp" },
+          { "year": "2023", "description": "International Math Olympiad: Silver Medal" },
+          { "year": "2022", "description": "Science Olympiad: 3 Gold Medals" }
+        ],
+        "show": true
+      },
+      {
+        "id": "research",
+        "name": "Research & Innovation",
+        "description": "Student projects and research initiatives",
+        "achievements": [
+          { "year": "2024", "description": "National Science Fair: Best Innovation Award" },
+          { "year": "2023", "description": "Published 3 research papers in student journals" },
+          { "year": "2022", "description": "AI Project selected for national exhibition" }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "sports": {
+    "show": true,
+    "title": "Sports & Athletics",
+    "subtitle": "Victories on the field and recognition in sports",
+    "featured": {
+      "title": "Championship Highlights",
+      "achievements": [
+        {
+          "sport": "Basketball",
+          "achievement": "National School Games Champions 2024",
+          "level": "National",
+          "students": ["Rohan Sharma", "Priya Mehta", "Arjun Patel"],
+          "year": "2024",
+          "show": true
+        },
+        {
+          "sport": "Swimming",
+          "achievement": "5 Gold Medals in State Championships",
+          "level": "State",
+          "students": ["Ananya Singh", "Kabir Verma"],
+          "year": "2024",
+          "show": true
+        },
+        {
+          "sport": "Athletics",
+          "achievement": "Record in 100m Sprint - State Level",
+          "level": "State",
+          "students": ["Raj Malhotra"],
+          "year": "2023",
+          "show": true
+        }
+      ]
+    },
+    "categories": [
+      { "name": "Team Sports", "count": "8 championships", "icon": "Users", "show": true },
+      { "name": "Individual Sports", "count": "24 gold medals", "icon": "Medal", "show": true },
+      { "name": "Annual Sports", "count": "3 records broken", "icon": "TrendingUp", "show": true }
+    ]
+  },
+  "cultural": {
+    "show": true,
+    "title": "Cultural & Arts Achievements",
+    "subtitle": "Excellence in performing and visual arts",
+    "sections": [
+      {
+        "category": "Music",
+        "achievements": [
+          { "event": "National Music Competition", "award": "First Prize", "year": "2024", "show": true },
+          { "event": "Inter-School Orchestra", "award": "Best Performance", "year": "2023", "show": true }
+        ],
+        "show": true
+      },
+      {
+        "category": "Dance",
+        "achievements": [
+          { "event": "National Dance Championship", "award": "Gold Medal", "year": "2024", "show": true },
+          { "event": "Cultural Festival", "award": "Judges Choice Award", "year": "2023", "show": true }
+        ],
+        "show": true
+      },
+      {
+        "category": "Visual Arts",
+        "achievements": [
+          { "event": "International Art Exhibition", "award": "Special Mention", "year": "2024", "show": true },
+          { "event": "National Painting Competition", "award": "Second Prize", "year": "2023", "show": true }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "alumni": {
+    "show": true,
+    "title": "Distinguished Alumni Achievements",
+    "subtitle": "Our alumni making a mark in various fields worldwide",
+    "achievements": [
+      {
+        "name": "Dr. Anjali Rao",
+        "batch": "2005",
+        "achievement": "Nobel Prize in Physics 2023",
+        "current": "Professor at MIT",
+        "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "show": true
+      },
+      {
+        "name": "Rahul Kapoor",
+        "batch": "2010",
+        "achievement": "Forbes 30 Under 30 - Technology",
+        "current": "CEO, TechGen Solutions",
+        "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "show": true
+      },
+      {
+        "name": "Meera Sharma",
+        "batch": "2012",
+        "achievement": "Olympic Gold Medalist - Swimming",
+        "current": "National Coach",
+        "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "show": true
+      }
+    ]
+  },
+  "timeline": {
+    "show": true,
+    "title": "Milestones Timeline",
+    "subtitle": "Key achievements through the years",
+    "events": [
+      {
+        "year": "2024",
+        "title": "National School Ranking - Top 10",
+        "description": "Ranked among top 10 schools in India by Education Today",
+        "category": "Recognition",
+        "show": true
+      },
+      {
+        "year": "2023",
+        "title": "Green School Award",
+        "description": "Received national award for environmental initiatives",
+        "category": "Sustainability",
+        "show": true
+      },
+      {
+        "year": "2022",
+        "title": "75 Years Celebration",
+        "description": "Successfully completed 75 years of excellence in education",
+        "category": "Milestone",
+        "show": true
+      },
+      {
+        "year": "2021",
+        "title": "Digital Learning Initiative",
+        "description": "Recognized as pioneer in digital education during pandemic",
+        "category": "Innovation",
+        "show": true
+      }
+    ]
+  },
+  "gallery": {
+    "show": true,
+    "title": "Achievements Gallery",
+    "subtitle": "Visual moments of success and celebration",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "caption": "National Science Fair Winners 2024",
+        "category": "Academic",
+        "show": true
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "caption": "Basketball Championship Victory",
+        "category": "Sports",
+        "show": true
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "caption": "Cultural Festival Performance",
+        "category": "Cultural",
+        "show": true
+      }
+    ],
+    "viewAllText": "View All Photos",
+    "viewAllLink": "/gallery"
+  }
+}

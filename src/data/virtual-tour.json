@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "title": "Our Rich Heritage",
+    "subtitle": "Nearly a century of educational excellence, rooted in Edmund Rice values and committed to nurturing generations of compassionate leaders.",
+    "stats": [
+      {
+        "value": "97+",
+        "label": "Years of Excellence",
+        "show": true
+      },
+      {
+        "value": "10,000+",
+        "label": "Alumni Worldwide",
+        "show": true
+      },
+      {
+        "value": "2,000+",
+        "label": "Current Students",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "View Location on Map",
+      "link": "https://www.google.com/maps/place/Old+Baneshwor+Road,+Kathmandu+44600/@27.6959749,85.3375764,3a,75y,358.88h,90t/data=!3m7!1e1!3m5!1scX9ydK9FjWf3uvl6RU8yoA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3DcX9ydK9FjWf3uvl6RU8yoA%26yaw%3D358.88434!7i13312!8i6656!4m15!1m8!3m7!1s0x39eb19964c28ced7:0x72292b647fff641!2sOld+Baneshwor+Road,+Kathmandu+44600!3b1!8m2!3d27.6959759!4d85.337565!16s%2Fg%2F11vqd4bt54!3m5!1s0x39eb19964c28ced7:0x72292b647fff641!8m2!3d27.6959759!4d85.337565!16s%2Fg%2F11vqd4bt54?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D",
+      "icon": "ArrowRight",
+      "show": true
+    },
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true
+  },
+  "layout": {
+    "showHero": true
+  }
+}

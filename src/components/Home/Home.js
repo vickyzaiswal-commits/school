@@ -30,10 +30,10 @@ import {
   Send,
 } from "lucide-react";
 import { apiRequest } from "@/utils/apiRequest";
-import { encryptObject, decryptObject } from "@/utils/encryption";
 import FileUpload from "@/utils/fileUpload";
 import { toast } from "sonner";
 import Spinner from "@components/Spinner/Spinner";
+import homeData from "@/data/home.json";
 const HomePage = ({ schoolData = {} }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -43,9 +43,7 @@ const HomePage = ({ schoolData = {} }) => {
   const [editData, setEditData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [originalData, setOriginalData] = useState(null);
-  const [isLoading, setIsLoading] = useState(
-    !Object.keys(schoolData || {}).length,
-  );
+  const [isLoading, setIsLoading] = useState(false);
   // Manage Section Visibility modal state
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   const [role, setRole] = useState(null); // derived from stored user
@@ -70,19 +68,6 @@ const HomePage = ({ schoolData = {} }) => {
           return;
         }
 
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn("Failed to decrypt stored ecareUser", e);
-            setRole(null);
-            return;
-          }
-        }
-
         const user = parsed.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
@@ -94,271 +79,26 @@ const HomePage = ({ schoolData = {} }) => {
     initRole();
   }, []);
 
-  // Default data structure - all from JSON
-  const defaultData = {
-    heroSlides: [
-      {
-        image:
-          "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        title: "Excellence in Education Since 1927",
-        subtitle: "Nurturing young minds with Edmund Rice values",
-        cta: "Explore Our Legacy",
-        ctaLink: "/about",
-        show: true,
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        title: "Admissions Open for 2025-26",
-        subtitle: "Join our community of learners and leaders",
-        cta: "Apply Now",
-        ctaLink: "/admissions",
-        show: true,
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2032&q=80",
-        title: "Holistic Development",
-        subtitle: "Academic excellence with character building",
-        cta: "Our Programs",
-        ctaLink: "/academics",
-        show: true,
-      },
-    ],
-    quickStats: [
-      {
-        number: "97+",
-        label: "Years of Excellence",
-        icon: "Trophy",
-        show: true,
-      },
-      { number: "2000+", label: "Students", icon: "Users", show: true },
-      {
-        number: "150+",
-        label: "Faculty Members",
-        icon: "GraduationCap",
-        show: true,
-      },
-      {
-        number: "50+",
-        label: "Co-curricular Activities",
-        icon: "Award",
-        show: true,
-      },
-    ],
-    features: [
-      {
-        icon: "Heart",
-        title: "Edmund Rice Values",
-        description:
-          "Character formation based on Christian values of compassion, justice, and respect.",
-        show: true,
-      },
-      {
-        icon: "BookOpen",
-        title: "Academic Excellence",
-        description:
-          "Comprehensive curriculum designed to nurture intellectual growth and critical thinking.",
-        show: true,
-      },
-      {
-        icon: "Users",
-        title: "Holistic Development",
-        description:
-          "Focus on emotional, social, physical, and spiritual development of every child.",
-        show: true,
-      },
-      {
-        icon: "Target",
-        title: "Individual Attention",
-        description:
-          "Small class sizes ensuring personalized learning and mentorship for each student.",
-        show: true,
-      },
-      {
-        icon: "Globe",
-        title: "Global Perspective",
-        description:
-          "International exposure and multicultural learning environment preparing students for the world.",
-        show: true,
-      },
-      {
-        icon: "Lightbulb",
-        title: "Innovation & Technology",
-        description:
-          "Modern facilities and technology-integrated learning for 21st-century skills.",
-        show: true,
-      },
-    ],
-    principalMessage: {
-      show: true,
-      name: "Dr. Mary Johnson",
-      role: "Principal",
-      message:
-        "At Abc, we believe that education is not just about academic achievement, but about nurturing the whole person. Our commitment to Edmund Rice values ensures that each student develops not only intellectually but also morally and spiritually.",
-      stats: [
-        { value: "100%", label: "Board Pass Rate", show: true },
-        { value: "95%", label: "College Admissions", show: true },
-        { value: "50+", label: "Awards Won", show: true },
-        { value: "25+", label: "Sports Titles", show: true },
-      ],
-    },
-    announcements: [
-      {
-        date: "Dec 15, 2024",
-        title: "Winter Break Schedule",
-        content:
-          "School will be closed from December 25, 2024 to January 6, 2025. Classes resume on January 7, 2025.",
-        urgent: false,
-        show: true,
-      },
-      {
-        date: "Dec 10, 2024",
-        title: "Annual Sports Day 2024",
-        content:
-          "Join us for our Annual Sports Day on December 20, 2024. Parents are cordially invited.",
-        urgent: true,
-        show: true,
-      },
-      {
-        date: "Dec 5, 2024",
-        title: "Parent-Teacher Conference",
-        content:
-          "Scheduled meetings with parents for academic progress discussion from December 18-19, 2024.",
-        urgent: false,
-        show: true,
-      },
-    ],
-    testimonials: [
-      {
-        name: "Dr. Rajesh Kumar",
-        role: "Parent, Class XII",
-        content:
-          "Abc has provided my son with not just excellent education, but also strong moral values. The teachers are dedicated and caring.",
-        rating: 5,
-        show: true,
-      },
-      {
-        name: "Arjun Mehta",
-        role: "Alumni, Batch 2020",
-        content:
-          "The foundation I received at Abc prepared me well for engineering college and life. Forever grateful to this institution.",
-        rating: 5,
-        show: true,
-      },
-      {
-        name: "Mrs. Priya Sharma",
-        role: "Parent, Class VIII",
-        content:
-          "The holistic approach to education here is remarkable. My daughter has grown tremendously in confidence and character.",
-        rating: 5,
-        show: true,
-      },
-    ],
-    contactInfo: {
-      show: true,
-      address: "1, Ashok Place, Birgunj - 110001, India",
-      phone: "011 2336 3462\n011 2336 3134",
-      email: "stcolumbas@stcolumbas.edu.in",
-      hours: "Monday - Friday: 8:00 AM - 4:00 PM\nSaturday: 8:00 AM - 12:00 PM",
-    },
-    quickActions: [
-      {
-        label: "Apply for Admission",
-        icon: "FileText",
-        link: "/admissions",
-        show: true,
-        isDownload: false,
-      },
-      {
-        label: "Virtual Campus Tour",
-        icon: "Globe",
-        link: "/virtual-tour",
-        show: true,
-        isDownload: false,
-      },
-      {
-        label: "Download Prospectus",
-        icon: "FileText",
-        link: "/downloads",
-        show: true,
-        isDownload: true,
-        fileUrl: null,
-      },
-      {
-        label: "Contact Admissions",
-        icon: "Phone",
-        link: "/contact",
-        show: true,
-        isDownload: false,
-      },
-    ],
-    quickAccess: [
-      {
-        label: "Admissions Open",
-        sublabel: "Apply for 2025-26",
-        icon: "FileText",
-        link: "/admissions",
-        show: true,
-      },
-      {
-        label: "e-Care Portal",
-        sublabel: "Student & Parent Login",
-        icon: "User",
-        link: "/ecare",
-        show: true,
-      },
-      {
-        label: "Pay Fees",
-        sublabel: "Secure Online Payment",
-        icon: "CreditCard",
-        link: "/pay-fees",
-        show: true,
-      },
-    ],
-    titles: {
-      features: {
-        title: "Why Choose Our School?",
-        subtitle:
-          "Committed to nurturing young minds with values, knowledge, and character.",
-      },
-      principal: {
-        title: "Principal's Message",
-      },
-      announcements: {
-        title: "Latest Announcements",
-        viewAll: "View All",
-        viewAllLink: "/news-events",
-      },
-      testimonials: {
-        title: "What Our Community Says",
-        subtitle:
-          "Hear from our parents, students, and alumni about their experience.",
-      },
-      contact: {
-        title: "Visit Our Campus",
-        buttonText: "Schedule a Visit",
-        ctaLink: "/appointment",
-      },
-    },
-    layout: {
-      showHero: true,
-      showStats: true,
-      showFeatures: true,
-      showPrincipal: true,
-      showAnnouncements: true,
-      showTestimonials: true,
-      showContact: true,
-    },
-  };
-
   const normalizeImageUrl = (url) => {
     if (!url) return '';
     if (typeof url !== 'string') return url;
+
     const t = url.trim();
-    if (t.startsWith('/') || /^https?:\/\//.test(t) || t.startsWith('data:') || t.startsWith('blob:')) return t;
-    if (t.startsWith('img/')) return `/${t}`;
-    return `/img/${t}`;
+    if (!t) return '';
+
+    if (/^(data:|blob:|https?:\/\/|\/)/.test(t)) {
+      return t;
+    }
+
+    if (t.startsWith('img/')) {
+      return `/${t}`;
+    }
+
+    if (t.startsWith('./') || t.startsWith('../')) {
+      return t;
+    }
+
+    return `/img/${encodeURIComponent(t)}`;
   };
 
   // Icon mapping for rendering
@@ -379,9 +119,13 @@ const HomePage = ({ schoolData = {} }) => {
   };
 
   // Start with server-provided data if present, otherwise default data
-  const [data, setData] = useState(
-    Object.keys(schoolData || {}).length ? schoolData : defaultData,
-  );
+  const [data, setData] = useState(() => {
+    let baseData = Object.keys(schoolData || {}).length ? schoolData : homeData;
+    while (baseData && baseData.homeData) {
+      baseData = baseData.homeData;
+    }
+    return baseData;
+  });
 
   const normalizeDataImages = (d) => {
     if (!d || typeof d !== 'object') return d;
@@ -396,62 +140,7 @@ const HomePage = ({ schoolData = {} }) => {
   };
 
   // Fetch data from database on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await apiRequest("save_data/get_all_homes", {});
-
-        if (res && res.status === 200 && res.data && res.data.length > 0) {
-          // Get the first home record (assuming single record for home page)
-          const homeRecord = res.data[0];
-
-          // Check if Data exists and has the expected structure
-          if (homeRecord.data) {
-            let fetched = homeRecord.data;
-
-            // If server returned an encrypted wrapper, attempt to decrypt
-            if (
-              typeof fetched === "string" ||
-              (fetched && typeof fetched === "object" && fetched.encrypted)
-            ) {
-              const decrypted = await decryptObject(fetched);
-              if (decrypted) fetched = decrypted;
-              else {
-                try {
-                  fetched = JSON.parse(fetched);
-                } catch (e) {
-                  console.warn("Failed to parse/decrypt homeRecord.Data");
-                  fetched = null;
-                }
-              }
-            }
-
-            if (fetched && fetched.homeData) {
-              setData(normalizeDataImages(fetched.homeData));
-            } else if (fetched) {
-              setData(normalizeDataImages(fetched));
-            } else {
-              setData(normalizeDataImages(defaultData));
-            }
-          } else {
-            // Fallback to default data
-            setData(defaultData);
-          }
-        } else {
-          // No data in database, use default JSON data
-            setData(normalizeDataImages(defaultData));
-        }
-      } catch (error) {
-        console.error("Failed to fetch school data:", error);
-        // Fallback to default data if fetch fails
-        setData(normalizeDataImages(defaultData));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   // Check role to enable edit mode
   useEffect(() => {
@@ -577,15 +266,13 @@ const HomePage = ({ schoolData = {} }) => {
   const saveSectionVisibility = async () => {
     try {
       const payload = {
-        homeData: data,
+        ...data,
         lastUpdated: new Date().toISOString(),
         updatedBy: "admin",
         version: "1.0",
       };
-      // encrypt payload before sending
-      const encrypted = await encryptObject(payload);
       const res = await apiRequest("save_data/save_home", {
-        payload: encrypted,
+        payload,
       });
       if (res && (res.status === 200 || res.status === 201)) {
         setSectionVisibilityModal(false);
@@ -885,7 +572,7 @@ const HomePage = ({ schoolData = {} }) => {
 
     // Prepare the complete JSON payload with all data
     const payload = {
-      homeData: updatedData, // Send complete JSON data
+      ...updatedData, // Send complete JSON data
       lastUpdated: new Date().toISOString(),
       updatedBy: "admin",
       version: "1.0",
@@ -894,10 +581,8 @@ const HomePage = ({ schoolData = {} }) => {
     // Saving complete JSON payload
 
     try {
-      // encrypt payload before sending
-      const encryptedPayload = await encryptObject(payload);
       const res = await apiRequest("save_data/save_home", {
-        payload: encryptedPayload,
+        payload,
       });
       // API response: { status: 200, message: "...", data: ... }
 
@@ -2286,12 +1971,19 @@ const HomePage = ({ schoolData = {} }) => {
             >
               <div className="absolute inset-0 bg-black/40 z-10"></div>
               {slide.image && typeof slide.image === 'string' ? (
-                // Use plain img for dynamic or external URLs to avoid Next/Image domain or blob/data issues
+                // Use plain img for dynamic, external, or uploaded URLs to avoid Next/Image domain issues
                 <img
                   src={normalizeImageUrl(slide.image)}
                   alt={slide.title}
                   className="object-cover w-full h-full"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  onError={(e) => {
+                    const fallback = normalizeImageUrl(slide.image || "");
+                    if (fallback.startsWith('/img/')) {
+                      e.currentTarget.src = fallback.replace(/%20/g, ' ');
+                    } else {
+                      e.currentTarget.style.display = 'none';
+                    }
+                  }}
                 />
               ) : (
                 <Image

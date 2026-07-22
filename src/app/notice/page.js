@@ -1,4 +1,6 @@
 "use client";
+import defaultData from '@/data/notice.json';
+
 import React, { useState, useEffect } from 'react';
 import {
   Megaphone, Calendar, FileText, Download, Edit, Trash2, Plus, X,
@@ -10,74 +12,11 @@ import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@/components/Spinner/Spinner';
 import Image from 'next/image';
 
-const defaultData = {
-  showHero: true,
-  showCategories: true,
-  showNotices: true,
 
-  hero: {
-    show: true,
-    title: "School Notices & Announcements",
-    subtitle: "Stay updated with the latest circulars, events, and important information from Abc School.",
-    backgroundImage: "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    showImage: true,
-    latestNotice: {
-      title: "Welcome Back to School – Term II Guidelines",
-      date: "2025-12-01",
-      category: "General",
-      excerpt: "Dear Parents & Students, please go through the updated guidelines for Term II..."
-    }
-  },
-
-  categories: {
-    show: true,
-    title: "Browse by Category",
-    subtitle: "Filter notices by department or type",
-    items: [
-      { name: "All Notices", value: "all", color: "bg-gray-600", show: true },
-      { name: "General", value: "general", color: "bg-blue-600", show: true },
-      { name: "Academics", value: "academics", color: "bg-green-600", show: true },
-      { name: "Examinations", value: "exams", color: "bg-purple-600", show: true },
-      { name: "Events & Activities", value: "events", color: "bg-yellow-600", show: true },
-      { name: "Holidays", value: "holidays", color: "bg-red-600", show: true },
-      { name: "Admissions", value: "admissions", color: "bg-indigo-600", show: true }
-    ]
-  },
-
-  notices: {
-    show: true,
-    title: "Latest Notices",
-    subtitle: "Important updates and circulars from the school administration",
-    items: [
-      {
-        id: "1",
-        title: "Winter Vacation Homework – Class X & XII",
-        date: "2025-12-05",
-        category: "academics",
-        excerpt: "Subject-wise holiday homework has been uploaded. Students are requested to complete and submit on reopening.",
-        content: "Detailed holiday homework guidelines for Classes X and XII have been uploaded on the school portal. Students must download and complete all assignments before the school reopens on 6th January 2026.",
-        attachment: null,
-        pinned: true,
-        show: true
-      },
-      {
-        id: "2",
-        title: "Annual Sports Day 2025 – Schedule & Guidelines",
-        date: "2025-11-28",
-        category: "events",
-        excerpt: "The much-awaited Annual Sports Day will be held on 15th December 2025.",
-        content: "Detailed schedule, events list, participation guidelines, and practice timings are attached. Parents are requested to encourage participation.",
-        attachment: "https://example.com/sports-schedule.pdf",
-        pinned: false,
-        show: true
-      }
-    ]
-  }
-};
 
 const NoticePage = () => {
   const [data, setData] = useState(defaultData);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedNotice, setSelectedNotice] = useState(null);
@@ -135,33 +74,7 @@ const NoticePage = () => {
     setEditMode(role === 'admin');
   }, [role]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_notice_data', {});
-        if (res.status === 200 && res.data?.length > 0) {
-          const raw = res.data[0].data;
-          let fetched = raw;
-          try {
-            if (raw && raw.encrypted) {
-              fetched = await decryptObject(raw);
-            } else if (typeof raw === 'string') {
-              fetched = JSON.parse(raw);
-            }
-          } catch (e) {
-            console.warn('Failed to decrypt/parse notice data, using raw value', e);
-            fetched = raw;
-          }
-          setData({ ...defaultData, ...fetched });
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   const toggleSectionVisibility = (key) => setData(prev => ({ ...prev, [key]: !prev[key] }));
 

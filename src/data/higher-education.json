@@ -1,0 +1,747 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Higher Education",
+    "subtitle": "Pursue academic excellence with our undergraduate and postgraduate programs designed for advanced study, research, and professional development",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true,
+    "cta": {
+      "text": "Download University Prospectus",
+      "show": true
+    }
+  },
+  "tabs": [
+    {
+      "id": "overview",
+      "name": "Overview",
+      "icon": "BookOpen",
+      "show": true
+    },
+    {
+      "id": "programs",
+      "name": "Academic Programs",
+      "icon": "GraduationCap",
+      "show": true
+    },
+    {
+      "id": "research",
+      "name": "Research & Innovation",
+      "icon": "Microscope",
+      "show": true
+    },
+    {
+      "id": "international",
+      "name": "International Programs",
+      "icon": "Globe2",
+      "show": true
+    },
+    {
+      "id": "career",
+      "name": "Career Support",
+      "icon": "Briefcase",
+      "show": true
+    }
+  ],
+  "introduction": {
+    "show": true,
+    "title": "Welcome to Higher Education",
+    "description": "Our Higher Education programs provide specialized education through undergraduate and postgraduate degrees, preparing students for advanced careers and research leadership. We offer rigorous curricula, expert faculty mentorship, and comprehensive support for academic and professional success.",
+    "stats": [
+      {
+        "icon": "Users",
+        "value": "15:1",
+        "label": "Student-Faculty Ratio",
+        "show": true
+      },
+      {
+        "icon": "Globe2",
+        "value": "50+",
+        "label": "International Partnerships",
+        "show": true
+      },
+      {
+        "icon": "GraduationCap",
+        "value": "95%",
+        "label": "Graduate Employment Rate",
+        "show": true
+      },
+      {
+        "icon": "Award",
+        "value": "100+",
+        "label": "Research Publications Annually",
+        "show": true
+      }
+    ],
+    "keyFeatures": [
+      {
+        "icon": "Lightbulb",
+        "title": "Academic Excellence",
+        "description": "Rigorous programs taught by distinguished faculty and industry experts",
+        "show": true
+      },
+      {
+        "icon": "Brain",
+        "title": "Research Focus",
+        "description": "Opportunities for cutting-edge research and innovation across disciplines",
+        "show": true
+      },
+      {
+        "icon": "Network",
+        "title": "Industry Connections",
+        "description": "Strong partnerships with leading corporations and organizations",
+        "show": true
+      },
+      {
+        "icon": "Globe2",
+        "title": "Global Perspective",
+        "description": "International collaborations and study abroad opportunities",
+        "show": true
+      }
+    ]
+  },
+  "academicPrograms": {
+    "show": true,
+    "title": "Academic Programs",
+    "description": "Comprehensive degree programs designed to foster intellectual growth and professional expertise",
+    "degrees": [
+      {
+        "id": "bachelors",
+        "name": "Bachelor’s Degree",
+        "icon": "BookOpen",
+        "duration": "3-4 Years",
+        "description": "Undergraduate programs across arts, science, commerce, and professional fields with industry exposure and research opportunities",
+        "specializations": [
+          {
+            "name": "Bachelor of Arts (BA)",
+            "subjects": [
+              "Economics",
+              "Psychology",
+              "Political Science",
+              "Sociology",
+              "English Literature"
+            ],
+            "show": true
+          },
+          {
+            "name": "Bachelor of Science (BSc)",
+            "subjects": [
+              "Physics",
+              "Chemistry",
+              "Mathematics",
+              "Computer Science",
+              "Biotechnology"
+            ],
+            "show": true
+          },
+          {
+            "name": "Bachelor of Commerce (BCom)",
+            "subjects": [
+              "Accountancy",
+              "Business Studies",
+              "Economics",
+              "Finance",
+              "Taxation"
+            ],
+            "show": true
+          },
+          {
+            "name": "Bachelor of Technology (BTech)",
+            "subjects": [
+              "Computer Science",
+              "Mechanical",
+              "Electrical",
+              "Civil",
+              "Electronics"
+            ],
+            "show": true
+          }
+        ],
+        "admissionRequirements": [
+          "Senior Secondary School Certificate (10+2)",
+          "Minimum 75% aggregate marks",
+          "Entrance examination score",
+          "Personal interview"
+        ],
+        "careerOpportunities": [
+          "Corporate Sector Employment",
+          "Government Services",
+          "Entrepreneurship",
+          "Higher Studies",
+          "Research Positions"
+        ],
+        "show": true
+      },
+      {
+        "id": "masters",
+        "name": "Master’s Degree",
+        "icon": "GraduationCap",
+        "duration": "2 Years",
+        "description": "Postgraduate taught programs with rigorous coursework, research projects, and dissertation options for specialized expertise",
+        "specializations": [
+          {
+            "name": "Master of Arts (MA)",
+            "subjects": [
+              "History",
+              "Philosophy",
+              "Sociology",
+              "Literature",
+              "Linguistics"
+            ],
+            "show": true
+          },
+          {
+            "name": "Master of Science (MSc)",
+            "subjects": [
+              "Physics",
+              "Chemistry",
+              "Mathematics",
+              "Environmental Science",
+              "Data Science"
+            ],
+            "show": true
+          },
+          {
+            "name": "Master of Commerce (MCom)",
+            "subjects": [
+              "Advanced Accounting",
+              "Business Economics",
+              "Financial Management",
+              "Marketing"
+            ],
+            "show": true
+          },
+          {
+            "name": "Master of Technology (MTech)",
+            "subjects": [
+              "Artificial Intelligence",
+              "Robotics",
+              "Renewable Energy",
+              "Structural Engineering"
+            ],
+            "show": true
+          }
+        ],
+        "admissionRequirements": [
+          "Relevant Bachelor's degree",
+          "Minimum 60% aggregate marks",
+          "Entrance examination (if applicable)",
+          "Research proposal (for research programs)"
+        ],
+        "careerOpportunities": [
+          "Academic Positions",
+          "Research Scientist",
+          "Industry Specialist",
+          "Government Advisor",
+          "Consultancy"
+        ],
+        "show": true
+      },
+      {
+        "id": "mphil",
+        "name": "MPhil",
+        "icon": "Search",
+        "duration": "1-2 Years",
+        "description": "Research-focused postgraduate degree preparing students for doctoral study with intensive research training",
+        "specializations": [
+          {
+            "name": "MPhil in Sciences",
+            "subjects": [
+              "Experimental Physics",
+              "Organic Chemistry",
+              "Mathematical Modeling",
+              "Molecular Biology"
+            ],
+            "show": true
+          },
+          {
+            "name": "MPhil in Humanities",
+            "subjects": [
+              "Historical Research",
+              "Philosophical Inquiry",
+              "Cultural Studies",
+              "Literary Theory"
+            ],
+            "show": true
+          },
+          {
+            "name": "MPhil in Social Sciences",
+            "subjects": [
+              "Sociological Research",
+              "Economic Analysis",
+              "Political Theory",
+              "Psychological Studies"
+            ],
+            "show": true
+          }
+        ],
+        "admissionRequirements": [
+          "Master's degree in relevant field",
+          "Minimum 65% aggregate marks",
+          "Research proposal",
+          "Faculty approval",
+          "Entrance examination"
+        ],
+        "careerOpportunities": [
+          "PhD Preparation",
+          "Research Associate",
+          "Academic Researcher",
+          "Policy Analyst",
+          "Think Tank Positions"
+        ],
+        "show": true
+      },
+      {
+        "id": "phd",
+        "name": "PhD",
+        "icon": "Award",
+        "duration": "3-5 Years",
+        "description": "Doctoral programs with intensive research, supervision, funding support, and publication opportunities for academic leadership",
+        "specializations": [
+          {
+            "name": "PhD in Sciences",
+            "subjects": [
+              "Quantum Computing",
+              "Nanotechnology",
+              "Climate Science",
+              "Genomics"
+            ],
+            "show": true
+          },
+          {
+            "name": "PhD in Engineering",
+            "subjects": [
+              "Artificial Intelligence",
+              "Sustainable Energy",
+              "Biomedical Engineering",
+              "Materials Science"
+            ],
+            "show": true
+          },
+          {
+            "name": "PhD in Humanities",
+            "subjects": [
+              "Comparative Literature",
+              "Historical Anthropology",
+              "Philosophical Ethics",
+              "Cultural Heritage"
+            ],
+            "show": true
+          }
+        ],
+        "admissionRequirements": [
+          "Master's degree with minimum 60% marks",
+          "MPhil degree (preferred)",
+          "Detailed research proposal",
+          "Faculty supervisor consent",
+          "Entrance examination and interview"
+        ],
+        "careerOpportunities": [
+          "University Professor",
+          "Research Director",
+          "Industry R&D Head",
+          "Policy Maker",
+          "Scientific Advisor"
+        ],
+        "show": true
+      }
+    ],
+    "programHighlights": [
+      {
+        "icon": "Zap",
+        "title": "Industry-Relevant Curriculum",
+        "description": "Regularly updated programs aligned with current industry needs and trends",
+        "show": true
+      },
+      {
+        "icon": "Users2",
+        "title": "Expert Faculty",
+        "description": "Learn from accomplished academicians and industry practitioners",
+        "show": true
+      },
+      {
+        "icon": "Coffee",
+        "title": "Research Opportunities",
+        "description": "Access to state-of-the-art laboratories and research facilities",
+        "show": true
+      },
+      {
+        "icon": "TrendingUp",
+        "title": "Career Advancement",
+        "description": "Strong placement support and professional development programs",
+        "show": true
+      }
+    ]
+  },
+  "researchInnovation": {
+    "show": true,
+    "title": "Research & Innovation",
+    "description": "Fostering cutting-edge research and innovation across disciplines",
+    "researchAreas": [
+      {
+        "name": "Science & Technology",
+        "projects": [
+          "Quantum Computing",
+          "Sustainable Energy",
+          "Biotechnology",
+          "Nanomaterials"
+        ],
+        "funding": "₹50M Annual Research Grants",
+        "show": true
+      },
+      {
+        "name": "Social Sciences",
+        "projects": [
+          "Urban Development",
+          "Public Policy",
+          "Economic Modeling",
+          "Social Justice"
+        ],
+        "funding": "₹20M Annual Research Grants",
+        "show": true
+      },
+      {
+        "name": "Humanities",
+        "projects": [
+          "Cultural Studies",
+          "Digital Humanities",
+          "Historical Research",
+          "Philosophical Inquiry"
+        ],
+        "funding": "₹15M Annual Research Grants",
+        "show": true
+      },
+      {
+        "name": "Interdisciplinary",
+        "projects": [
+          "AI Ethics",
+          "Climate Change",
+          "Healthcare Innovation",
+          "Smart Cities"
+        ],
+        "funding": "₹30M Annual Research Grants",
+        "show": true
+      }
+    ],
+    "facilities": [
+      {
+        "name": "Advanced Research Center",
+        "description": "State-of-the-art laboratories and computational facilities",
+        "show": true
+      },
+      {
+        "name": "Digital Library",
+        "description": "Access to millions of research papers and databases",
+        "show": true
+      },
+      {
+        "name": "Innovation Hub",
+        "description": "Incubation center for startups and innovative projects",
+        "show": true
+      },
+      {
+        "name": "Collaboration Spaces",
+        "description": "Modern spaces for interdisciplinary research collaboration",
+        "show": true
+      }
+    ],
+    "achievements": [
+      {
+        "year": "2023",
+        "achievement": "Published 150+ research papers in indexed journals",
+        "show": true
+      },
+      {
+        "year": "2022",
+        "achievement": "Secured ₹100M in external research funding",
+        "show": true
+      },
+      {
+        "year": "2021",
+        "achievement": "Filed 25 patents for innovative technologies",
+        "show": true
+      },
+      {
+        "year": "2020",
+        "achievement": "Established 10 new international research collaborations",
+        "show": true
+      }
+    ]
+  },
+  "internationalPrograms": {
+    "show": true,
+    "title": "International Programs",
+    "description": "Global learning experiences through international collaborations and exchanges",
+    "partnerships": [
+      {
+        "university": "University of Oxford",
+        "country": "UK",
+        "type": "Student Exchange",
+        "show": true
+      },
+      {
+        "university": "MIT",
+        "country": "USA",
+        "type": "Research Collaboration",
+        "show": true
+      },
+      {
+        "university": "University of Toronto",
+        "country": "Canada",
+        "type": "Dual Degree",
+        "show": true
+      },
+      {
+        "university": "University of Melbourne",
+        "country": "Australia",
+        "type": "Faculty Exchange",
+        "show": true
+      },
+      {
+        "university": "National University of Singapore",
+        "country": "Singapore",
+        "type": "Joint Research",
+        "show": true
+      },
+      {
+        "university": "ETH Zurich",
+        "country": "Switzerland",
+        "type": "Summer Programs",
+        "show": true
+      }
+    ],
+    "exchangePrograms": [
+      {
+        "name": "Semester Abroad",
+        "duration": "4-6 Months",
+        "description": "Study at partner universities while earning credits towards your degree",
+        "show": true
+      },
+      {
+        "name": "Summer Research",
+        "duration": "2-3 Months",
+        "description": "International research internships and projects",
+        "show": true
+      },
+      {
+        "name": "Faculty-Led Programs",
+        "duration": "2-4 Weeks",
+        "description": "Short-term study tours and cultural immersion programs",
+        "show": true
+      },
+      {
+        "name": "Virtual Exchange",
+        "duration": "Flexible",
+        "description": "Online collaborative courses with international peers",
+        "show": true
+      }
+    ],
+    "benefits": [
+      "Global Perspective and Cultural Awareness",
+      "Enhanced Career Opportunities",
+      "International Network Building",
+      "Language and Communication Skills",
+      "Personal Growth and Independence"
+    ]
+  },
+  "careerSupport": {
+    "show": true,
+    "title": "Career Support & Placement",
+    "description": "Comprehensive career services and placement support for our graduates",
+    "services": [
+      {
+        "icon": "Briefcase",
+        "title": "Career Counseling",
+        "description": "Personalized career guidance and planning sessions",
+        "show": true
+      },
+      {
+        "icon": "FileText",
+        "title": "Resume Building",
+        "description": "Professional resume and portfolio development workshops",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Interview Preparation",
+        "description": "Mock interviews and communication skills training",
+        "show": true
+      },
+      {
+        "icon": "Network",
+        "title": "Industry Networking",
+        "description": "Connections with alumni and industry professionals",
+        "show": true
+      }
+    ],
+    "placementStats": [
+      {
+        "sector": "Corporate",
+        "percentage": "65%",
+        "icon": "Building",
+        "show": true
+      },
+      {
+        "sector": "Higher Education",
+        "percentage": "20%",
+        "icon": "GraduationCap",
+        "show": true
+      },
+      {
+        "sector": "Research",
+        "percentage": "10%",
+        "icon": "Microscope",
+        "show": true
+      },
+      {
+        "sector": "Entrepreneurship",
+        "percentage": "5%",
+        "icon": "TrendingUp",
+        "show": true
+      }
+    ],
+    "topRecruiters": [
+      "Microsoft",
+      "Google",
+      "TCS",
+      "Infosys",
+      "HDFC Bank",
+      "Deloitte",
+      "PwC",
+      "Amazon",
+      "Reliance",
+      "Wipro"
+    ],
+    "alumniSuccess": [
+      {
+        "name": "Dr. Rajesh Kumar",
+        "position": "Professor at IIT Delhi",
+        "degree": "PhD Physics"
+      },
+      {
+        "name": "Priya Sharma",
+        "position": "Data Scientist at Google",
+        "degree": "MSc Computer Science"
+      },
+      {
+        "name": "Amit Patel",
+        "position": "Financial Analyst at Morgan Stanley",
+        "degree": "MCom Finance"
+      },
+      {
+        "name": "Anjali Verma",
+        "position": "Research Director at DRDO",
+        "degree": "PhD Engineering"
+      }
+    ]
+  },
+  "admissions": {
+    "show": true,
+    "title": "Admissions Process",
+    "description": "Transparent and merit-based admissions process for all programs",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Application Submission",
+        "description": "Online application with required documents",
+        "show": true
+      },
+      {
+        "step": 2,
+        "title": "Entrance Examination",
+        "description": "Program-specific entrance test (if applicable)",
+        "show": true
+      },
+      {
+        "step": 3,
+        "title": "Interview",
+        "description": "Personal interview with faculty panel",
+        "show": true
+      },
+      {
+        "step": 4,
+        "title": "Admission Offer",
+        "description": "Merit-based admission offer letter",
+        "show": true
+      },
+      {
+        "step": 5,
+        "title": "Fee Payment",
+        "description": "Confirmation through fee payment",
+        "show": true
+      },
+      {
+        "step": 6,
+        "title": "Registration",
+        "description": "Final registration and course enrollment",
+        "show": true
+      }
+    ],
+    "importantDates": [
+      {
+        "event": "Application Start Date",
+        "date": "January 15, 2024",
+        "show": true
+      },
+      {
+        "event": "Application Deadline",
+        "date": "March 31, 2024",
+        "show": true
+      },
+      {
+        "event": "Entrance Examination",
+        "date": "April 15-20, 2024",
+        "show": true
+      },
+      {
+        "event": "Interview Schedule",
+        "date": "May 1-15, 2024",
+        "show": true
+      },
+      {
+        "event": "Admission Results",
+        "date": "June 1, 2024",
+        "show": true
+      },
+      {
+        "event": "Program Commencement",
+        "date": "July 15, 2024",
+        "show": true
+      }
+    ],
+    "documentsRequired": [
+      "Academic transcripts and certificates",
+      "Entrance examination scorecard",
+      "Identity proof (Aadhar/Passport)",
+      "Passport size photographs",
+      "Research proposal (for research programs)",
+      "Letters of recommendation (if applicable)"
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Begin Your Academic Journey",
+    "description": "Join our higher education community and shape your future with world-class education, research opportunities, and career support.",
+    "primaryCta": {
+      "text": "Apply Now for 2024 Admissions",
+      "show": true,
+      "href": "/admissions/higher-education"
+    },
+    "secondaryCta": {
+      "text": "Download Program Brochure",
+      "show": true,
+      "href": "/brochures/higher-education.pdf"
+    }
+  },
+  "layout": {
+    "showHero": true,
+    "showTabs": true,
+    "showIntroduction": true,
+    "showAcademicPrograms": true,
+    "showResearchInnovation": true,
+    "showInternationalPrograms": true,
+    "showCareerSupport": true,
+    "showAdmissions": true,
+    "showCta": true
+  }
+}

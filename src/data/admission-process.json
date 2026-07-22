@@ -1,0 +1,484 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Admission Process",
+    "subtitle": "Join the Abc family - Where excellence in education meets values for life",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": false,
+    "cta": "Begin Your Application",
+    "ctaLink": "#"
+  },
+  "stats": {
+    "show": true,
+    "items": [
+      {
+        "number": "97%",
+        "label": "Acceptance Rate",
+        "show": true
+      },
+      {
+        "number": "1:25",
+        "label": "Teacher-Student Ratio",
+        "show": true
+      },
+      {
+        "number": "5",
+        "label": "Step Process",
+        "show": true
+      },
+      {
+        "number": "15",
+        "label": "Days Average Processing",
+        "show": true
+      }
+    ]
+  },
+  "admissionSteps": {
+    "show": true,
+    "title": "Admission Process",
+    "description": "Our streamlined 5-step process makes applying to Abc simple and straightforward",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Inquiry & Information",
+        "description": "Learn about our school and admission process",
+        "icon": "Users",
+        "details": [
+          {
+            "text": "Attend virtual information session",
+            "show": true
+          },
+          {
+            "text": "Download prospectus and fee structure",
+            "show": true
+          },
+          {
+            "text": "Schedule campus tour (optional)",
+            "show": true
+          },
+          {
+            "text": "Meet with admission counselor",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "step": 2,
+        "title": "Application Submission",
+        "description": "Complete and submit the application form",
+        "icon": "FileText",
+        "details": [
+          {
+            "text": "Fill online application form",
+            "show": true
+          },
+          {
+            "text": "Upload required documents",
+            "show": true
+          },
+          {
+            "text": "Pay application fee (₹1,000)",
+            "show": true
+          },
+          {
+            "text": "Receive application confirmation",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "step": 3,
+        "title": "Assessment & Interaction",
+        "description": "Student assessment and parent interaction",
+        "icon": "UserCheck",
+        "details": [
+          {
+            "text": "Age-appropriate assessment for student",
+            "show": true
+          },
+          {
+            "text": "Parent interaction with admission committee",
+            "show": true
+          },
+          {
+            "text": "Observation of student in group setting",
+            "show": true
+          },
+          {
+            "text": "Review of previous school records",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "step": 4,
+        "title": "Admission Decision",
+        "description": "Receive and review admission offer",
+        "icon": "Award",
+        "details": [
+          {
+            "text": "Admission committee review",
+            "show": true
+          },
+          {
+            "text": "Decision communicated via email",
+            "show": true
+          },
+          {
+            "text": "Offer letter with fee details",
+            "show": true
+          },
+          {
+            "text": "Next steps information",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "step": 5,
+        "title": "Confirmation & Enrollment",
+        "description": "Complete enrollment formalities",
+        "icon": "CheckCircle",
+        "details": [
+          {
+            "text": "Submit acceptance form",
+            "show": true
+          },
+          {
+            "text": "Pay admission fee and first installment",
+            "show": true
+          },
+          {
+            "text": "Complete documentation",
+            "show": true
+          },
+          {
+            "text": "Receive welcome package",
+            "show": true
+          }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "gradeLevels": {
+    "show": true,
+    "title": "Grade Level Information",
+    "description": "Admission criteria and process varies by grade level",
+    "levels": [
+      {
+        "id": "nursery",
+        "name": "Pre-School (Nursery, KG)",
+        "age": "3-5 years",
+        "seats": 40,
+        "assessment": "Informal interaction and observation",
+        "show": true
+      },
+      {
+        "id": "primary",
+        "name": "Primary (Classes I-V)",
+        "age": "6-10 years",
+        "seats": 35,
+        "assessment": "Basic skills assessment in English and Mathematics",
+        "show": true
+      },
+      {
+        "id": "middle",
+        "name": "Middle (Classes VI-VIII)",
+        "age": "11-13 years",
+        "seats": 30,
+        "assessment": "Subject proficiency test and interaction",
+        "show": true
+      },
+      {
+        "id": "secondary",
+        "name": "Secondary (Classes IX-X)",
+        "age": "14-15 years",
+        "seats": 25,
+        "assessment": "Comprehensive entrance test in core subjects",
+        "show": true
+      },
+      {
+        "id": "senior",
+        "name": "Senior Secondary (Classes XI-XII)",
+        "age": "16-17 years",
+        "seats": 20,
+        "assessment": "Subject-specific tests and stream eligibility evaluation",
+        "show": true
+      }
+    ]
+  },
+  "importantDates": {
+    "show": true,
+    "title": "Important Dates for 2026-27 Admissions",
+    "dates": [
+      {
+        "event": "Admission Process Begins",
+        "date": "December 1, 2025",
+        "description": "Online applications open for all classes",
+        "show": true
+      },
+      {
+        "event": "Last Date for Applications",
+        "date": "January 15, 2026",
+        "description": "Deadline for submission of complete application forms",
+        "show": true
+      },
+      {
+        "event": "Assessments & Interactions",
+        "date": "January 20-30, 2026",
+        "description": "Grade-wise scheduled assessments and parent meetings",
+        "show": true
+      },
+      {
+        "event": "First Round of Offers",
+        "date": "February 5, 2026",
+        "description": "First batch of admission offers communicated",
+        "show": true
+      },
+      {
+        "event": "Fee Payment Deadline",
+        "date": "February 20, 2026",
+        "description": "Last date for fee payment to secure admission",
+        "show": true
+      },
+      {
+        "event": "Academic Year Begins",
+        "date": "April 1, 2026",
+        "description": "New academic session 2026-27 commences",
+        "show": true
+      }
+    ]
+  },
+  "requiredDocuments": {
+    "show": true,
+    "title": "Required Documents",
+    "description": "Please keep these documents ready for the application process",
+    "categories": [
+      {
+        "category": "Application Documents",
+        "items": [
+          {
+            "text": "Completed application form",
+            "show": true
+          },
+          {
+            "text": "2 recent passport-size photographs of student",
+            "show": true
+          },
+          {
+            "text": "Photograph of parents/guardians",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Birth & Identity Proof",
+        "items": [
+          {
+            "text": "Birth certificate (original for verification)",
+            "show": true
+          },
+          {
+            "text": "Aadhaar card of student (if available)",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Academic Records",
+        "items": [
+          {
+            "text": "Report card of previous academic year",
+            "show": true
+          },
+          {
+            "text": "Transfer certificate from previous school (if applicable)",
+            "show": true
+          },
+          {
+            "text": "Achievement records (academic and co-curricular)",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Parent Documents",
+        "items": [
+          {
+            "text": "Aadhaar card of both parents",
+            "show": true
+          },
+          {
+            "text": "Address proof (electricity bill, rent agreement, etc.)",
+            "show": true
+          }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "feeStructure": {
+    "show": true,
+    "title": "Fee Structure 2026-27",
+    "items": [
+      {
+        "item": "Application Fee",
+        "amount": "₹1,000",
+        "description": "Non-refundable, payable with application submission",
+        "show": true
+      },
+      {
+        "item": "Admission Fee",
+        "amount": "₹25,000",
+        "description": "One-time payment upon admission confirmation",
+        "show": true
+      },
+      {
+        "item": "Annual Charges",
+        "amount": "₹15,000",
+        "description": "Payable at the beginning of each academic year",
+        "show": true
+      },
+      {
+        "item": "Tuition Fee (Monthly)",
+        "amount": "₹8,000 - ₹12,000",
+        "description": "Varies by grade level, payable quarterly in advance",
+        "show": true
+      },
+      {
+        "item": "Development Fee",
+        "amount": "₹10,000",
+        "description": "Annual charge for infrastructure development",
+        "show": true
+      }
+    ]
+  },
+  "scholarships": {
+    "show": true,
+    "title": "Scholarships & Financial Aid",
+    "description": "We believe in rewarding excellence and supporting deserving students",
+    "scholarships": [
+      {
+        "name": "Academic Excellence Scholarship",
+        "eligibility": "95%+ in previous class & excellent assessment performance",
+        "coverage": "Up to 25% tuition fee waiver",
+        "show": true
+      },
+      {
+        "name": "Sports Scholarship",
+        "eligibility": "State/National level sports achievement",
+        "coverage": "Up to 50% tuition fee waiver",
+        "show": true
+      },
+      {
+        "name": "Sibling Scholarship",
+        "eligibility": "Second child from the same family",
+        "coverage": "5% discount on tuition fees",
+        "show": true
+      },
+      {
+        "name": "Alumni Scholarship",
+        "eligibility": "Children of Abc alumni",
+        "coverage": "10% discount on tuition fees",
+        "show": true
+      }
+    ]
+  },
+  "faqs": {
+    "show": true,
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to common questions about our admission process",
+    "items": [
+      {
+        "question": "What is the age criteria for admission to Nursery?",
+        "answer": "The child should have completed 3 years of age as of March 31, 2026 for admission to Nursery. For KG, the child should have completed 4 years of age by the same date.",
+        "show": true
+      },
+      {
+        "question": "Is there any sibling preference in admission?",
+        "answer": "Yes, we offer sibling preference subject to availability of seats and the child meeting the admission criteria. A 5% discount on tuition fees is also offered for the second child.",
+        "show": true
+      },
+      {
+        "question": "What is the student-teacher ratio in classrooms?",
+        "answer": "We maintain an optimal student-teacher ratio of 25:1 in primary classes and 30:1 in middle and secondary classes to ensure personalized attention.",
+        "show": true
+      },
+      {
+        "question": "Are transportation facilities available?",
+        "answer": "Yes, we provide safe and reliable transportation services covering most areas in the city. The bus fee is additional and varies based on distance.",
+        "show": true
+      },
+      {
+        "question": "What is the school's policy on transfers?",
+        "answer": "Transfer certificates from recognized schools are accepted. Students may need to take an entrance test for admission to classes II and above based on seat availability.",
+        "show": true
+      }
+    ]
+  },
+  "contact": {
+    "show": true,
+    "title": "Ready to Begin Your Journey?",
+    "description": "Start your application today or contact our admission team for personalized assistance",
+    "info": [
+      {
+        "icon": "Mail",
+        "content": "admissions@stcolumbas.edu.in",
+        "show": true
+      },
+      {
+        "icon": "Phone",
+        "content": "011-2336-3462 (Ext. 110)",
+        "show": true
+      },
+      {
+        "icon": "Clock",
+        "content": "Monday-Friday: 9:00 AM - 4:00 PM",
+        "show": true
+      },
+      {
+        "icon": "MapPin",
+        "content": "1, Ashok Place, Birgunj - 110001",
+        "show": true
+      }
+    ],
+    "buttons": [
+      {
+        "label": "Apply Now",
+        "icon": "FileText",
+        "link": "#",
+        "show": true
+      },
+      {
+        "label": "Schedule Campus Tour",
+        "icon": "MapPin",
+        "link": "#",
+        "show": true
+      }
+    ]
+  },
+  "layout": {
+    "showHero": true,
+    "showStats": true,
+    "showAdmissionSteps": true,
+    "showGradeLevels": true,
+    "showImportantDates": true,
+    "showRequiredDocuments": true,
+    "showFeeStructure": true,
+    "showScholarships": true,
+    "showFaqs": true,
+    "showContact": true
+  },
+  "lastUpdated": "2026-07-21T09:31:14.771Z",
+  "updatedBy": "admin",
+  "version": "1.0"
+}

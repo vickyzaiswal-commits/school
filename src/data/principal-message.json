@@ -5,7 +5,7 @@
     "subtitle": "A message of inspiration and commitment to excellence",
     "height": "h-96",
     "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "backgroundImageShow": true
+    "backgroundImageShow": false
   },
   "principalInfo": {
     "show": true,
@@ -67,10 +67,26 @@
     "title": "Achievements Under My Leadership",
     "description": "Since joining Abc as Principal in 2015, we have achieved remarkable milestones that reflect our commitment to excellence.",
     "stats": [
-      { "value": "100%", "label": "Board Pass Rate", "show": true },
-      { "value": "95%", "label": "College Admissions", "show": true },
-      { "value": "85%", "label": "Above 90% Scores", "show": true },
-      { "value": "50+", "label": "Awards Won", "show": true }
+      {
+        "value": "100%",
+        "label": "Board Pass Rate",
+        "show": true
+      },
+      {
+        "value": "95%",
+        "label": "College Admissions",
+        "show": true
+      },
+      {
+        "value": "85%",
+        "label": "Above 90% Scores",
+        "show": true
+      },
+      {
+        "value": "50+",
+        "label": "Awards Won",
+        "show": true
+      }
     ],
     "highlights": [
       {
@@ -148,10 +164,30 @@
       }
     ],
     "buttons": [
-      { "label": "Schedule Appointment", "icon": "ExternalLink", "link": "/appointment", "show": true },
-      { "label": "Admission Information", "icon": "FileText", "link": "/admissions", "show": true },
-      { "label": "Academic Programs", "icon": "BookOpen", "link": "/academics", "show": true },
-      { "label": "Vision & Mission", "icon": "Target", "link": "/about/vision-mission", "show": true }
+      {
+        "label": "Schedule Appointment",
+        "icon": "ExternalLink",
+        "link": "/appointment",
+        "show": true
+      },
+      {
+        "label": "Admission Information",
+        "icon": "FileText",
+        "link": "/admissions",
+        "show": true
+      },
+      {
+        "label": "Academic Programs",
+        "icon": "BookOpen",
+        "link": "/academics",
+        "show": true
+      },
+      {
+        "label": "Vision & Mission",
+        "icon": "Target",
+        "link": "/about/vision-mission",
+        "show": true
+      }
     ]
   },
   "showHero": true,
@@ -160,5 +196,8 @@
   "showPriorities": true,
   "showAchievements": true,
   "showLeadership": true,
-  "showContact": true
+  "showContact": true,
+  "lastUpdated": "2026-07-21T08:26:58.528Z",
+  "updatedBy": "admin",
+  "version": "1.0"
 }

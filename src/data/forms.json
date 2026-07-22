@@ -1,0 +1,211 @@
+{
+  "showHero": true,
+  "showBenefits": true,
+  "showCategories": true,
+  "showForms": true,
+  "showCta": true,
+  "hero": {
+    "show": true,
+    "title": "Download Forms 2024-2025",
+    "subtitle": "Access all school forms, applications and documents in one place",
+    "height": "h-96",
+    "showImage": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Forms Available",
+        "show": true
+      },
+      {
+        "value": "15K+",
+        "label": "Total Downloads",
+        "show": true
+      },
+      {
+        "value": "6",
+        "label": "Categories",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "Browse All Forms",
+      "show": true
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Why Use Our Forms Portal",
+    "subtitle": "Streamlined access to all necessary documents for students, parents and staff",
+    "items": [
+      {
+        "icon": "FileText",
+        "title": "Easy Access",
+        "description": "Download forms anytime, anywhere",
+        "show": true
+      },
+      {
+        "icon": "Download",
+        "title": "Multiple Formats",
+        "description": "Available in PDF, DOCX, and more",
+        "show": true
+      },
+      {
+        "icon": "Clock",
+        "title": "Up-to-Date",
+        "description": "Always the latest versions",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "For Everyone",
+        "description": "Forms for students, parents and staff",
+        "show": true
+      }
+    ]
+  },
+  "categories": {
+    "show": true,
+    "items": [
+      {
+        "id": "admission",
+        "name": "Admission",
+        "icon": "BookOpen",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "academic",
+        "name": "Academic",
+        "icon": "Award",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "transport",
+        "name": "Transport",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "medical",
+        "name": "Medical",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "administrative",
+        "name": "Administrative",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "extracurricular",
+        "name": "Extracurricular",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "scholarship",
+        "name": "Scholarship",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "hostel",
+        "name": "Hostel",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "library",
+        "name": "Library",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "sports",
+        "name": "Sports",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      },
+      {
+        "id": "cultural",
+        "name": "Cultural",
+        "icon": "Users",
+        "count": 0,
+        "show": true
+      }
+    ]
+  },
+  "forms": {
+    "show": true,
+    "title": "Available Forms & Documents",
+    "subtitle": "Search and download any form instantly",
+    "noResultsTitle": "No forms found",
+    "noResultsSubtitle": "Try adjusting your search or category",
+    "items": [
+      {
+        "id": 1,
+        "title": "Admission Application Form 2025-26",
+        "category": "admission",
+        "description": "Complete application for new student enrollment",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "fileUrl": "",
+        "downloads": 1847,
+        "icon": "FileText",
+        "show": true
+      },
+      {
+        "id": 2,
+        "title": "Medical & Health Declaration",
+        "category": "medical",
+        "description": "Required health information and medical history form",
+        "format": "PDF/DOCX",
+        "size": "1.8 MB",
+        "fileUrl": "",
+        "downloads": 923,
+        "icon": "Heart",
+        "show": true
+      },
+      {
+        "id": 3,
+        "title": "Transport Request Form",
+        "category": "transport",
+        "description": "Apply for school bus service or route change",
+        "format": "PDF",
+        "size": "980 KB",
+        "fileUrl": "",
+        "downloads": 567,
+        "icon": "MapPin",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Can't Find the Form You Need?",
+    "subtitle": "Our administrative team is ready to assist you",
+    "buttons": [
+      {
+        "text": "Request a Form",
+        "link": "mailto:admin@school.com",
+        "show": true
+      },
+      {
+        "text": "Contact Office",
+        "link": "/contact",
+        "show": true
+      }
+    ]
+  }
+}

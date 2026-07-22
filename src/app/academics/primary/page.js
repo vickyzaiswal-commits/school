@@ -143,39 +143,7 @@ const PrimarySchoolPage = () => {
   }, [role]);
 
   // Fetch data from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_primaryschool_data', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedRaw = res.data[0]?.data || {};
-
-          let fetchedData = fetchedRaw;
-          if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
-            const decrypted = await decryptObject(fetchedRaw);
-            if (decrypted) fetchedData = decrypted;
-            else {
-              try {
-                fetchedData = JSON.parse(fetchedRaw);
-              } catch (e) {
-                console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
-                fetchedData = {};
-              }
-            }
-          }
-
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-          setData(defaultData);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setData(defaultData);
-      }
-    };
- 
-    fetchData();
-  }, []);
+  
 
   // IntersectionObserver for animations
   useEffect(() => {

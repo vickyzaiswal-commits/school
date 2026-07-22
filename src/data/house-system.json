@@ -1,0 +1,659 @@
+{
+  "showHero": true,
+  "showBenefits": true,
+  "showTabs": true,
+  "showOverview": true,
+  "showHouses": true,
+  "showCompetitions": true,
+  "showPoints": true,
+  "showResources": true,
+  "showCta": true,
+  "showLabels": true,
+  "hero": {
+    "show": true,
+    "height": "h-96",
+    "title": "Our House System",
+    "subtitle": "Fostering camaraderie, competition, and character development through our vibrant house system since 1950.",
+    "showImage": false,
+    "backgroundImage": "",
+    "stats": [
+      {
+        "value": "75+",
+        "label": "Years of Tradition",
+        "show": true
+      },
+      {
+        "value": "4",
+        "label": "Houses",
+        "show": true
+      },
+      {
+        "value": "100+",
+        "label": "Annual Events",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "Learn More About Houses",
+      "link": "#",
+      "show": true
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Why We Have a House System",
+    "subtitle": "The house system is a cornerstone of our school community, promoting values beyond the classroom",
+    "items": [
+      {
+        "icon": "Users",
+        "title": "Community Building",
+        "description": "Fostering camaraderie and school spirit across grade levels",
+        "show": true
+      },
+      {
+        "icon": "Trophy",
+        "title": "Healthy Competition",
+        "description": "Encouraging students to strive for excellence in various fields",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Leadership Development",
+        "description": "Providing opportunities for students to develop leadership skills",
+        "show": true
+      },
+      {
+        "icon": "Star",
+        "title": "Talent Recognition",
+        "description": "Showcasing diverse talents beyond academic achievements",
+        "show": true
+      }
+    ]
+  },
+  "tabs": {
+    "show": true,
+    "items": [
+      {
+        "id": "overview",
+        "name": "Overview",
+        "icon": "Shield",
+        "show": true
+      },
+      {
+        "id": "houses",
+        "name": "Houses",
+        "icon": "Users",
+        "show": true
+      },
+      {
+        "id": "competitions",
+        "name": "Competitions",
+        "icon": "Trophy",
+        "show": true
+      },
+      {
+        "id": "points",
+        "name": "Points",
+        "icon": "TrendingUp",
+        "show": true
+      }
+    ]
+  },
+  "overview": {
+    "show": true,
+    "title": "House System Overview",
+    "subtitle": "Learn about our tradition of house competition and camaraderie",
+    "history": {
+      "show": true,
+      "title": "History & Tradition",
+      "content": [
+        "The House System at Abc has been a cherished tradition since 1950, when the school was founded. The system was established to create smaller communities within our larger school family, fostering closer relationships between students of different ages and backgrounds.",
+        "Each of our four houses—Ruby, Emerald, Sapphire, and Topaz—represents different values and strengths, but all share the common goal of developing well-rounded individuals who contribute positively to their community.",
+        "Over the decades, the house system has evolved to include a wide range of competitions and activities, but its core purpose remains the same: to build character, leadership, and school spirit."
+      ]
+    },
+    "system": {
+      "show": true,
+      "title": "How the System Works",
+      "steps": [
+        {
+          "step": 1,
+          "title": "House Allocation",
+          "description": "New students are randomly allocated to one of the four houses, creating a balanced mix across grades.",
+          "show": true
+        },
+        {
+          "step": 2,
+          "title": "Points Competition",
+          "description": "Houses compete throughout the year in academic, sports, cultural, and service activities.",
+          "show": true
+        },
+        {
+          "step": 3,
+          "title": "Leadership Roles",
+          "description": "Senior students serve as House Captains, developing leadership skills and mentoring younger members.",
+          "show": true
+        },
+        {
+          "step": 4,
+          "title": "Annual Championship",
+          "description": "The house with the most points at year-end wins the prestigious House Championship Cup.",
+          "show": true
+        }
+      ]
+    },
+    "captains": {
+      "show": true,
+      "title": "House Captains",
+      "viewProfileButton": "View Profile",
+      "items": [
+        {
+          "name": "Aarav Patel",
+          "house": "Ruby",
+          "position": "Captain",
+          "grade": "XII-A",
+          "achievements": [
+            "Basketball Team Captain",
+            "Debate Club President",
+            "National Science Olympiad Winner"
+          ],
+          "quote": "Ruby House teaches us that true strength comes from supporting each other.",
+          "show": true
+        },
+        {
+          "name": "Neha Verma",
+          "house": "Emerald",
+          "position": "Captain",
+          "grade": "XII-C",
+          "achievements": [
+            "Student Council Secretary",
+            "Math Olympiad Gold Medalist",
+            "Environmental Club Head"
+          ],
+          "quote": "In Emerald, we grow together by sharing knowledge and supporting each other's dreams.",
+          "show": true
+        },
+        {
+          "name": "Siddharth Mehta",
+          "house": "Sapphire",
+          "position": "Captain",
+          "grade": "XII-D",
+          "achievements": [
+            "School Band Lead",
+            "Art Exhibition Winner",
+            "Innovation Fair Champion"
+          ],
+          "quote": "Creativity is intelligence having fun - that's the Sapphire way!",
+          "show": true
+        },
+        {
+          "name": "Vikram Singh",
+          "house": "Topaz",
+          "position": "Captain",
+          "grade": "XII-B",
+          "achievements": [
+            "Chess Team Captain",
+            "Coding Competition Winner",
+            "Robotics Club President"
+          ],
+          "quote": "Topaz teaches us to see the bigger picture and work strategically toward our goals.",
+          "show": true
+        }
+      ]
+    }
+  },
+  "houses": {
+    "show": true,
+    "title": "Our Houses",
+    "subtitle": "Learn about the unique identity and strengths of each house",
+    "items": {
+      "ruby": {
+        "name": "Ruby House",
+        "color": "bg-red-600",
+        "textColor": "text-white",
+        "borderColor": "border-red-600",
+        "symbol": "🦁",
+        "motto": "Courage and Strength",
+        "head": "Mr. Sharma",
+        "captain": "Aarav Patel (XII-A)",
+        "viceCaptain": "Priya Singh (XI-B)",
+        "points": 1245,
+        "strengths": [
+          "Sports",
+          "Debate",
+          "Leadership"
+        ],
+        "description": "Ruby House is known for its courageous members who demonstrate strength in both physical and intellectual pursuits. Founded in 1952, Ruby has won the House Championship 15 times.",
+        "traditions": [
+          "Annual Ruby House Dinner for all members",
+          "Special cheer performed at all inter-house competitions",
+          "Mentorship program pairing senior and junior members",
+          "House-specific community service project each term"
+        ],
+        "show": true
+      },
+      "emerald": {
+        "name": "Emerald House",
+        "color": "bg-green-600",
+        "textColor": "text-white",
+        "borderColor": "border-green-600",
+        "symbol": "🌳",
+        "motto": "Growth and Wisdom",
+        "head": "Ms. Gupta",
+        "captain": "Neha Verma (XII-C)",
+        "viceCaptain": "Rahul Kumar (XI-A)",
+        "points": 1180,
+        "strengths": [
+          "Academics",
+          "Science",
+          "Environment"
+        ],
+        "description": "Emerald House values growth, wisdom, and environmental consciousness. With a strong focus on academic excellence, Emerald has produced many scholarship winners.",
+        "traditions": [
+          "Annual Emerald House Dinner for all members",
+          "Special cheer performed at all inter-house competitions",
+          "Mentorship program pairing senior and junior members",
+          "House-specific community service project each term"
+        ],
+        "show": true
+      },
+      "sapphire": {
+        "name": "Sapphire House",
+        "color": "bg-blue-600",
+        "textColor": "text-white",
+        "borderColor": "border-blue-600",
+        "symbol": "🐬",
+        "motto": "Creativity and Flow",
+        "head": "Mr. Fernandez",
+        "captain": "Siddharth Mehta (XII-D)",
+        "viceCaptain": "Ananya Das (XI-C)",
+        "points": 1320,
+        "strengths": [
+          "Arts",
+          "Music",
+          "Innovation"
+        ],
+        "description": "Sapphire House celebrates creativity, artistic expression, and innovative thinking. Known for dominating cultural events and art competitions.",
+        "traditions": [
+          "Annual Sapphire House Dinner for all members",
+          "Special cheer performed at all inter-house competitions",
+          "Mentorship program pairing senior and junior members",
+          "House-specific community service project each term"
+        ],
+        "show": true
+      },
+      "topaz": {
+        "name": "Topaz House",
+        "color": "bg-yellow-600",
+        "textColor": "text-white",
+        "borderColor": "border-yellow-600",
+        "symbol": "🦅",
+        "motto": "Vision and Perseverance",
+        "head": "Ms. Roberts",
+        "captain": "Vikram Singh (XII-B)",
+        "viceCaptain": "Meera Joshi (XI-D)",
+        "points": 1095,
+        "strengths": [
+          "Mathematics",
+          "Technology",
+          "Chess"
+        ],
+        "description": "Topaz House embodies vision, strategy, and perseverance. With strong analytical skills, Topaz excels in mathematical and technological competitions.",
+        "traditions": [
+          "Annual Topaz House Dinner for all members",
+          "Special cheer performed at all inter-house competitions",
+          "Mentorship program pairing senior and junior members",
+          "House-specific community service project each term"
+        ],
+        "show": true
+      }
+    }
+  },
+  "competitions": {
+    "show": true,
+    "title": "Inter-House Competitions",
+    "subtitle": "Houses compete throughout the year in various events to earn points",
+    "pointsSystem": {
+      "show": true,
+      "title": "Points System Explained",
+      "rules": [
+        "1st place receives 100% of available points",
+        "2nd place receives 75% of available points",
+        "3rd place receives 50% of available points",
+        "4th place receives 25% of available points",
+        "Participation points awarded for all entries",
+        "Sportsmanship points awarded by faculty judges"
+      ]
+    },
+    "categories": [
+      {
+        "category": "Sports",
+        "icon": "Activity",
+        "events": [
+          {
+            "name": "Annual Sports Meet",
+            "points": 100,
+            "date": "Oct 15, 2025",
+            "show": true
+          },
+          {
+            "name": "Inter-House Basketball",
+            "points": 50,
+            "date": "Nov 10, 2025",
+            "show": true
+          },
+          {
+            "name": "Swimming Championship",
+            "points": 50,
+            "date": "Oct 20, 2025",
+            "show": true
+          },
+          {
+            "name": "Athletics Competition",
+            "points": 75,
+            "date": "Nov 5, 2025",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Cultural",
+        "icon": "Music",
+        "events": [
+          {
+            "name": "Annual Day Performance",
+            "points": 100,
+            "date": "Nov 20, 2025",
+            "show": true
+          },
+          {
+            "name": "Music Competition",
+            "points": 50,
+            "date": "Oct 8, 2025",
+            "show": true
+          },
+          {
+            "name": "Drama Festival",
+            "points": 75,
+            "date": "Oct 30, 2025",
+            "show": true
+          },
+          {
+            "name": "Dance Championship",
+            "points": 60,
+            "date": "Nov 15, 2025",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Academic",
+        "icon": "Brain",
+        "events": [
+          {
+            "name": "Science Exhibition",
+            "points": 75,
+            "date": "Oct 18, 2025",
+            "show": true
+          },
+          {
+            "name": "Quiz Competition",
+            "points": 50,
+            "date": "Nov 12, 2025",
+            "show": true
+          },
+          {
+            "name": "Debate Tournament",
+            "points": 60,
+            "date": "Oct 25, 2025",
+            "show": true
+          },
+          {
+            "name": "Math Olympiad",
+            "points": 50,
+            "date": "Nov 8, 2025",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "category": "Art & Literature",
+        "icon": "Palette",
+        "events": [
+          {
+            "name": "Art Exhibition",
+            "points": 50,
+            "date": "Oct 10, 2025",
+            "show": true
+          },
+          {
+            "name": "Creative Writing Contest",
+            "points": 40,
+            "date": "Nov 5, 2025",
+            "show": true
+          },
+          {
+            "name": "Poetry Slam",
+            "points": 40,
+            "date": "Oct 15, 2025",
+            "show": true
+          },
+          {
+            "name": "Photography Competition",
+            "points": 40,
+            "date": "Nov 18, 2025",
+            "show": true
+          }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "points": {
+    "show": true,
+    "title": "House Points Standings",
+    "subtitle": "Current points distribution across all houses",
+    "tableHeaders": [
+      {
+        "label": "House",
+        "show": true
+      },
+      {
+        "label": "Total Points",
+        "show": true
+      },
+      {
+        "label": "Sports",
+        "show": true
+      },
+      {
+        "label": "Cultural",
+        "show": true
+      },
+      {
+        "label": "Academic",
+        "show": true
+      },
+      {
+        "label": "Art",
+        "show": true
+      },
+      {
+        "label": "Trend",
+        "show": true
+      }
+    ],
+    "breakdown": [
+      {
+        "house": "Ruby",
+        "points": 1245,
+        "sports": 320,
+        "cultural": 280,
+        "academic": 385,
+        "art": 260,
+        "trend": "up",
+        "show": true
+      },
+      {
+        "house": "Emerald",
+        "points": 1180,
+        "sports": 270,
+        "cultural": 250,
+        "academic": 420,
+        "art": 240,
+        "trend": "down",
+        "show": true
+      },
+      {
+        "house": "Sapphire",
+        "points": 1320,
+        "sports": 290,
+        "cultural": 450,
+        "academic": 310,
+        "art": 270,
+        "trend": "up",
+        "show": true
+      },
+      {
+        "house": "Topaz",
+        "points": 1095,
+        "sports": 250,
+        "cultural": 220,
+        "academic": 395,
+        "art": 230,
+        "trend": "stable",
+        "show": true
+      }
+    ],
+    "recentEvents": {
+      "show": true,
+      "title": "Recent Point Events",
+      "events": [
+        {
+          "description": "Sapphire won Music Competition",
+          "points": 50,
+          "show": true
+        },
+        {
+          "description": "Ruby placed 2nd in Basketball",
+          "points": 38,
+          "show": true
+        },
+        {
+          "description": "Emerald won Science Exhibition",
+          "points": 75,
+          "show": true
+        },
+        {
+          "description": "Topaz won Chess Tournament",
+          "points": 50,
+          "show": true
+        }
+      ]
+    },
+    "upcomingEvents": {
+      "show": true,
+      "title": "Upcoming Point Opportunities",
+      "events": [
+        {
+          "description": "Annual Sports Meet (Oct 15, 2025)",
+          "points": 100,
+          "show": true
+        },
+        {
+          "description": "Debate Tournament (Oct 25, 2025)",
+          "points": 60,
+          "show": true
+        },
+        {
+          "description": "Drama Festival (Oct 30, 2025)",
+          "points": 75,
+          "show": true
+        },
+        {
+          "description": "Art Exhibition (Nov 5, 2025)",
+          "points": 50,
+          "show": true
+        }
+      ]
+    }
+  },
+  "resources": {
+    "show": true,
+    "title": "House System Resources",
+    "subtitle": "Download guides, calendars, and information about the house system",
+    "downloadButton": "Download",
+    "items": [
+      {
+        "title": "House System Handbook",
+        "description": "Complete guide to the house system rules and traditions",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "icon": "Book",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "title": "Competition Calendar",
+        "description": "Schedule of all inter-house events for 2025-26",
+        "format": "PDF",
+        "size": "1.5 MB",
+        "icon": "Calendar",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "title": "Points System Guide",
+        "description": "Detailed explanation of how points are awarded",
+        "format": "PDF",
+        "size": "1.2 MB",
+        "icon": "TrendingUp",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "title": "House Captain Application",
+        "description": "Form to apply for house leadership positions",
+        "format": "DOCX",
+        "size": "0.8 MB",
+        "icon": "Users",
+        "fileUrl": "",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Proud of Your House?",
+    "subtitle": "Show your house spirit and participate in upcoming competitions to earn points for your house",
+    "buttons": [
+      {
+        "text": "View Competition Schedule",
+        "style": "primary",
+        "link": "#",
+        "show": true
+      },
+      {
+        "text": "Learn About House Leadership",
+        "style": "secondary",
+        "link": "#",
+        "show": true
+      }
+    ]
+  },
+  "labels": {
+    "show": true,
+    "houseInformation": "House Information",
+    "symbol": "Symbol",
+    "houseHead": "House Head",
+    "captain": "Captain",
+    "viceCaptain": "Vice Captain",
+    "currentPoints": "Current Points",
+    "strengths": "Strengths",
+    "houseDescription": "House Description",
+    "houseTraditions": "House Traditions"
+  }
+}

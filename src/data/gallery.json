@@ -1,0 +1,309 @@
+{
+  "showHero": true,
+  "showBenefits": true,
+  "showTabs": true,
+  "showAlbums": true,
+  "showGallery": true,
+  "showStatistics": true,
+  "showCta": true,
+  "showLabels": true,
+  "hero": {
+    "show": true,
+    "title": "School Gallery 2024-2025 abc",
+    "subtitle": "Capturing Memories, Celebrating Moments, Building Legacy",
+    "height": "h-96",
+    "showImage": false,
+    "backgroundImage": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "stats": [
+      {
+        "value": "5K+",
+        "label": "Photos",
+        "show": true
+      },
+      {
+        "value": "250+",
+        "label": "Videos",
+        "show": true
+      },
+      {
+        "value": "120+",
+        "label": "Events",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "Explore Gallery",
+      "link": "#",
+      "show": true
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Role of the Gallery",
+    "subtitle": "The gallery serves as the visual memory of the school and plays a vital role in preserving moments",
+    "items": [
+      {
+        "icon": "Users",
+        "title": "Memory Preservation",
+        "description": "Capturing important school events and activities",
+        "show": true
+      },
+      {
+        "icon": "Megaphone",
+        "title": "Community Engagement",
+        "description": "Sharing school life with parents and alumni",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Student Showcase",
+        "description": "Highlighting student achievements and talents",
+        "show": true
+      },
+      {
+        "icon": "Lightbulb",
+        "title": "Inspiration Hub",
+        "description": "Motivating current and future students",
+        "show": true
+      }
+    ]
+  },
+  "tabs": {
+    "show": true,
+    "items": [
+      {
+        "id": "albums",
+        "name": "Featured Albums",
+        "icon": "Users",
+        "show": true
+      },
+      {
+        "id": "gallery",
+        "name": "Recent Media",
+        "icon": "Camera",
+        "show": true
+      },
+      {
+        "id": "statistics",
+        "name": "Statistics",
+        "icon": "TrendingUp",
+        "show": true
+      },
+      {
+        "id": "cta",
+        "name": "Get Involved",
+        "icon": "Heart",
+        "show": true
+      }
+    ]
+  },
+  "albums": {
+    "show": true,
+    "title": "Featured Albums",
+    "subtitle": "Explore our highlighted collections of school moments",
+    "items": [
+      {
+        "title": "Annual Day 2023",
+        "cover": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "count": 145,
+        "date": "Nov 20, 2023",
+        "show": true
+      },
+      {
+        "title": "Sports Championship",
+        "cover": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "count": 89,
+        "date": "Feb 28, 2024",
+        "show": true
+      },
+      {
+        "title": "Science Fair 2024",
+        "cover": "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "count": 112,
+        "date": "Feb 15, 2024",
+        "show": true
+      },
+      {
+        "title": "Art Exhibition",
+        "cover": "https://images.unsplash.com/photo-1563089145-599997674d42?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "count": 76,
+        "date": "Mar 10, 2024",
+        "show": true
+      }
+    ]
+  },
+  "gallery": {
+    "show": true,
+    "title": "Recent Photos & Videos",
+    "subtitle": "Latest captures from school events and activities",
+    "categories": [
+      {
+        "id": "events",
+        "name": "School Events",
+        "show": true
+      },
+      {
+        "id": "sports",
+        "name": "Sports",
+        "show": true
+      },
+      {
+        "id": "academic",
+        "name": "Academic",
+        "show": true
+      },
+      {
+        "id": "cultural",
+        "name": "Cultural",
+        "show": true
+      },
+      {
+        "id": "campus",
+        "name": "Campus Life",
+        "show": true
+      }
+    ],
+    "items": [
+      {
+        "type": "image",
+        "title": "Annual Day Performance",
+        "category": "events",
+        "date": "Nov 20, 2023",
+        "description": "Students performing at the annual cultural festival",
+        "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 124,
+        "views": 568,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Basketball Championship Finals",
+        "category": "sports",
+        "date": "Feb 28, 2024",
+        "description": "Intense moments from the school basketball championship finals",
+        "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 89,
+        "views": 342,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Athletics Meet 2024",
+        "category": "sports",
+        "date": "Mar 15, 2024",
+        "description": "Students competing in various track and field events",
+        "image": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 67,
+        "views": 289,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Science Laboratory Research",
+        "category": "academic",
+        "date": "Jan 25, 2024",
+        "description": "Students conducting experiments in the science laboratory",
+        "image": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 92,
+        "views": 415,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Mathematics Olympiad Winners",
+        "category": "academic",
+        "date": "Feb 10, 2024",
+        "description": "Celebrating our mathematics olympiad champions",
+        "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 78,
+        "views": 321,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Library Reading Session",
+        "category": "academic",
+        "date": "Mar 5, 2024",
+        "description": "Students engaged in focused reading sessions at the school library",
+        "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 56,
+        "views": 234,
+        "show": true
+      },
+      {
+        "type": "video",
+        "title": "Cultural Dance Performance",
+        "category": "cultural",
+        "date": "Nov 20, 2023",
+        "description": "Traditional dance performance during annual day celebrations",
+        "image": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 145,
+        "views": 623,
+        "show": true
+      },
+      {
+        "type": "image",
+        "title": "Campus Garden Project",
+        "category": "campus",
+        "date": "Mar 20, 2024",
+        "description": "Students working on the campus garden beautification project",
+        "image": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        "likes": 43,
+        "views": 187,
+        "show": true
+      }
+    ]
+  },
+  "statistics": {
+    "show": true,
+    "title": "Gallery Statistics",
+    "subtitle": "Our visual journey in numbers",
+    "items": [
+      {
+        "value": "5K+",
+        "label": "Photos",
+        "description": "Captured moments",
+        "show": true
+      },
+      {
+        "value": "250+",
+        "label": "Videos",
+        "description": "Recorded events",
+        "show": true
+      },
+      {
+        "value": "120+",
+        "label": "Events",
+        "description": "Documented activities",
+        "show": true
+      },
+      {
+        "value": "15K+",
+        "label": "Views",
+        "description": "Community engagements",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Share Your Moments",
+    "subtitle": "Contribute to our school gallery",
+    "buttons": [
+      {
+        "text": "Submit Photos",
+        "show": true
+      },
+      {
+        "text": "Request Access",
+        "show": true
+      }
+    ]
+  },
+  "labels": {
+    "show": true,
+    "bio": "Bio",
+    "responsibilities": "Responsibilities",
+    "achievements": "Achievements"
+  }
+}

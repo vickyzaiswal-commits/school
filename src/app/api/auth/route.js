@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-import bcrypt from "bcryptjs";
 
 const LOGIN_FILE_PATH = path.join(process.cwd(), "src/data/login.json");
 
 const FAILED_LOGINS = new Map();
 const MAX_ATTEMPTS = 5;
 const LOCK_TIME_MS = 15 * 60 * 1000;
-const DUMMY_HASH = bcrypt.hashSync("invalid_password_for_timing", 10);
-
 function recordFailedAttempt(key) {
   const now = Date.now();
   const entry = FAILED_LOGINS.get(key) || {
@@ -98,15 +95,13 @@ async function handleSignUp(body) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
     const newUser = {
       id: String(Date.now()),
       name,
       email: emailNormalized,
-      password: hashedPassword,
+      password,
       role: role || "user",
+      createdAt: new Date().toISOString(),
     };
 
     users.push(newUser);
@@ -161,7 +156,6 @@ async function handleLogin(body) {
 
     console.log("JSON user query result:", { user });
     if (!user) {
-      await bcrypt.compare(password, DUMMY_HASH);
       recordFailedAttempt(emailNormalized);
       return NextResponse.json(
         { message: "Invalid credentials" },
@@ -169,18 +163,7 @@ async function handleLogin(body) {
       );
     }
 
-    console.log(password, user.password);
-    
-    // Check password: support both plain text and bcrypt
-    let isPasswordValid = password === user.password;
-    if (!isPasswordValid) {
-      try {
-        isPasswordValid = await bcrypt.compare(password, user.password);
-      } catch (err) {
-        isPasswordValid = false;
-      }
-    }
-    console.log("Password validation result:", isPasswordValid);
+    const isPasswordValid = password === user.password;
 
     if (!isPasswordValid) {
       const updated = recordFailedAttempt(emailNormalized);
@@ -197,6 +180,11 @@ async function handleLogin(body) {
     }
 
     clearFailedAttempts(emailNormalized);
+
+    user.lastLogin = new Date().toISOString();
+    user.loginCount = (user.loginCount || 0) + 1;
+    await writeUsers(users);
+
     const userObj = { ...user };
     delete userObj.email;
     delete userObj.password;

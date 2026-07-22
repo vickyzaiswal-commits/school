@@ -1,4 +1,6 @@
 "use client";
+import defaultData from '@/data/forms.json';
+
 import React, { useState, useEffect } from 'react';
 import { 
   Download, Search, FileText, BookOpen, Users, Award, MapPin, Heart, Clock,
@@ -29,8 +31,8 @@ const categoryOptions = [
 ];
 
 const DownloadFormsPage = () => {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(defaultData);
+  const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editSection, setEditSection] = useState(null);
   const [editFormOpen, setEditFormOpen] = useState(false);
@@ -87,104 +89,13 @@ const DownloadFormsPage = () => {
     showCta: 'CTA Section'
   };
 
-  const defaultData = {
-    showHero: true,
-    showBenefits: true,
-    showCategories: true,
-    showForms: true,
-    showCta: true,
-    hero: {
-      show: true,
-      title: "Download Forms 2024-2025",
-      subtitle: "Access all school forms, applications and documents in one place",
-      height: "h-96",
-      showImage: true,
-      backgroundImage: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      stats: [
-        { value: "50+", label: "Forms Available", show: true },
-        { value: "15K+", label: "Total Downloads", show: true },
-        { value: "6", label: "Categories", show: true }
-      ],
-      ctaButton: { label: "Browse All Forms", show: true }
-    },
-    benefits: {
-      show: true,
-      title: "Why Use Our Forms Portal",
-      subtitle: "Streamlined access to all necessary documents for students, parents and staff",
-      items: [
-        { icon: "FileText", title: "Easy Access", description: "Download forms anytime, anywhere", show: true },
-        { icon: "Download", title: "Multiple Formats", description: "Available in PDF, DOCX, and more", show: true },
-        { icon: "Clock", title: "Up-to-Date", description: "Always the latest versions", show: true },
-        { icon: "Users", title: "For Everyone", description: "Forms for students, parents and staff", show: true }
-      ]
-    },
-    categories: {
-      show: true,
-      items: categoryOptions.map((cat) => ({
-        id: cat.id,
-        name: cat.name,
-        icon: cat.id === 'all' ? "FileText" : cat.id === 'admission' ? "BookOpen" : cat.id === 'academic' ? "Award" : "Users",
-        count: 0,
-        show: true
-      }))
-    },
-    forms: {
-      show: true,
-      title: "Available Forms & Documents",
-      subtitle: "Search and download any form instantly",
-      noResultsTitle: "No forms found",
-      noResultsSubtitle: "Try adjusting your search or category",
-      items: [
-        { id: 1, title: "Admission Application Form 2025-26", category: "admission", description: "Complete application for new student enrollment", format: "PDF", size: "2.1 MB", fileUrl: "", downloads: 1847, icon: "FileText", show: true },
-        { id: 2, title: "Medical & Health Declaration", category: "medical", description: "Required health information and medical history form", format: "PDF/DOCX", size: "1.8 MB", fileUrl: "", downloads: 923, icon: "Heart", show: true },
-        { id: 3, title: "Transport Request Form", category: "transport", description: "Apply for school bus service or route change", format: "PDF", size: "980 KB", fileUrl: "", downloads: 567, icon: "MapPin", show: true }
-      ]
-    },
-    cta: {
-      show: true,
-      title: "Can't Find the Form You Need?",
-      subtitle: "Our administrative team is ready to assist you",
-      buttons: [
-        { text: "Request a Form", link: "mailto:admin@school.com", show: true },
-        { text: "Contact Office", link: "/contact", show: true }
-      ]
-    }
-  };
+  
 
   useEffect(() => {
     setEditMode(role === 'admin');
   }, [role]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_downloads_data', {});
-        if (res.status === 200 && res.data?.length > 0) {
-          const raw = res.data[0].data;
-          let fetched = raw;
-          try {
-            if (raw?.encrypted) {
-              fetched = await decryptObject(raw);
-            } else if (typeof raw === 'string') {
-              fetched = JSON.parse(raw);
-            }
-          } catch (deErr) {
-            console.warn('Data decryption/parsing failed, using raw data', deErr);
-            fetched = raw;
-          }
-          setData({ ...defaultData, ...fetched });
-        } else {
-          setData(defaultData);
-        }
-      } catch (err) {
-        console.error(err);
-        setData(defaultData);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   const filteredCategories = data.categories?.items?.filter(c => c.show !== false) || [];
   const allForms = data.forms?.items?.filter(f => f.show !== false) || [];

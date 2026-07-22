@@ -1,4 +1,6 @@
 "use client";
+import defaultData from '@/data/contact-us.json';
+
 import React, { useState, useEffect } from 'react';
 import { 
   MapPin, Phone, Mail, Clock, Send, Facebook, Twitter, Instagram, Youtube,
@@ -16,205 +18,11 @@ const iconMap = {
   Edit, Trash2, Plus, X, Eye, EyeOff, Settings
 };
 
-const defaultData = {
-  showHero: true,
-  showContactMethods: true,
-  showVisitSection: true,
-  showDepartments: true,
-  showContactForm: true,
-  showFaqs: true,
-  showSocialMedia: true,
-  
-  hero: {
-    show: true,
-    title: "Contact Abc School",
-    subtitle: "We're here to answer your questions and help you connect with our school community. Reach out to us through any of the channels below.",
-    showImage: true,
-    backgroundImage: "https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    stats: [
-      { value: "24/7", label: "Email Support", show: true },
-      { value: "6", label: "Departments", show: true },
-      { value: "98%", label: "Response Rate", show: true }
-    ],
-    ctaButton: { 
-      label: "Send a Message", 
-      show: true,
-      link: "#contact-form"
-    },
-    secondaryButton: {
-      label: "Call Now",
-      show: true,
-      link: "tel:01123363462"
-    }
-  },
-  contactMethods: {
-    show: true,
-    title: "Contact Methods",
-    subtitle: "Choose the most convenient way to get in touch with us",
-    items: [
-      {
-        icon: "Phone",
-        title: "Phone",
-        details: ["011-2336-3462", "011-2336-3134"],
-        description: "Call us during school hours",
-        link: "tel:01123363462",
-        show: true
-      },
-      {
-        icon: "Mail",
-        title: "Email",
-        details: ["stcolumbas@stcolumbas.edu.in", "info@stcolumbas.edu.in"],
-        description: "We'll respond within 24 hours",
-        link: "mailto:stcolumbas@stcolumbas.edu.in",
-        show: true
-      },
-      {
-        icon: "MapPin",
-        title: "Address",
-        details: ["1, Ashok Place", "Birgunj - 110001"],
-        description: "Visit our campus",
-        link: "https://maps.google.com/?q=St.+Columba's+School+Ashok+Place+New+Delhi",
-        show: true
-      },
-      {
-        icon: "Clock",
-        title: "Office Hours",
-        details: ["Mon-Fri: 8:00 AM - 4:00 PM", "Sat: 8:00 AM - 12:00 PM"],
-        description: "Reception remains open during these hours",
-        link: null,
-        show: true
-      }
-    ]
-  },
-  visitSection: {
-    show: true,
-    title: "Visit Our Campus",
-    description: "Our school is located in the heart of Birgunj, easily accessible by public and private transport. We welcome visitors during school hours with prior appointment.",
-    directions: {
-      title: "Directions",
-      items: [
-        "Nearest Metro: Rajiv Chowk (Yellow Line) - 1.5km",
-        "Nearest Bus Stop: Ashok Road - 200m",
-        "Parking available for visitors"
-      ]
-    },
-    bestTime: {
-      title: "Best Time to Visit",
-      description: "For campus tours and meetings with administration, we recommend scheduling your visit between 9:00 AM and 2:00 PM on weekdays."
-    },
-    buttonText: "Get Directions",
-    buttonLink: "https://maps.google.com/?q=St.+Columba's+School+Ashok+Place+New+Delhi",
-    mapEmbedUrl: "https://www.google.com/maps?q=St.+Columba's+School+Ashok+Place+New+Delhi&output=embed"
-  },
-  departments: {
-    show: true,
-    title: "Department Contacts",
-    subtitle: "Connect directly with the relevant department for specific inquiries",
-    items: [
-      {
-        id: 'general',
-        name: 'General Inquiries',
-        email: 'info@stcolumbas.edu.in',
-        phone: '011-2336-3462',
-        show: true
-      },
-      {
-        id: 'admissions',
-        name: 'Admissions',
-        email: 'admissions@stcolumbas.edu.in',
-        phone: '011-2336-3462 Ext. 101',
-        show: true
-      },
-      {
-        id: 'academics',
-        name: 'Academic Affairs',
-        email: 'academics@stcolumbas.edu.in',
-        phone: '011-2336-3462 Ext. 102',
-        show: true
-      },
-      {
-        id: 'accounts',
-        name: 'Accounts & Fees',
-        email: 'accounts@stcolumbas.edu.in',
-        phone: '011-2336-3462 Ext. 103',
-        show: true
-      },
-      {
-        id: 'transport',
-        name: 'Transport',
-        email: 'transport@stcolumbas.edu.in',
-        phone: '011-2336-3462 Ext. 104',
-        show: true
-      },
-      {
-        id: 'sports',
-        name: 'Sports Department',
-        email: 'sports@stcolumbas.edu.in',
-        phone: '011-2336-3462 Ext. 105',
-        show: true
-      }
-    ]
-  },
-  contactForm: {
-    show: true,
-    title: "Send us a Message",
-    description: "Fill out the form and we'll get back to you as soon as possible. For urgent matters, please call us directly.",
-    responseTime: "Within 24-48 hours",
-    officeHours: "Mon-Fri: 8AM-4PM, Sat: 8AM-12PM",
-    successMessage: {
-      title: "Message Sent Successfully!",
-      description: "Thank you for contacting us. We'll get back to you shortly."
-    }
-  },
-  faqs: {
-    show: true,
-    title: "Frequently Asked Questions",
-    subtitle: "Quick answers to common questions we receive",
-    items: [
-      {
-        question: "What are the school office hours?",
-        answer: "Our administrative office is open Monday to Friday from 8:00 AM to 4:00 PM, and on Saturdays from 8:00 AM to 12:00 PM.",
-        show: true
-      },
-      {
-        question: "How can I schedule a campus tour?",
-        answer: "You can schedule a campus tour by contacting our admissions office at admissions@stcolumbas.edu.in or by calling 011-2336-3462 Ext. 101 at least 48 hours in advance.",
-        show: true
-      },
-      {
-        question: "Who should I contact for academic records?",
-        answer: "For academic records and transcripts, please contact the academic affairs department at academics@stcolumbas.edu.in with your student details and requirements.",
-        show: true
-      },
-      {
-        question: "How do I report my child's absence?",
-        answer: "Please call the school reception at 011-2336-3462 before 9:00 AM on the day of absence, or send an email to your child's class teacher with the reason for absence.",
-        show: true
-      }
-    ]
-  },
-  socialMedia: {
-    show: true,
-    title: "Connect With Us",
-    subtitle: "Follow our social media channels to stay updated with school news, events, and activities",
-    newsletter: {
-      title: "School Newsletter",
-      description: "Subscribe to our monthly newsletter for updates on school events, achievements, and important announcements.",
-      placeholder: "Your email address",
-      buttonText: "Subscribe"
-    },
-    platforms: [
-      { icon: "Facebook", name: 'Facebook', color: 'text-blue-400', show: true },
-      { icon: "Twitter", name: 'Twitter', color: 'text-blue-300', show: true },
-      { icon: "Instagram", name: 'Instagram', color: 'text-pink-400', show: true },
-      { icon: "Youtube", name: 'YouTube', color: 'text-red-400', show: true }
-    ]
-  }
-};
+
 
 const ContactUsPage = () => {
   const [data, setData] = useState(defaultData);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState(data.departments.items.find(dept => dept.show !== false)?.id || 'general');
   const [formData, setFormData] = useState({
@@ -291,36 +99,7 @@ const ContactUsPage = () => {
     setEditMode(role === 'admin');
   }, [role]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_contact_data', {});
-        if (res.status === 200 && res.data?.length > 0) {
-          const raw = res.data[0].data;
-          let fetched = raw;
-          try {
-            if (raw?.encrypted) {
-              fetched = await decryptObject(raw);
-            } else if (typeof raw === 'string') {
-              fetched = JSON.parse(raw);
-            }
-          } catch (deErr) {
-            console.warn('Data decryption/parsing failed, using raw data', deErr);
-            fetched = raw;
-          }
-          setData({ ...defaultData, ...fetched });
-        } else {
-          setData(defaultData);
-        }
-      } catch (err) {
-        console.error(err);
-        setData(defaultData);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   const toggleSectionVisibility = (key) => setData(prev => ({ ...prev, [key]: !prev[key] }));
   

@@ -1,0 +1,488 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Senior School",
+    "subtitle": "Preparing future leaders for academic excellence and professional success in Classes XI-XII",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true,
+    "cta": {
+      "text": "Download Senior School Prospectus",
+      "show": true,
+      "href": "#"
+    }
+  },
+  "tabs": [
+    {
+      "id": "overview",
+      "name": "Overview",
+      "icon": "BookOpen",
+      "show": true
+    },
+    {
+      "id": "streams",
+      "name": "Academic Streams",
+      "icon": "Target",
+      "show": true
+    },
+    {
+      "id": "curriculum",
+      "name": "Curriculum",
+      "icon": "GraduationCap",
+      "show": true
+    },
+    {
+      "id": "career",
+      "name": "Career Guidance",
+      "icon": "Briefcase",
+      "show": true
+    }
+  ],
+  "introduction": {
+    "show": true,
+    "title": "Welcome to Senior School",
+    "description": "Our Senior School program (Classes XI-XII) provides specialized education through three academic streams, preparing students for higher education and professional careers. We offer a rigorous curriculum, expert faculty guidance, and comprehensive support for competitive examinations and university admissions.",
+    "stats": [
+      {
+        "icon": "Users",
+        "value": "25:1",
+        "label": "Student-Teacher Ratio",
+        "show": true
+      },
+      {
+        "icon": "Clock",
+        "value": "8:00 AM - 3:30 PM",
+        "label": "Daily Schedule",
+        "show": true
+      },
+      {
+        "icon": "GraduationCap",
+        "value": "Subject Expert",
+        "label": "Faculty",
+        "show": true
+      },
+      {
+        "icon": "Star",
+        "value": "100%",
+        "label": "Board Pass Rate",
+        "show": true
+      }
+    ],
+    "teachingApproach": [
+      {
+        "icon": "Lightbulb",
+        "title": "Conceptual Mastery",
+        "description": "Deep understanding of fundamental concepts through advanced pedagogical approaches",
+        "show": true
+      },
+      {
+        "icon": "Brain",
+        "title": "Critical Analysis",
+        "description": "Developing analytical skills and higher-order thinking for competitive examinations",
+        "show": true
+      },
+      {
+        "icon": "Target",
+        "title": "Exam Preparation",
+        "description": "Comprehensive preparation for board exams and competitive entrance tests",
+        "show": true
+      },
+      {
+        "icon": "Briefcase",
+        "title": "Career Readiness",
+        "description": "Developing skills and knowledge required for university education and professional careers",
+        "show": true
+      }
+    ]
+  },
+  "academicStreams": {
+    "show": true,
+    "title": "Academic Streams",
+    "description": "Specialized pathways designed to prepare students for higher education and careers",
+    "streams": [
+      {
+        "id": "science",
+        "name": "Science Stream",
+        "icon": "Microscope",
+        "description": "For students aspiring to pursue careers in engineering, medicine, research, and technology",
+        "subjects": [
+          {
+            "name": "Physics",
+            "icon": "Atom",
+            "show": true
+          },
+          {
+            "name": "Chemistry",
+            "icon": "FlaskRound",
+            "show": true
+          },
+          {
+            "name": "Mathematics",
+            "icon": "Calculator",
+            "show": true
+          },
+          {
+            "name": "Biology",
+            "icon": "Eye",
+            "show": true
+          },
+          {
+            "name": "Computer Science",
+            "icon": "Code",
+            "show": true
+          },
+          {
+            "name": "English Core",
+            "icon": "Book",
+            "show": true
+          }
+        ],
+        "careerPathways": [
+          "Engineering (Various Specializations)",
+          "Medical Sciences (MBBS, Dentistry, Nursing)",
+          "Pure Sciences (Physics, Chemistry, Biology)",
+          "Research and Development",
+          "Technology and IT Services",
+          "Defense Services"
+        ],
+        "show": true
+      },
+      {
+        "id": "commerce",
+        "name": "Commerce Stream",
+        "icon": "BarChart3",
+        "description": "For students interested in business, finance, accounting, and economics",
+        "subjects": [
+          {
+            "name": "Accountancy",
+            "icon": "FileText",
+            "show": true
+          },
+          {
+            "name": "Business Studies",
+            "icon": "Briefcase",
+            "show": true
+          },
+          {
+            "name": "Economics",
+            "icon": "Globe",
+            "show": true
+          },
+          {
+            "name": "Mathematics",
+            "icon": "Calculator",
+            "show": true
+          },
+          {
+            "name": "Informatics Practices",
+            "icon": "Code",
+            "show": true
+          },
+          {
+            "name": "English Core",
+            "icon": "Book",
+            "show": true
+          }
+        ],
+        "careerPathways": [
+          "Chartered Accountancy (CA)",
+          "Company Secretary (CS)",
+          "Business Management (BBA, MBA)",
+          "Economics and Finance",
+          "Banking and Insurance",
+          "Entrepreneurship"
+        ],
+        "show": true
+      },
+      {
+        "id": "humanities",
+        "name": "Humanities Stream",
+        "icon": "Landmark",
+        "description": "For students passionate about social sciences, languages, arts, and humanities",
+        "subjects": [
+          {
+            "name": "History",
+            "icon": "Book",
+            "show": true
+          },
+          {
+            "name": "Political Science",
+            "icon": "Landmark",
+            "show": true
+          },
+          {
+            "name": "Economics",
+            "icon": "Globe",
+            "show": true
+          },
+          {
+            "name": "Psychology",
+            "icon": "Brain",
+            "show": true
+          },
+          {
+            "name": "Geography",
+            "icon": "Globe",
+            "show": true
+          },
+          {
+            "name": "English Core",
+            "icon": "Book",
+            "show": true
+          }
+        ],
+        "careerPathways": [
+          "Law and Judiciary",
+          "Civil Services",
+          "Journalism and Mass Communication",
+          "Psychology and Counseling",
+          "Social Work and Research",
+          "Arts and Design"
+        ],
+        "show": true
+      }
+    ],
+    "specialPrograms": [
+      {
+        "icon": "Microscope",
+        "title": "Advanced Science Program",
+        "description": "Research projects, Olympiad training, and advanced laboratory work",
+        "show": true
+      },
+      {
+        "icon": "BarChart3",
+        "title": "Commerce Excellence",
+        "description": "Stock market simulations, business case studies, and financial literacy programs",
+        "show": true
+      },
+      {
+        "icon": "Landmark",
+        "title": "Humanities Research",
+        "description": "Social research projects, debate competitions, and model United Nations",
+        "show": true
+      },
+      {
+        "icon": "Code",
+        "title": "Technology Innovation",
+        "description": "Advanced programming, robotics, and technology development projects",
+        "show": true
+      }
+    ]
+  },
+  "curriculum": {
+    "show": true,
+    "title": "Senior School Curriculum",
+    "description": "Rigorous academic program aligned with CBSE guidelines and competitive exam requirements",
+    "assessmentStructure": [
+      {
+        "component": "Unit Tests",
+        "weightage": "10%",
+        "description": "Regular assessment of individual units and chapters",
+        "show": true
+      },
+      {
+        "component": "Practical Examinations",
+        "weightage": "20%",
+        "description": "Laboratory work, projects, and practical application",
+        "show": true
+      },
+      {
+        "component": "Mid-Term Examinations",
+        "weightage": "30%",
+        "description": "Comprehensive assessment of half-yearly syllabus",
+        "show": true
+      },
+      {
+        "component": "Board Examinations",
+        "weightage": "40%",
+        "description": "Final CBSE board examinations at end of Class XII",
+        "show": true
+      }
+    ],
+    "academicSupport": [
+      {
+        "title": "Remedial Classes",
+        "description": "Additional support for students needing extra help in specific subjects",
+        "show": true
+      },
+      {
+        "title": "Advanced Placement",
+        "description": "Enrichment programs for high-achieving students seeking additional challenges",
+        "show": true
+      },
+      {
+        "title": "Study Groups",
+        "description": "Peer learning and collaborative study sessions",
+        "show": true
+      },
+      {
+        "title": "Faculty Mentoring",
+        "description": "One-on-one guidance from subject teachers and mentors",
+        "show": true
+      }
+    ],
+    "dailySchedule": {
+      "title": "Typical Daily Schedule",
+      "show": true,
+      "schedule": [
+        {
+          "time": "8:00 AM",
+          "activity": "Assembly & Morning Briefing",
+          "show": true
+        },
+        {
+          "time": "8:15 AM",
+          "activity": "Period 1: Core Subject",
+          "show": true
+        },
+        {
+          "time": "9:00 AM",
+          "activity": "Period 2: Core Subject",
+          "show": true
+        },
+        {
+          "time": "9:45 AM",
+          "activity": "Period 3: Core Subject",
+          "show": true
+        },
+        {
+          "time": "10:30 AM",
+          "activity": "Short Break",
+          "show": true
+        },
+        {
+          "time": "10:45 AM",
+          "activity": "Period 4: Core Subject",
+          "show": true
+        },
+        {
+          "time": "11:30 AM",
+          "activity": "Period 5: Elective/Additional",
+          "show": true
+        },
+        {
+          "time": "12:15 PM",
+          "activity": "Lunch Break",
+          "show": true
+        },
+        {
+          "time": "1:00 PM",
+          "activity": "Period 6: Practical/Lab",
+          "show": true
+        },
+        {
+          "time": "1:45 PM",
+          "activity": "Period 7: Revision/Remedial",
+          "show": true
+        },
+        {
+          "time": "2:30 PM",
+          "activity": "Period 8: Test/Assessment",
+          "show": true
+        },
+        {
+          "time": "3:15 PM",
+          "activity": "Dispersal/Extra Help Sessions",
+          "show": true
+        }
+      ]
+    }
+  },
+  "careerGuidance": {
+    "show": true,
+    "title": "Career Guidance & University Placement",
+    "description": "Comprehensive support for career planning and higher education admissions",
+    "services": [
+      {
+        "icon": "GraduationCap",
+        "title": "University Counseling",
+        "description": "Personalized guidance for college selection and admission processes",
+        "show": true
+      },
+      {
+        "icon": "Briefcase",
+        "title": "Career Workshops",
+        "description": "Sessions with industry professionals and career experts",
+        "show": true
+      },
+      {
+        "icon": "FileText",
+        "title": "Entrance Exam Preparation",
+        "description": "Specialized coaching for JEE, NEET, CLAT, and other competitive exams",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Alumni Mentorship",
+        "description": "Guidance from successful alumni in various professional fields",
+        "show": true
+      }
+    ],
+    "placementRecord": [
+      {
+        "university": "IITs & NITs",
+        "count": "45+ placements",
+        "icon": "GraduationCap",
+        "show": true
+      },
+      {
+        "university": "Medical Colleges",
+        "count": "30+ placements",
+        "icon": "Heart",
+        "show": true
+      },
+      {
+        "university": "Law Schools",
+        "count": "25+ placements",
+        "icon": "Scale",
+        "show": true
+      },
+      {
+        "university": "Business Schools",
+        "count": "40+ placements",
+        "icon": "Briefcase",
+        "show": true
+      },
+      {
+        "university": "Foreign Universities",
+        "count": "20+ placements",
+        "icon": "Globe",
+        "show": true
+      }
+    ],
+    "universityPartners": [
+      "Delhi University",
+      "IIT Delhi",
+      "AIIMS",
+      "SRCC",
+      "NLU Delhi",
+      "IIM Indore",
+      "BITS Pilani",
+      "University of Toronto"
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Begin Your Journey to Excellence",
+    "description": "Join our senior school program and take the first step toward your dream career with our comprehensive academic and career guidance.",
+    "primaryCta": {
+      "text": "Apply for Admission",
+      "show": true,
+      "href": "/admissions"
+    },
+    "secondaryCta": {
+      "text": "Download Stream Selection Guide",
+      "show": true,
+      "href": "/streams"
+    }
+  },
+  "layout": {
+    "showHero": true,
+    "showTabs": true,
+    "showIntroduction": true,
+    "showAcademicStreams": true,
+    "showCurriculum": true,
+    "showCareerGuidance": true,
+    "showCta": true
+  }
+}

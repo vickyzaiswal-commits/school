@@ -36,8 +36,8 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
-import { encryptObject, decryptObject } from '@/utils/encryption';
 import Image from 'next/image';
+import feesData from '@/data/fees.json';
 
 const FeesPage = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -57,19 +57,7 @@ const FeesPage = () => {
         if (!raw) { setRole(null); return; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn('Failed to decrypt stored ecareUser', e);
-            setRole(null);
-            return;
-          }
-        }
-        const user = parsed.user || parsed;
+        const user = parsed?.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
         console.warn('Failed to read stored user for role detection', err);
@@ -79,186 +67,6 @@ const FeesPage = () => {
     initRole();
   }, []);
 
-  // Default data structure - Consistent with MiddleSchoolPage
-  const defaultData = {
-    hero: {
-      show: true,
-      title: "Fee Structure & Payment",
-      subtitle: "Transparent and comprehensive fee information for academic year 2024-25",
-      height: "h-96",
-      backgroundImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      backgroundImageShow: true,
-      primaryCta: { text: "Pay Fees Online", show: true, href: "#payment" },
-      secondaryCta: { text: "Download Fee Structure", show: true, href: "" }
-    },
-    feeStructure: {
-      show: true,
-      title: "Detailed Fee Structure",
-      description: "Breakdown of all fees and charges for different grade levels",
-      feeCategories: [
-        { id: 'tuition', name: 'Tuition Fee', description: 'Monthly academic charges', show: true },
-        { id: 'development', name: 'Development Fee', description: 'Annual infrastructure charge', show: true },
-        { id: 'annual', name: 'Annual Charges', description: 'Yearly administrative costs', show: true },
-        { id: 'activity', name: 'Activity Fee', description: 'Co-curricular activities', show: true }
-      ],
-      gradeLevels: {
-        nursery: { label: 'Pre-School (Nursery, KG)', tuition: 8000, development: 5000, annual: 3000, activity: 2000, show: true },
-        primary: { label: 'Primary (Classes I-V)', tuition: 9000, development: 6000, annual: 3500, activity: 2500, show: true },
-        middle: { label: 'Middle School (Classes VI-VIII)', tuition: 10000, development: 7000, annual: 4000, activity: 3000, show: true },
-        secondary: { label: 'Secondary (Classes IX-X)', tuition: 12000, development: 8000, annual: 5000, activity: 3500, show: true },
-        senior: { label: 'Senior Secondary (Classes XI-XII)', tuition: 14000, development: 10000, annual: 6000, activity: 4000, show: true }
-      }
-    },
-    additionalCharges: {
-      show: true,
-      title: "Additional Charges (Optional)",
-      charges: [
-        { name: 'Transportation', amount: '₹2,000 - ₹4,000', description: 'Based on distance from school', show: true },
-        { name: 'Meals', amount: '₹1,500', description: 'Optional monthly meal plan', show: true },
-        { name: 'Uniform', amount: '₹3,500', description: 'One-time purchase (2 sets)', show: true },
-        { name: 'Books & Stationery', amount: '₹2,000 - ₹5,000', description: 'Varies by grade level', show: true },
-        { name: 'Examination', amount: '₹500 - ₹1,000', description: 'Per term', show: true }
-      ]
-    },
-    paymentSchedule: {
-      show: true,
-      title: "Payment Schedule 2024-25",
-      terms: [
-        { term: 'Term I', dueDate: 'April 10, 2024', amount: '40% of annual fees', status: 'Upcoming', show: true },
-        { term: 'Term II', dueDate: 'August 10, 2024', amount: '30% of annual fees', status: 'Upcoming', show: true },
-        { term: 'Term III', dueDate: 'December 10, 2024', amount: '30% of annual fees', status: 'Upcoming', show: true }
-      ],
-      latePolicy: {
-        show: true,
-        title: "Late Payment Policy",
-        description: "A late fee of ₹100 per day will be charged after the due date. After 15 days, students may not be permitted to attend classes until outstanding fees are cleared."
-      }
-    },
-    paymentMethods: {
-      show: true,
-      title: "Payment Methods",
-      methods: [
-        {
-          method: 'Online Payment',
-          icon: 'CreditCard',
-          description: 'Secure online payment gateway',
-          options: ['Credit/Debit Cards', 'Net Banking', 'UPI', 'Wallet'],
-          show: true
-        },
-        {
-          method: 'Bank Transfer',
-          icon: 'Building',
-          description: 'Direct bank transfer to school account',
-          options: ['NEFT', 'RTGS', 'IMPS'],
-          show: true
-        },
-        {
-          method: 'Cheque/DD',
-          icon: 'Receipt',
-          description: 'Payable to St. Columba\'s School',
-          options: ['At par cheques only', 'Demand Draft'],
-          show: true
-        },
-        {
-          method: 'Cash Payment',
-          icon: 'Banknote',
-          description: 'In-person payment at accounts office',
-          options: ['During office hours', 'Receipt provided immediately'],
-          show: true
-        }
-      ],
-      instructions: {
-        show: true,
-        title: "Secure Online Payment Instructions",
-        steps: [
-          "Visit our school portal and login to your account",
-          "Navigate to the 'Fee Payment' section",
-          "Select the term and verify the amount due",
-          "Choose your preferred payment method",
-          "Complete the secure payment process",
-          "Download and save the payment receipt"
-        ]
-      }
-    },
-    scholarships: {
-      show: true,
-      title: "Scholarships & Financial Aid",
-      description: "Financial support options for deserving students",
-      scholarships: [
-        { name: 'Academic Excellence Scholarship', discount: 'Up to 25%', criteria: '95%+ in previous final exams', show: true },
-        { name: 'Sibling Discount', discount: '5%', criteria: 'For second child from same family', show: true },
-        { name: 'Alumni Scholarship', discount: '10%', criteria: 'Children of St. Columba\'s alumni', show: true },
-        { name: 'Sports Scholarship', discount: 'Up to 50%', criteria: 'State/National level sports achievements', show: true }
-      ],
-      cta: { text: "Download Financial Aid Form", show: true, href: "" },
-      needBased: {
-        show: true,
-        title: "Need-Based Financial Assistance",
-        description: "We offer limited need-based financial assistance for economically challenged families with academically outstanding students. Applications are reviewed confidentially on a case-by-case basis."
-      }
-    },
-    faqs: {
-      show: true,
-      title: "Frequently Asked Questions",
-      items: [
-        {
-          question: "What is included in the tuition fee?",
-          answer: "Tuition fee covers regular academic instruction, use of laboratory facilities, library access, and basic stationery. It does not include transportation, meals, uniforms, or special activities.",
-          show: true
-        },
-        {
-          question: "Are there any hidden charges?",
-          answer: "No, all fees are clearly communicated upfront. Additional charges only apply for optional services like transportation, meals, and specific extracurricular activities that parents choose to enroll their children in.",
-          show: true
-        },
-        {
-          question: "What is the development fee used for?",
-          answer: "The development fee is used for infrastructure maintenance, technology upgrades, facility improvements, and campus development projects that benefit all students.",
-          show: true
-        },
-        {
-          question: "Can fees be paid in installments?",
-          answer: "Yes, we offer quarterly payment options. The annual fee is divided into three terms with due dates in April, August, and December.",
-          show: true
-        },
-        {
-          question: "What is the policy for late fee payment?",
-          answer: "A late fee of ₹100 per day is applicable after the due date. After 15 days, students may not be permitted to attend classes until fees are cleared.",
-          show: true
-        },
-        {
-          question: "Are fees refundable if a student withdraws?",
-          answer: "Tuition fees are refundable on a pro-rata basis. Development and annual charges are non-refundable once the academic term has begun.",
-          show: true
-        }
-      ]
-    },
-    contact: {
-      show: true,
-      title: "Accounts Office Contact",
-      info: [
-        { icon: "Mail", content: "accounts@stcolumbas.edu.in", show: true },
-        { icon: "Phone", content: "011-2336-3462 (Ext. 120)", show: true },
-        { icon: "Clock", content: "Monday-Friday: 9:00 AM - 4:00 PM", show: true },
-        { icon: "HelpCircle", content: "Saturday: 9:00 AM - 12:00 PM (Fee related queries only)", show: true }
-      ],
-      resources: [
-        { label: "Download Fee Structure PDF", icon: "Download", href: "", show: true },
-        { label: "Payment Receipt Download", icon: "Receipt", href: "", show: true },
-        { label: "Fee Payment Policy", icon: "FileText", href: "", show: true }
-      ]
-    },
-    layout: {
-      showHero: true,
-      showFeeStructure: true,
-      showAdditionalCharges: true,
-      showPaymentSchedule: true,
-      showPaymentMethods: true,
-      showScholarships: true,
-      showFaqs: true,
-      showContact: true
-    }
-  };
 
   // Icon mapping
   const iconMap = {
@@ -314,7 +122,7 @@ const FeesPage = () => {
   ];
 
   // Initialize data
-  const [data, setData] = useState(defaultData);
+  const [data, setData] = useState(feesData);
   const [selectedGrade, setSelectedGrade] = useState('primary');
   const [selectedTerm, setSelectedTerm] = useState('term1');
   const [openFaq, setOpenFaq] = useState(null);
@@ -339,42 +147,7 @@ const FeesPage = () => {
   }, [role]);
 
   // Fetch data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_fees_data', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.data || {};
-          try {
-            if (fetchedData && fetchedData.encrypted) {
-              fetchedData = await decryptObject(fetchedData);
-            } else if (typeof fetchedData === 'string') {
-              try {
-                fetchedData = JSON.parse(fetchedData);
-              } catch (e) {
-                console.warn('Failed to parse fetchedData string, using default', e);
-                fetchedData = {};
-              }
-            }
-          } catch (e) {
-            console.warn('Decryption failed, falling back to raw data or default', e);
-            try {
-              if (typeof fetchedData === 'string') fetchedData = JSON.parse(fetchedData);
-            } catch (err) {
-              fetchedData = {};
-            }
-          }
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-          setData(defaultData);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setData(defaultData);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   // IntersectionObserver
   useEffect(() => {
@@ -513,8 +286,7 @@ const FeesPage = () => {
       };
 
       try {
-        const encrypted = await encryptObject(payload);
-        const save_data = await apiRequest('save_data/save_fees_data', { payload: encrypted });
+        const save_data = await apiRequest('save_data/save_fees_data', { payload });
         
         if (save_data.status === 200) {
           setData(updatedData);
@@ -522,7 +294,7 @@ const FeesPage = () => {
           console.error('Save failed:', save_data);
         }
       } catch (err) {
-        console.error('Save/Encryption error:', err);
+        console.error('Save error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -560,15 +332,14 @@ const FeesPage = () => {
       };
 
       try {
-        const encrypted = await encryptObject(payload);
-        const save_data = await apiRequest('save_data/save_fees_data', { payload: encrypted });
+        const save_data = await apiRequest('save_data/save_fees_data', { payload });
         if (save_data.status === 200) {
           setData(updatedData);
         } else {
           console.error('Save failed:', save_data);
         }
       } catch (err) {
-        console.error('Save/Encryption error:', err);
+        console.error('Save error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);

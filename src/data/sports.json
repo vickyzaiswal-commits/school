@@ -1,0 +1,430 @@
+{
+  "hero": {
+    "show": true,
+    "title": "Sports & Athletics",
+    "subtitle": "Excellence in sportsmanship, teamwork, and athletic achievement",
+    "stats": [
+      {
+        "value": "25+",
+        "label": "Sports Disciplines",
+        "show": true
+      },
+      {
+        "value": "50+",
+        "label": "Championship Titles",
+        "show": true
+      },
+      {
+        "value": "300+",
+        "label": "Student Athletes",
+        "show": true
+      }
+    ],
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1509223197845-458d87318791?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true
+  },
+  "sportsCategories": {
+    "show": true,
+    "title": "Sports Programs",
+    "items": [
+      {
+        "id": "all",
+        "name": "All Sports",
+        "icon": "Activity",
+        "show": true
+      },
+      {
+        "id": "team",
+        "name": "Team Sports",
+        "icon": "Users",
+        "show": true
+      },
+      {
+        "id": "individual",
+        "name": "Individual Sports",
+        "icon": "Target",
+        "show": true
+      },
+      {
+        "id": "aquatics",
+        "name": "Aquatics",
+        "icon": "Play",
+        "show": true
+      },
+      {
+        "id": "indoor",
+        "name": "Indoor Games",
+        "icon": "Shield",
+        "show": true
+      }
+    ]
+  },
+  "teamSports": {
+    "show": true,
+    "title": "Team Sports",
+    "teams": [
+      {
+        "id": "basketball",
+        "name": "Basketball",
+        "icon": "Trophy",
+        "coach": "Mr. Rajesh Kumar",
+        "achievements": [
+          "State Champions 2023",
+          "Inter-School Tournament Winners",
+          "5 District Titles"
+        ],
+        "schedule": "Monday, Wednesday, Friday (4:00 PM - 6:00 PM)",
+        "members": "25 players (Senior & Junior teams)",
+        "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2090&q=80",
+        "button": {
+          "label": "Join Team Tryouts",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "id": "cricket",
+        "name": "Cricket",
+        "icon": "Medal",
+        "coach": "Mr. Vikram Singh",
+        "achievements": [
+          "National Quarter-finalists",
+          "City Champions 2023",
+          "Best Batsman Award"
+        ],
+        "schedule": "Tuesday, Thursday, Saturday (3:30 PM - 6:00 PM)",
+        "members": "30 players (Under-14, Under-16, Under-19)",
+        "image": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "button": {
+          "label": "Join Team Tryouts",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "id": "football",
+        "name": "Football",
+        "icon": "Award",
+        "coach": "Ms. Priya Sharma",
+        "achievements": [
+          "Regional Champions",
+          "Fair Play Award 2023",
+          "3 Tournament Wins"
+        ],
+        "schedule": "Monday, Wednesday, Friday (4:00 PM - 6:00 PM)",
+        "members": "28 players (Junior & Senior divisions)",
+        "image": "https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
+        "button": {
+          "label": "Join Team Tryouts",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "id": "swimming",
+        "name": "Swimming",
+        "icon": "Play",
+        "coach": "Mr. Anil Mehta",
+        "achievements": [
+          "State Level Medalists",
+          "10 School Records",
+          "National Qualifiers"
+        ],
+        "schedule": "Daily (6:00 AM - 8:00 AM & 4:00 PM - 6:00 PM)",
+        "members": "20 swimmers (Competitive squad)",
+        "image": "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "button": {
+          "label": "Join Team Tryouts",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      }
+    ]
+  },
+  "individualSports": {
+    "show": true,
+    "title": "Individual Sports",
+    "items": [
+      {
+        "name": "Athletics",
+        "description": "Track and field events including sprints, long distance, jumps, and throws",
+        "achievements": [
+          "50+ medals in district meets",
+          "10 school records broken",
+          "State level champions"
+        ],
+        "icon": "TrendingUp",
+        "show": true
+      },
+      {
+        "name": "Table Tennis",
+        "description": "Competitive table tennis with professional coaching",
+        "achievements": [
+          "City champions 2023",
+          "3 state level players",
+          "Inter-school tournament winners"
+        ],
+        "icon": "Target",
+        "show": true
+      },
+      {
+        "name": "Badminton",
+        "description": "Singles and doubles badminton training and competitions",
+        "achievements": [
+          "District champions",
+          "5 national level players",
+          "Annual tournament hosts"
+        ],
+        "icon": "Medal",
+        "show": true
+      },
+      {
+        "name": "Chess",
+        "description": "Strategic game development and competitive chess",
+        "achievements": [
+          "State chess champions",
+          "International rating players",
+          "Mind sports excellence"
+        ],
+        "icon": "Shield",
+        "show": true
+      }
+    ]
+  },
+  "facilities": {
+    "show": true,
+    "title": "World-Class Facilities",
+    "items": [
+      {
+        "name": "Olympic-size Swimming Pool",
+        "description": "25-meter pool with diving facilities and professional coaching",
+        "image": "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Basketball Courts",
+        "description": "4 professional courts with floodlights for evening practice",
+        "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2090&q=80",
+        "show": true
+      },
+      {
+        "name": "Cricket Ground",
+        "description": "Professional pitch with practice nets and bowling machines",
+        "image": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Football Field",
+        "description": "FIFA-standard turf field with professional goal posts",
+        "image": "https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
+        "show": true
+      },
+      {
+        "name": "Indoor Sports Complex",
+        "description": "Multi-purpose hall for badminton, table tennis, and martial arts",
+        "image": "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Athletics Track",
+        "description": "400-meter synthetic track with field event facilities",
+        "image": "https://images.unsplash.com/photo-1580261450046-d0a30080dc9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2091&q=80",
+        "show": true
+      }
+    ]
+  },
+  "upcomingEvents": {
+    "show": true,
+    "title": "Upcoming Sports Events",
+    "items": [
+      {
+        "date": "2024-04-15",
+        "title": "Annual Sports Day",
+        "time": "8:00 AM - 4:00 PM",
+        "venue": "School Grounds",
+        "description": "Annual sports meet with track and field events for all classes",
+        "button": {
+          "label": "Register",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "date": "2024-04-22",
+        "title": "Inter-School Basketball Tournament",
+        "time": "9:00 AM - 5:00 PM",
+        "venue": "Main Basketball Courts",
+        "description": "City level basketball competition hosting 12 schools",
+        "button": {
+          "label": "Register",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "date": "2024-05-05",
+        "title": "Swimming Gala",
+        "time": "8:00 AM - 12:00 PM",
+        "venue": "School Swimming Pool",
+        "description": "Annual swimming competition for different age groups",
+        "button": {
+          "label": "Register",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      },
+      {
+        "date": "2024-05-15",
+        "title": "Cricket League Finals",
+        "time": "2:00 PM - 6:00 PM",
+        "venue": "Main Cricket Ground",
+        "description": "Final match of the inter-house cricket tournament",
+        "button": {
+          "label": "Register",
+          "link": "#",
+          "show": true
+        },
+        "show": true
+      }
+    ]
+  },
+  "achievements": {
+    "show": true,
+    "title": "Sports Achievements",
+    "items": [
+      {
+        "year": "2023",
+        "items": [
+          "State Basketball Champions (Senior Boys)",
+          "National Swimming Competition - 3 Gold Medals",
+          "Inter-School Cricket Tournament Runners-up",
+          "District Athletics Meet - 15 Gold Medals"
+        ],
+        "show": true
+      },
+      {
+        "year": "2022",
+        "items": [
+          "Football Regional Champions",
+          "Table Tennis State Level Winners",
+          "Chess Tournament National Qualifiers",
+          "Best Sports School Award"
+        ],
+        "show": true
+      },
+      {
+        "year": "2021",
+        "items": [
+          "Basketball District Champions",
+          "Swimming State Records Broken",
+          "Athletics National Level Participation",
+          "Sports Excellence Award"
+        ],
+        "show": true
+      }
+    ]
+  },
+  "coaches": {
+    "show": true,
+    "title": "Our Coaching Staff",
+    "items": [
+      {
+        "name": "Mr. Rajesh Kumar",
+        "sport": "Basketball",
+        "qualification": "NIS Certified Coach",
+        "experience": "15 years",
+        "achievement": "Former National Player",
+        "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Ms. Priya Sharma",
+        "sport": "Football",
+        "qualification": "AIFF Certified Coach",
+        "experience": "12 years",
+        "achievement": "FFA Licensed Trainer",
+        "image": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Mr. Anil Mehta",
+        "sport": "Swimming",
+        "qualification": "Advanced Coaching Certification",
+        "experience": "20 years",
+        "achievement": "Olympic Training Program",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      },
+      {
+        "name": "Mr. Vikram Singh",
+        "sport": "Cricket",
+        "qualification": "BCCI Level 2 Coach",
+        "experience": "18 years",
+        "achievement": "Former First-Class Player",
+        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Join Our Sports Program",
+    "description": "Whether you're a beginner or an aspiring athlete, our sports programs offer something for everyone. Develop skills, build character, and be part of our winning tradition.",
+    "buttons": [
+      {
+        "label": "Register for Tryouts",
+        "link": "#",
+        "show": true
+      },
+      {
+        "label": "Contact Sports Department",
+        "link": "#",
+        "show": true
+      }
+    ]
+  },
+  "contact": {
+    "show": true,
+    "title": "Sports Department Contact",
+    "items": [
+      {
+        "icon": "Phone",
+        "label": "Phone",
+        "value": "011-2336-3462 (Ext. 220)",
+        "show": true
+      },
+      {
+        "icon": "Mail",
+        "label": "Email",
+        "value": "sports@stcolumbas.edu.in",
+        "show": true
+      },
+      {
+        "icon": "Clock",
+        "label": "Office Hours",
+        "value": "Mon-Fri: 8:00 AM - 5:00 PM",
+        "show": true
+      }
+    ]
+  },
+  "layout": {
+    "showHero": true,
+    "showSportsCategories": true,
+    "showTeamSports": true,
+    "showIndividualSports": true,
+    "showFacilities": true,
+    "showUpcomingEvents": true,
+    "showAchievements": true,
+    "showCoaches": true,
+    "showCta": true,
+    "showContact": true
+  }
+}

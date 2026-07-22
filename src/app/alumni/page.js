@@ -1,4 +1,6 @@
 "use client";
+import defaultData from '@/data/alumni.json';
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { 
@@ -12,133 +14,11 @@ const iconMap = {
   MapPin, Clock, Phone, Mail, ExternalLink, ChevronRight, ArrowRight, Users, Award, Globe, Heart, Building, Settings, X, Edit, Trash2, Plus
 };
 
-const defaultData = {
-  hero: {
-    show: true,
-    title: "Our Alumni Community",
-    subtitle: "Connecting generations of leaders, innovators, and change-makers",
-    backgroundImage: "https://images.unsplash.com/photo-1516321310762-479437144403?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    showImage: true,
-    latestHighlight: {
-      title: "Welcome Back to Alumni Portal – Yearbook Highlights",
-      date: "2025-12-01",
-      category: "Featured",
-      excerpt: "Check out our featured alumni stories and upcoming reunion events."
-    },
-    
-  },
-  introduction: {
-    show: true,
-    title: "A Legacy of Excellence",
-    description: "Our alumni form a vibrant global network, contributing to society through leadership, innovation, and service. Stay connected, share your achievements, and inspire the next generation.",
-    stats: [
-      { icon: "Users", value: "10,000+", label: "Alumni Worldwide", description: "A global network of graduates", show: true },
-      { icon: "Award", value: "50+", label: "Notable Alumni", description: "Leaders in various fields", show: true },
-      { icon: "Globe", value: "30+", label: "Countries Represented", description: "A diverse alumni community", show: true }
-    ]
-  },
-  alumniCategories: {
-    show: true,
-    items: [
-      { id: 'all', name: 'All Stories', icon: "Users", show: true },
-      { id: 'leadership', name: 'Leadership', icon: "Award", show: true },
-      { id: 'innovation', name: 'Innovation', icon: "Globe", show: true },
-      { id: 'community', name: 'Community Service', icon: "Heart", show: true }
-    ]
-  },
-  alumniStories: {
-    show: true,
-    items: [
-      {
-        id: '1',
-        name: "Dr. Anita Sharma",
-        description: "Renowned cardiologist leading groundbreaking research in heart disease prevention.",
-        image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-        category: "leadership",
-        achievements: ["Published 50+ research papers", "Received National Health Award", "Mentors young doctors"],
-        show: true
-      },
-      {
-        id: '2',
-        name: "Rahul Kapoor",
-        description: "Tech entrepreneur who founded a leading AI startup revolutionizing education.",
-        image: "https://images.unsplash.com/photo-1516321310762-479437144403?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-        category: "innovation",
-        achievements: ["Raised $10M in funding", "Featured in Forbes 30 Under 30", "Developed award-winning app"],
-        show: true
-      },
-      {
-        id: '3',
-        name: "Priya Mehra",
-        description: "Social worker dedicated to uplifting underprivileged communities through education.",
-        image: "https://images.unsplash.com/photo-1573496359142-b8d877c828f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-        category: "community",
-        achievements: ["Founded NGO for education", "Impacted 5,000+ children", "Received Social Impact Award"],
-        show: true
-      }
-    ]
-  },
-  alumniFeatures: {
-    show: true,
-    items: [
-      {
-        icon: "Globe",
-        title: "Global Network",
-        description: "Join our worldwide alumni network to connect, collaborate, and share opportunities.",
-        show: true
-      },
-      {
-        icon: "Award",
-        title: "Mentorship Program",
-        description: "Mentor current students or seek guidance from experienced alumni in your field.",
-        show: true
-      },
-      {
-        icon: "Heart",
-        title: "Giving Back",
-        description: "Support scholarships, infrastructure, and programs to empower future generations.",
-        show: true
-      }
-    ]
-  },
-  connectSection: {
-    show: true,
-    title: "Stay Connected",
-    description: "Join our alumni portal, attend events, or share your story to inspire others.",
-    primaryCta: "Join Alumni Portal",
-    primaryLink: "https://alumni.example.com",
-    showPrimary: true,
-    secondaryCta: "Attend an Event",
-    secondaryLink: "#",
-    showSecondary: true
-  },
-  contactInfo: {
-    show: true,
-    title: "Connect with Us",
-    address: "1, Ashok Place, Birgunj - 110001, India",
-    addressShow: true,
-    hours: "Monday - Friday: 9:00 AM - 3:00 PM\nSaturday: 9:00 AM - 12:00 PM",
-    hoursShow: true,
-    phone: "011 2336 3462\n011 2336 3134",
-    phoneShow: true,
-    email: "alumni@stcolumbas.edu.in",
-    emailShow: true,
-    mapTitle: "Visit Us",
-    mapDescription: "Come to our campus for alumni events or meetings.",
-    mapShow: true,
-    mapEmbedUrl: ""
-  },
-  showHero: true,
-  showIntroduction: true,
-  showAlumniStories: true,
-  showAlumniFeatures: true,
-  showConnectSection: true,
-  showContact: true
-};
+
 
 const AlumniPage = () => {
   const [data, setData] = useState(defaultData);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [editFormOpen, setEditFormOpen] = useState(false);
@@ -201,36 +81,7 @@ const AlumniPage = () => {
     setEditMode(role === 'admin');
   }, [role]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_alumni_data', {});
-        if (res.status === 200 && res.data?.length > 0) {
-          const raw = res.data[0].data;
-          let fetched = raw;
-          try {
-            if (raw && raw.encrypted) {
-              fetched = await decryptObject(raw);
-            } else if (typeof raw === 'string') {
-              fetched = JSON.parse(raw);
-            }
-          } catch (e) {
-            console.warn('Failed to decrypt/parse alumni data, using raw value', e);
-            fetched = raw;
-          }
-          setData({ ...defaultData, ...fetched });
-        } else {
-          setData(defaultData);
-        }
-      } catch (err) {
-        console.error(err);
-        setData(defaultData);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {

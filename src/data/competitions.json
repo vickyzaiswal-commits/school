@@ -1,0 +1,622 @@
+{
+  "layout": {
+    "showHero": true,
+    "showBenefits": true,
+    "showCategories": true,
+    "showCompetitions": true,
+    "showUpcomingEvents": true,
+    "showAchievements": true,
+    "showResources": true,
+    "showCta": true
+  },
+  "hero": {
+    "show": true,
+    "title": "School Competitions",
+    "subtitle": "Challenge yourself, showcase your talents, and achieve excellence in competitive arenas",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Annual Competitions",
+        "show": true
+      },
+      {
+        "value": "100+",
+        "label": "Student Participants",
+        "show": true
+      },
+      {
+        "value": "30+",
+        "label": "Awards Won",
+        "show": true
+      }
+    ],
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "backgroundImageShow": true,
+    "ctaButton": {
+      "label": "View Competition Handbook",
+      "link": "#",
+      "show": true
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Why Participate in Competitions?",
+    "description": "Competitions provide unique opportunities for growth, recognition, and skill development",
+    "items": [
+      {
+        "icon": "Trophy",
+        "title": "Skill Development",
+        "description": "Enhancing subject knowledge, critical thinking, and problem-solving abilities through competitive challenges.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Teamwork & Collaboration",
+        "description": "Learning to work effectively in teams and developing leadership qualities.",
+        "show": true
+      },
+      {
+        "icon": "Brain",
+        "title": "Intellectual Growth",
+        "description": "Pushing boundaries of knowledge and creativity beyond standard curriculum.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Confidence Building",
+        "description": "Gaining self-assurance through preparation, performance, and achievement.",
+        "show": true
+      }
+    ]
+  },
+  "categories": {
+    "show": true,
+    "title": "Competition Categories",
+    "description": "Explore our diverse range of competitive opportunities",
+    "items": [
+      {
+        "id": "academic",
+        "name": "Academic Competitions",
+        "icon": "Book",
+        "description": "Subject-based challenges",
+        "show": true
+      },
+      {
+        "id": "arts",
+        "name": "Arts & Creative",
+        "icon": "Palette",
+        "description": "Creative expression contests",
+        "show": true
+      },
+      {
+        "id": "sports",
+        "name": "Sports & Athletics",
+        "icon": "Trophy",
+        "description": "Physical competitions",
+        "show": true
+      },
+      {
+        "id": "tech",
+        "name": "Technology & Innovation",
+        "icon": "Code",
+        "description": "STEM challenges",
+        "show": true
+      }
+    ]
+  },
+  "competitions": {
+    "show": true,
+    "labels": {
+      "level": "Level",
+      "advisor": "Advisor",
+      "meeting": "Meeting",
+      "eligibility": "Eligibility"
+    },
+    "items": {
+      "academic": [
+        {
+          "name": "Math Olympiad",
+          "icon": "Calculator",
+          "level": "National",
+          "advisor": "Dr. Mathur",
+          "meeting": "Wed 3:30-5:00 PM",
+          "description": "Advanced mathematical problem solving competition",
+          "eligibility": "Grades 9-12",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Science Bowl",
+          "icon": "Microscope",
+          "level": "Regional",
+          "advisor": "Ms. Patel",
+          "meeting": "Tue 4:00-5:30 PM",
+          "description": "Quick-response science knowledge competition",
+          "eligibility": "Grades 6-8",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Debate Tournament",
+          "icon": "Mic",
+          "level": "State",
+          "advisor": "Mr. Kumar",
+          "meeting": "Mon/Thu 3:30-5:30 PM",
+          "description": "Competitive public speaking and argumentation",
+          "eligibility": "Grades 9-12",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Spelling Bee",
+          "icon": "Book",
+          "level": "School",
+          "advisor": "Ms. Evans",
+          "meeting": "Fri 3:30-4:30 PM",
+          "description": "Spelling competition for language excellence",
+          "eligibility": "Grades 4-8",
+          "status": "Completed",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Model United Nations",
+          "icon": "Globe",
+          "level": "International",
+          "advisor": "Mr. Sharma",
+          "meeting": "Wed 4:00-6:00 PM",
+          "description": "Simulation of United Nations procedures",
+          "eligibility": "Grades 10-12",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "History Bowl",
+          "icon": "Book",
+          "level": "Regional",
+          "advisor": "Ms. Johnson",
+          "meeting": "Thu 3:30-5:00 PM",
+          "description": "Competition testing historical knowledge",
+          "eligibility": "Grades 9-12",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        }
+      ],
+      "arts": [
+        {
+          "name": "Art Competition",
+          "icon": "Palette",
+          "level": "National",
+          "advisor": "Ms. Davis",
+          "meeting": "Mon 3:30-5:00 PM",
+          "description": "Various visual arts categories and mediums",
+          "eligibility": "All Grades",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Music Festival",
+          "icon": "Music",
+          "level": "State",
+          "advisor": "Mr. Williams",
+          "meeting": "Tue 4:00-6:00 PM",
+          "description": "Solo and ensemble performance competition",
+          "eligibility": "All Grades",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Drama Competition",
+          "icon": "Mic",
+          "level": "Regional",
+          "advisor": "Ms. Roberts",
+          "meeting": "Wed 4:00-6:30 PM",
+          "description": "One-act plays and dramatic interpretation",
+          "eligibility": "Grades 6-12",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Creative Writing Contest",
+          "icon": "Book",
+          "level": "National",
+          "advisor": "Mr. Anderson",
+          "meeting": "Fri 3:30-5:00 PM",
+          "description": "Poetry, short story, and essay competitions",
+          "eligibility": "All Grades",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Digital Arts Showcase",
+          "icon": "Code",
+          "level": "State",
+          "advisor": "Ms. Chen",
+          "meeting": "Thu 4:00-5:30 PM",
+          "description": "Digital media, animation, and graphic design",
+          "eligibility": "Grades 7-12",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Photography Contest",
+          "icon": "Award",
+          "level": "School",
+          "advisor": "Mr. Thompson",
+          "meeting": "Mon 3:30-4:30 PM",
+          "description": "Various photography categories and themes",
+          "eligibility": "All Grades",
+          "status": "Completed",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        }
+      ],
+      "sports": [
+        {
+          "name": "Basketball Tournament",
+          "icon": "Trophy",
+          "level": "Regional",
+          "advisor": "Coach Miller",
+          "meeting": "Daily Practice",
+          "description": "Inter-school basketball championship",
+          "eligibility": "Grades 9-12",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Swimming Championship",
+          "icon": "Trophy",
+          "level": "State",
+          "advisor": "Coach Wilson",
+          "meeting": "Mon-Fri 4:00-6:00 PM",
+          "description": "Various swimming strokes and relays",
+          "eligibility": "Grades 6-12",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Track & Field Meet",
+          "icon": "Trophy",
+          "level": "District",
+          "advisor": "Coach Davis",
+          "meeting": "Mon/Wed/Fri 4:00-6:00 PM",
+          "description": "Running, jumping, and throwing events",
+          "eligibility": "All Grades",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Chess Championship",
+          "icon": "Trophy",
+          "level": "National",
+          "advisor": "Mr. Rodriguez",
+          "meeting": "Tue/Thu 3:30-5:00 PM",
+          "description": "Individual and team chess competitions",
+          "eligibility": "All Grades",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Soccer League",
+          "icon": "Trophy",
+          "level": "Regional",
+          "advisor": "Coach Martinez",
+          "meeting": "Daily Practice",
+          "description": "Inter-school soccer competition",
+          "eligibility": "Grades 9-12",
+          "status": "Completed",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Table Tennis Tournament",
+          "icon": "Trophy",
+          "level": "School",
+          "advisor": "Mr. Kim",
+          "meeting": "Fri 3:30-5:30 PM",
+          "description": "Singles and doubles table tennis",
+          "eligibility": "All Grades",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        }
+      ],
+      "tech": [
+        {
+          "name": "Robotics Competition",
+          "icon": "Code",
+          "level": "International",
+          "advisor": "Mr. Zhang",
+          "meeting": "Mon/Wed/Fri 4:00-6:30 PM",
+          "description": "Design, build, and program competitive robots",
+          "eligibility": "Grades 7-12",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Coding Challenge",
+          "icon": "Code",
+          "level": "National",
+          "advisor": "Ms. Johnson",
+          "meeting": "Tue/Thu 3:30-5:30 PM",
+          "description": "Algorithmic problem solving and programming",
+          "eligibility": "Grades 9-12",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Science Fair",
+          "icon": "Microscope",
+          "level": "Regional",
+          "advisor": "Dr. Evans",
+          "meeting": "Wed 4:00-6:00 PM",
+          "description": "Original scientific research projects",
+          "eligibility": "All Grades",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "App Development Contest",
+          "icon": "Code",
+          "level": "State",
+          "advisor": "Mr. Brown",
+          "meeting": "Mon 4:00-6:00 PM",
+          "description": "Mobile application design and development",
+          "eligibility": "Grades 9-12",
+          "status": "Ongoing",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Engineering Challenge",
+          "icon": "Zap",
+          "level": "National",
+          "advisor": "Mr. Wilson",
+          "meeting": "Thu 4:00-6:30 PM",
+          "description": "Design and build solutions to engineering problems",
+          "eligibility": "Grades 10-12",
+          "status": "Registration Open",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        },
+        {
+          "name": "Cybersecurity Competition",
+          "icon": "Shield",
+          "level": "National",
+          "advisor": "Ms. Garcia",
+          "meeting": "Fri 4:00-6:00 PM",
+          "description": "Network security, cryptography, and forensics",
+          "eligibility": "Grades 9-12",
+          "status": "Upcoming",
+          "link": "#",
+          "learnMore": "Learn more and register",
+          "showButton": true,
+          "show": true
+        }
+      ]
+    }
+  },
+  "upcomingEvents": {
+    "show": true,
+    "title": "Upcoming Competition Events",
+    "description": "Important dates and deadlines for upcoming competitions",
+    "ctaButton": {
+      "label": "View Full Competition Calendar",
+      "link": "#",
+      "show": true
+    },
+    "items": [
+      {
+        "title": "Regional Science Bowl",
+        "date": "2024-10-28",
+        "time": "9:00 AM - 4:00 PM",
+        "competition": "Science Bowl",
+        "location": "State University",
+        "status": "Registration Open",
+        "description": "Regional qualifying round for national science competition",
+        "show": true
+      },
+      {
+        "title": "Math Olympiad Qualifiers",
+        "date": "2024-11-05",
+        "time": "10:00 AM - 2:00 PM",
+        "competition": "Math Olympiad",
+        "location": "School Campus",
+        "status": "Upcoming",
+        "description": "Qualifying examination for national math competition",
+        "show": true
+      },
+      {
+        "title": "Robotics Regional Championship",
+        "date": "2024-11-12",
+        "time": "8:00 AM - 5:00 PM",
+        "competition": "Robotics Competition",
+        "location": "Convention Center",
+        "status": "Ongoing",
+        "description": "Regional robotics competition with multiple divisions",
+        "show": true
+      },
+      {
+        "title": "Basketball Tournament Finals",
+        "date": "2024-11-19",
+        "time": "6:00 PM - 9:00 PM",
+        "competition": "Basketball Tournament",
+        "location": "School Gymnasium",
+        "status": "Upcoming",
+        "description": "Championship finals for inter-school basketball tournament",
+        "show": true
+      }
+    ]
+  },
+  "achievements": {
+    "show": true,
+    "title": "Recent Competition Achievements",
+    "description": "Celebrating the accomplishments of our talented students",
+    "galleryButton": {
+      "label": "View Our Achievement Gallery",
+      "link": "#",
+      "show": true
+    },
+    "items": [
+      {
+        "title": "National Robotics Champions",
+        "year": "2024",
+        "description": "1st Place in National Robotics Competition",
+        "icon": "Trophy",
+        "category": "tech",
+        "show": true
+      },
+      {
+        "title": "State Science Bowl Winners",
+        "year": "2023",
+        "description": "1st Place in State Science Bowl Competition",
+        "icon": "Microscope",
+        "category": "academic",
+        "show": true
+      },
+      {
+        "title": "Regional Art Awards",
+        "year": "2024",
+        "description": "12 students received awards in Regional Art Competition",
+        "icon": "Palette",
+        "category": "arts",
+        "show": true
+      },
+      {
+        "title": "Math Olympiad Finalists",
+        "year": "2023",
+        "description": "3 students qualified for National Math Olympiad",
+        "icon": "Calculator",
+        "category": "academic",
+        "show": true
+      }
+    ]
+  },
+  "resources": {
+    "show": true,
+    "title": "Competition Resources",
+    "description": "Download important documents, preparation materials, and registration forms",
+    "downloadLabel": "Download",
+    "items": [
+      {
+        "title": "Competition Calendar 2024-25",
+        "description": "Complete schedule of all competitions and events",
+        "format": "PDF",
+        "size": "1.2 MB",
+        "icon": "Calendar",
+        "link": "#",
+        "show": true
+      },
+      {
+        "title": "Competition Preparation Guide",
+        "description": "Tips and strategies for competition success",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "icon": "Book",
+        "link": "#",
+        "show": true
+      },
+      {
+        "title": "Permission Slip Template",
+        "description": "Standard form for competition participation",
+        "format": "DOCX",
+        "size": "0.4 MB",
+        "icon": "FileText",
+        "link": "#",
+        "show": true
+      },
+      {
+        "title": "Past Competition Papers",
+        "description": "Archive of previous years' competition materials",
+        "format": "ZIP",
+        "size": "4.7 MB",
+        "icon": "FileText",
+        "link": "#",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Ready to Compete?",
+    "description": "Join our competitive teams and represent our school in various competitions",
+    "buttons": [
+      {
+        "label": "Register for Competitions",
+        "variant": "primary",
+        "link": "#",
+        "show": true
+      },
+      {
+        "label": "Contact Competition Coordinator",
+        "variant": "secondary",
+        "link": "#",
+        "show": true
+      }
+    ]
+  }
+}

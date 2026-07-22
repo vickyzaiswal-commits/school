@@ -1,0 +1,427 @@
+{
+  "showHero": true,
+  "showBenefits": true,
+  "showCategories": true,
+  "showGrades": true,
+  "showPopular": true,
+  "showDocuments": true,
+  "showPayment": true,
+  "showNotes": true,
+  "showCta": true,
+  "hero": {
+    "show": true,
+    "title": "Download Fee Structure 2024-2025",
+    "subtitle": "Access complete fee details for all grades and categories",
+    "height": "h-96",
+    "showImage": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1554224154-22dec7ec8818?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "stats": [
+      {
+        "value": "6",
+        "label": "Fee Categories",
+        "show": true
+      },
+      {
+        "value": "8+",
+        "label": "Fee Documents",
+        "show": true
+      },
+      {
+        "value": "2024-25",
+        "label": "Academic Year",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "Browse Fee Documents",
+      "show": true,
+      "link": "#documents-section",
+      "openInNewTab": false
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Fee Structure Overview",
+    "subtitle": "Transparent and comprehensive fee details for your planning",
+    "items": [
+      {
+        "icon": "BookOpen",
+        "title": "Detailed Breakdown",
+        "description": "Clear categorization of all fee components",
+        "show": true
+      },
+      {
+        "icon": "Calendar",
+        "title": "Payment Schedule",
+        "description": "Installment dates and options",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Grade-Specific",
+        "description": "Customized for different grade levels",
+        "show": true
+      },
+      {
+        "icon": "Wallet",
+        "title": "Multiple Options",
+        "description": "Various payment methods available",
+        "show": true
+      }
+    ]
+  },
+  "categories": {
+    "show": true,
+    "items": [
+      {
+        "id": "all",
+        "name": "All Fee Components",
+        "icon": "FileText",
+        "show": true
+      },
+      {
+        "id": "tuition",
+        "name": "Tuition Fees",
+        "icon": "BookOpen",
+        "show": true
+      },
+      {
+        "id": "development",
+        "name": "Development Fees",
+        "icon": "Building",
+        "show": true
+      },
+      {
+        "id": "activities",
+        "name": "Activity Fees",
+        "icon": "Users",
+        "show": true
+      },
+      {
+        "id": "transport",
+        "name": "Transport Fees",
+        "icon": "Bus",
+        "show": true
+      },
+      {
+        "id": "other",
+        "name": "Other Charges",
+        "icon": "Receipt",
+        "show": true
+      }
+    ]
+  },
+  "grades": {
+    "show": true,
+    "items": [
+      {
+        "id": "all",
+        "name": "All Grades",
+        "show": true
+      },
+      {
+        "id": "primary",
+        "name": "Primary (I-V)",
+        "show": true
+      },
+      {
+        "id": "middle",
+        "name": "Middle (VI-VIII)",
+        "show": true
+      },
+      {
+        "id": "secondary",
+        "name": "Secondary (IX-X)",
+        "show": true
+      },
+      {
+        "id": "senior",
+        "name": "Senior (XI-XII)",
+        "show": true
+      }
+    ]
+  },
+  "popular": {
+    "show": true,
+    "title": "Popular Downloads",
+    "items": [
+      {
+        "id": 1,
+        "title": "Complete Fee Structure 2024-2025",
+        "downloads": 1542,
+        "show": true
+      },
+      {
+        "id": 2,
+        "title": "Primary School Fee Breakdown",
+        "downloads": 876,
+        "show": true
+      },
+      {
+        "id": 5,
+        "title": "Secondary School Fee Structure",
+        "downloads": 987,
+        "show": true
+      },
+      {
+        "id": 7,
+        "title": "Senior School Fee Schedule",
+        "downloads": 765,
+        "show": true
+      },
+      {
+        "id": 3,
+        "title": "Transportation Fee Schedule",
+        "downloads": 765,
+        "show": true
+      }
+    ]
+  },
+  "documents": {
+    "show": true,
+    "title": "Available Fee Documents",
+    "subtitle": "Search and download fee structure documents instantly",
+    "noResultsTitle": "No documents found",
+    "noResultsSubtitle": "Try different keywords or another category",
+    "clearSearchText": "Clear search",
+    "loadMoreText": "Load More Documents",
+    "items": [
+      {
+        "id": 1,
+        "title": "Complete Fee Structure 2024-2025",
+        "category": "all",
+        "grade": "all",
+        "description": "Comprehensive fee structure for all grades including all components",
+        "format": "PDF",
+        "size": "2.8 MB",
+        "downloads": 1542,
+        "updated": "2024-03-15",
+        "academicYear": "2024-2025",
+        "pages": 24,
+        "icon": "FileSpreadsheet",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 2,
+        "title": "Primary School Fee Breakdown",
+        "category": "tuition",
+        "grade": "primary",
+        "description": "Detailed tuition fee structure for primary classes (I to V)",
+        "format": "PDF",
+        "size": "1.5 MB",
+        "downloads": 876,
+        "updated": "2024-03-10",
+        "academicYear": "2024-2025",
+        "pages": 12,
+        "icon": "FileDigit",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 3,
+        "title": "Transportation Fee Schedule",
+        "category": "transport",
+        "grade": "all",
+        "description": "Bus transportation fees for all routes and distance slabs",
+        "format": "PDF",
+        "size": "1.2 MB",
+        "downloads": 765,
+        "updated": "2024-03-08",
+        "academicYear": "2024-2025",
+        "pages": 8,
+        "icon": "FileText",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 4,
+        "title": "Activity Fee Details",
+        "category": "activities",
+        "grade": "all",
+        "description": "Breakdown of activity fees for sports, arts, and cultural programs",
+        "format": "PDF",
+        "size": "1.1 MB",
+        "downloads": 543,
+        "updated": "2024-03-05",
+        "academicYear": "2024-2025",
+        "pages": 6,
+        "icon": "FileText",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 5,
+        "title": "Secondary School Fee Structure",
+        "category": "tuition",
+        "grade": "secondary",
+        "description": "Tuition and development fees for classes IX and X",
+        "format": "PDF",
+        "size": "1.7 MB",
+        "downloads": 987,
+        "updated": "2024-03-12",
+        "academicYear": "2024-2025",
+        "pages": 14,
+        "icon": "FileDigit",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 6,
+        "title": "One-Time Admission Charges",
+        "category": "other",
+        "grade": "all",
+        "description": "One-time admission and registration fees for new students",
+        "format": "PDF",
+        "size": "0.9 MB",
+        "downloads": 432,
+        "updated": "2024-03-01",
+        "academicYear": "2024-2025",
+        "pages": 5,
+        "icon": "FileText",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 7,
+        "title": "Senior School Fee Schedule",
+        "category": "tuition",
+        "grade": "senior",
+        "description": "Detailed fee structure for classes XI and XII (all streams)",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "downloads": 765,
+        "updated": "2024-03-18",
+        "academicYear": "2024-2025",
+        "pages": 18,
+        "icon": "FileDigit",
+        "fileUrl": "",
+        "show": true
+      },
+      {
+        "id": 8,
+        "title": "Development Fund Breakdown",
+        "category": "development",
+        "grade": "all",
+        "description": "Infrastructure development and maintenance fund details",
+        "format": "PDF",
+        "size": "1.3 MB",
+        "downloads": 654,
+        "updated": "2024-03-07",
+        "academicYear": "2024-2025",
+        "pages": 9,
+        "icon": "FileText",
+        "fileUrl": "",
+        "show": true
+      }
+    ]
+  },
+  "payment": {
+    "show": true,
+    "title": "Payment Options & Schedule",
+    "methods": {
+      "show": true,
+      "title": "Payment Methods",
+      "items": [
+        {
+          "method": "Online Payment",
+          "description": "Secure online payment through parent portal",
+          "icon": "CreditCard",
+          "features": [
+            "Instant confirmation",
+            "Multiple payment methods",
+            "24/7 availability"
+          ],
+          "show": true
+        },
+        {
+          "method": "Bank Transfer",
+          "description": "Direct transfer to school bank account",
+          "icon": "Building",
+          "features": [
+            "NEFT/RTGS/IMPS",
+            "Bank receipt required",
+            "2-3 business days processing"
+          ],
+          "show": true
+        },
+        {
+          "method": "Cheque/Cash",
+          "description": "Payment at school accounts office",
+          "icon": "Banknote",
+          "features": [
+            "During office hours",
+            "Receipt provided",
+            "Exact change required for cash"
+          ],
+          "show": true
+        },
+        {
+          "method": "UPI/QR Code",
+          "description": "Scan and pay using UPI apps",
+          "icon": "QrCode",
+          "features": [
+            "Instant payment",
+            "Multiple UPI apps supported",
+            "Transaction ID required"
+          ],
+          "show": true
+        }
+      ]
+    },
+    "schedule": {
+      "show": true,
+      "title": "Fee Payment Schedule 2024-2025",
+      "items": [
+        {
+          "installment": "First Term",
+          "dueDate": "April 15, 2024",
+          "amount": "40% of annual fees",
+          "status": "Upcoming",
+          "show": true
+        },
+        {
+          "installment": "Second Term",
+          "dueDate": "July 15, 2024",
+          "amount": "30% of annual fees",
+          "status": "Upcoming",
+          "show": true
+        },
+        {
+          "installment": "Third Term",
+          "dueDate": "October 15, 2024",
+          "amount": "30% of annual fees",
+          "status": "Upcoming",
+          "show": true
+        }
+      ]
+    }
+  },
+  "notes": {
+    "show": true,
+    "title": "Important Notes",
+    "items": [
+      "A late fee of 1% per month will be charged for payments made after the due date",
+      "Fee concessions are available for eligible students (contact accounts office)",
+      "All fees are subject to revision as per school management guidelines",
+      "Keep payment receipts for future reference and verification"
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Need Assistance with Fee Payment?",
+    "subtitle": "Our accounts office is available to help with any fee-related questions or payment issues",
+    "buttons": [
+      {
+        "text": "Contact Accounts Office",
+        "Link": "#",
+        "show": true
+      },
+      {
+        "text": "Make Online Payment",
+        "Link": "#",
+        "show": true
+      }
+    ]
+  }
+}

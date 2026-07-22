@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
-import { encryptObject, decryptObject } from '@/utils/encryption';
+import applicationFormData from '@/data/application-form.json';
 
 const ApplicationFormPage = ({ schoolData = {} }) => {
   // All useState calls FIRST, unconditionally
@@ -41,7 +41,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState(applicationFormData);
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -103,19 +103,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
         if (!raw) { setRole(null); return; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn('Failed to decrypt stored ecareUser', e);
-            setRole(null);
-            return;
-          }
-        }
-        const user = parsed.user || parsed;
+        const user = parsed?.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
         console.warn('Failed to read stored user for role detection', err);
@@ -125,119 +113,6 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
     initRole();
   }, []);
   
-  // Default configuration with all fields enabled
-  const defaultConfig = {
-    // Hero Section
-    hero: {
-      show: true,
-      title: "Admission Application",
-      subtitle: "Join the Abc family - Begin your journey to excellence",
-      height: "h-96",
-      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      backgroundImageShow: true,
-      cta: "Start Application",
-      ctaIcon: ArrowRight,
-      ctaLink: "#"
-    },
-    // Help Section
-    helpSection: {
-      show: true,
-      title: {
-        show: true,
-        value: "Need Help?"
-      },
-      contact: {
-        show: true,
-        title: {
-          show: true,
-          value: "Contact Admission Office"
-        },
-        email: {
-          show: true,
-          value: "admissions@stcolumbas.edu.in"
-        },
-        phone: {
-          show: true,
-          value: "011-2336-3462 (Ext. 110)"
-        }
-      },
-      officeHours: {
-        show: true,
-        title: {
-          show: true,
-          value: "Office Hours"
-        },
-        mondayFriday: {
-          show: true,
-          value: "Monday-Friday: 9:00 AM - 4:00 PM"
-        },
-        saturday: {
-          show: true,
-          value: "Saturday: 9:00 AM - 12:00 PM"
-        }
-      }
-    },
-    // Student Information
-    firstName: { show: true, required: true, label: 'First Name' },
-    lastName: { show: true, required: true, label: 'Last Name' },
-    dateOfBirth: { show: true, required: true, label: 'Date of Birth' },
-    gender: { show: true, required: true, label: 'Gender' },
-    nationality: { show: true, required: true, label: 'Nationality' },
-    bloodGroup: { show: true, required: false, label: 'Blood Group' },
-    
-    // Contact Information
-    address: { show: true, required: true, label: 'Address' },
-    city: { show: true, required: true, label: 'City' },
-    state: { show: true, required: true, label: 'State' },
-    pincode: { show: true, required: true, label: 'Pincode' },
-    phone: { show: true, required: true, label: 'Phone Number' },
-    email: { show: true, required: true, label: 'Email Address' },
-    
-    // Parent Information
-    fatherName: { show: true, required: true, label: "Father's Name" },
-    fatherOccupation: { show: true, required: false, label: "Father's Occupation" },
-    fatherQualification: { show: true, required: false, label: "Father's Qualification" },
-    fatherPhone: { show: true, required: false, label: "Father's Phone" },
-    fatherEmail: { show: true, required: false, label: "Father's Email" },
-    
-    motherName: { show: true, required: true, label: "Mother's Name" },
-    motherOccupation: { show: true, required: false, label: "Mother's Occupation" },
-    motherQualification: { show: true, required: false, label: "Mother's Qualification" },
-    motherPhone: { show: true, required: false, label: "Mother's Phone" },
-    motherEmail: { show: true, required: false, label: "Mother's Email" },
-    
-    // Academic Information
-    applyingForClass: { show: true, required: true, label: 'Applying for Class' },
-    currentSchool: { show: true, required: true, label: 'Current/Previous School' },
-    lastClass: { show: true, required: false, label: 'Last Class Completed' },
-    lastPercentage: { show: true, required: false, label: 'Percentage/CGPA in Last Class' },
-    board: { show: true, required: false, label: 'Board/Curriculum' },
-    
-    // Documents
-    birthCertificate: { show: true, required: true, label: 'Birth Certificate' },
-    aadhaarCard: { show: true, required: true, label: 'Aadhaar Card' },
-    photograph: { show: true, required: true, label: 'Passport Size Photograph' },
-    previousMarksheet: { show: true, required: false, label: 'Previous Year Marksheet' },
-    transferCertificate: { show: true, required: false, label: 'Transfer Certificate' },
-    
-    // Steps configuration
-    showStudentInfo: true,
-    showContactDetails: true,
-    showParentInfo: true,
-    showAcademicInfo: true,
-    showDocuments: true,
-    showReview: true,
-    
-    // Custom labels
-    stepTitles: {
-      studentInfo: 'Student Information',
-      contactDetails: 'Contact Details',
-      parentInfo: 'Parent Information',
-      academicInfo: 'Academic History',
-      documents: 'Documents Upload',
-      review: 'Review & Submit'
-    }
-  };
 
   // Field groups for editing
   const fieldGroups = {
@@ -276,43 +151,7 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
   }, [role]);
 
   // Fetch data from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_application_forms', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.data || {};
-          try {
-            if (fetchedData && fetchedData.encrypted) {
-              fetchedData = await decryptObject(fetchedData);
-            } else if (typeof fetchedData === 'string') {
-              try {
-                fetchedData = JSON.parse(fetchedData);
-              } catch (e) {
-                console.warn('Failed to parse fetchedData string, using default', e);
-                fetchedData = {};
-              }
-            }
-          } catch (e) {
-            console.warn('Decryption failed, falling back to raw data or default', e);
-            try {
-              if (typeof fetchedData === 'string') fetchedData = JSON.parse(fetchedData);
-            } catch (err) {
-              fetchedData = {};
-            }
-          }
-          setConfig({ ...defaultConfig, ...fetchedData, ...schoolData });
-        } else {
-          setConfig({ ...defaultConfig, ...schoolData });
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setConfig({ ...defaultConfig, ...schoolData });
-      }
-    };
-
-    fetchData();
-  }, []);
+  
 
   // Early return AFTER all hooks
   if (!config) {
@@ -416,15 +255,14 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       };
 
       try {
-        const encrypted = await encryptObject(payload);
-        const save_data = await apiRequest('save_data/save_application_form', { payload: encrypted });
+        const save_data = await apiRequest('save_data/save_application_form', { payload });
         if (save_data.status === 200) {
           setConfig(editData);
         } else {
           console.error('Save failed:', save_data);
         }
       } catch (err) {
-        console.error('Save/Encryption error:', err);
+        console.error('Save error:', err);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -485,10 +323,9 @@ const ApplicationFormPage = ({ schoolData = {} }) => {
       if (typeof apiRequest === 'function') {
         const payload = { ...config, lastUpdated: new Date().toISOString(), updatedBy: 'admin' };
         try {
-          const encrypted = await encryptObject(payload);
-          await apiRequest('save_data/save_application_form', { payload: encrypted });
+          await apiRequest('save_data/save_application_form', { payload });
         } catch (err) {
-          console.error('Save/Encryption error', err);
+          console.error('Save error', err);
         }
       }
     } catch (error) {

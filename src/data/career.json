@@ -1,0 +1,320 @@
+{
+  "showHero": true,
+  "showWhyJoin": true,
+  "showBenefits": true,
+  "showOpenPositions": true,
+  "showApplicationProcess": true,
+  "showTestimonials": true,
+  "showFAQ": true,
+  "showContactCTA": true,
+  "hero": {
+    "show": true,
+    "title": "Join Abc School",
+    "subtitle": "Shape the future of education with us. We're looking for passionate educators and staff who want to make a difference in students' lives.",
+    "showImage": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Faculty Members",
+        "show": true
+      },
+      {
+        "value": "15:1",
+        "label": "Student-Teacher Ratio",
+        "show": true
+      },
+      {
+        "value": "90%",
+        "label": "Staff Retention",
+        "show": true
+      }
+    ],
+    "ctaButton": {
+      "label": "View Open Positions",
+      "show": true,
+      "link": "#open-positions"
+    },
+    "secondaryButton": {
+      "label": "Learn About Us",
+      "show": true,
+      "link": "/about"
+    }
+  },
+  "whyJoin": {
+    "show": true,
+    "title": "Why Work With Us?",
+    "subtitle": "Join a community dedicated to excellence in education",
+    "items": [
+      {
+        "icon": "GraduationCap",
+        "title": "Professional Growth",
+        "description": "Continuous professional development opportunities, workshops, and support for higher education.",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Collaborative Culture",
+        "description": "Work in a supportive team environment that values collaboration and shared success.",
+        "show": true
+      },
+      {
+        "icon": "Award",
+        "title": "Recognition & Rewards",
+        "description": "Regular recognition programs, performance bonuses, and career advancement opportunities.",
+        "show": true
+      },
+      {
+        "icon": "Heart",
+        "title": "Make a Difference",
+        "description": "Direct impact on students' lives and contribute to shaping future generations.",
+        "show": true
+      }
+    ]
+  },
+  "benefits": {
+    "show": true,
+    "title": "Employee Benefits",
+    "subtitle": "We take care of our team with comprehensive benefits",
+    "categories": [
+      {
+        "title": "Health & Wellness",
+        "items": [
+          "Health Insurance",
+          "Dental & Vision Coverage",
+          "Mental Health Support",
+          "Wellness Programs"
+        ],
+        "show": true
+      },
+      {
+        "title": "Financial Security",
+        "items": [
+          "Competitive Salary",
+          "Retirement Plans",
+          "Performance Bonuses",
+          "Tuition Reimbursement"
+        ],
+        "show": true
+      },
+      {
+        "title": "Work-Life Balance",
+        "items": [
+          "Paid Time Off",
+          "School Holidays",
+          "Flexible Hours",
+          "Parental Leave"
+        ],
+        "show": true
+      },
+      {
+        "title": "Professional Support",
+        "items": [
+          "Training Budget",
+          "Conference Allowance",
+          "Mentorship Program",
+          "Research Grants"
+        ],
+        "show": true
+      }
+    ]
+  },
+  "openPositions": {
+    "show": true,
+    "title": "Open Positions",
+    "subtitle": "Explore current opportunities at our school",
+    "filterCategories": [
+      "All",
+      "Teaching",
+      "Administration",
+      "Support Staff",
+      "Internships"
+    ],
+    "positions": [
+      {
+        "id": "math-teacher",
+        "title": "Mathematics Teacher",
+        "department": "Teaching",
+        "type": "Full-time",
+        "location": "High School",
+        "experience": "3+ years",
+        "deadline": "2024-06-15",
+        "description": "We are seeking an enthusiastic Mathematics Teacher for grades 9-12. The ideal candidate will have a strong background in advanced mathematics and experience with innovative teaching methods.",
+        "responsibilities": [
+          "Develop and implement engaging lesson plans",
+          "Assess student progress and provide feedback",
+          "Collaborate with math department colleagues",
+          "Participate in school events and parent meetings"
+        ],
+        "requirements": [
+          "Master’s degree in Mathematics or related field",
+          "Teaching certification",
+          "Experience with CBSE curriculum",
+          "Strong classroom management skills"
+        ],
+        "show": true
+      },
+      {
+        "id": "admissions-officer",
+        "title": "Admissions Officer",
+        "department": "Administration",
+        "type": "Full-time",
+        "location": "Main Office",
+        "experience": "2+ years",
+        "deadline": "2024-06-20",
+        "description": "Join our admissions team to help guide prospective families through the enrollment process.",
+        "responsibilities": [
+          "Manage admissions inquiries and applications",
+          "Conduct school tours and interviews",
+          "Coordinate admission testing",
+          "Maintain applicant records"
+        ],
+        "requirements": [
+          "Bachelor’s degree in any discipline",
+          "Excellent communication skills",
+          "Experience in customer service",
+          "Knowledge of school admissions processes"
+        ],
+        "show": true
+      },
+      {
+        "id": "librarian",
+        "title": "School Librarian",
+        "department": "Support Staff",
+        "type": "Full-time",
+        "location": "Library",
+        "experience": "1+ years",
+        "deadline": "2024-06-25",
+        "description": "Manage our school library and promote reading culture among students.",
+        "responsibilities": [
+          "Organize and maintain library collection",
+          "Assist students with research",
+          "Conduct reading programs",
+          "Manage library software system"
+        ],
+        "requirements": [
+          "Degree in Library Science",
+          "Familiarity with digital resources",
+          "Love for children’s literature",
+          "Organizational skills"
+        ],
+        "show": true
+      }
+    ]
+  },
+  "applicationProcess": {
+    "show": true,
+    "title": "Application Process",
+    "subtitle": "Simple steps to join our team",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Submit Application",
+        "description": "Complete our online application form with your resume and cover letter.",
+        "icon": "BookOpen",
+        "show": true
+      },
+      {
+        "number": "02",
+        "title": "Initial Screening",
+        "description": "Our HR team reviews applications and contacts qualified candidates.",
+        "icon": "Target",
+        "show": true
+      },
+      {
+        "number": "03",
+        "title": "Interview Process",
+        "description": "Participate in interviews with department heads and school leadership.",
+        "icon": "Users",
+        "show": true
+      },
+      {
+        "number": "04",
+        "title": "Demo Lesson/Task",
+        "description": "Teaching candidates conduct a demo lesson; other positions complete relevant tasks.",
+        "icon": "GraduationCap",
+        "show": true
+      },
+      {
+        "number": "05",
+        "title": "Offer & Onboarding",
+        "description": "Successful candidates receive an offer and begin our comprehensive onboarding process.",
+        "icon": "CheckCircle",
+        "show": true
+      }
+    ]
+  },
+  "testimonials": {
+    "show": true,
+    "title": "Hear From Our Team",
+    "subtitle": "What our staff members say about working here",
+    "items": [
+      {
+        "name": "Dr. Sarah Johnson",
+        "role": "Science Department Head",
+        "tenure": "8 years",
+        "quote": "Abc has provided me with unparalleled opportunities for professional growth while maintaining a perfect work-life balance.",
+        "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "show": true
+      },
+      {
+        "name": "Rahul Verma",
+        "role": "IT Coordinator",
+        "tenure": "5 years",
+        "quote": "The collaborative environment and support for innovation make this an exceptional place to work.",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "show": true
+      },
+      {
+        "name": "Priya Sharma",
+        "role": "Primary Teacher",
+        "tenure": "3 years",
+        "quote": "The mentorship I received as a new teacher was incredible. I've grown so much professionally here.",
+        "image": "https://images.unsplash.com/photo-1494790108755-2616b786d4b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "show": true
+      }
+    ]
+  },
+  "faq": {
+    "show": true,
+    "title": "Frequently Asked Questions",
+    "subtitle": "Common questions about careers at our school",
+    "items": [
+      {
+        "question": "What is the typical hiring timeline?",
+        "answer": "The hiring process usually takes 3-4 weeks from application to offer, depending on the position and interview availability.",
+        "show": true
+      },
+      {
+        "question": "Do you provide relocation assistance?",
+        "answer": "Yes, we offer relocation assistance for select positions. Details are discussed during the offer stage.",
+        "show": true
+      },
+      {
+        "question": "Are there opportunities for career advancement?",
+        "answer": "Absolutely! We prioritize internal promotions and provide clear career paths for all staff members.",
+        "show": true
+      },
+      {
+        "question": "What is the school's approach to professional development?",
+        "answer": "We allocate a dedicated budget for each staff member's professional development and encourage attendance at workshops and conferences.",
+        "show": true
+      },
+      {
+        "question": "Do you hire international candidates?",
+        "answer": "Yes, we welcome applications from qualified international candidates who have the right to work in India.",
+        "show": true
+      }
+    ]
+  },
+  "contactCTA": {
+    "show": true,
+    "title": "Still Have Questions?",
+    "subtitle": "Get in touch with our HR department",
+    "email": "hr@stcolumbas.edu.in",
+    "phone": "011-2336-3462 Ext. 201",
+    "officeHours": "Monday to Friday, 9:00 AM - 5:00 PM",
+    "buttonText": "Contact HR",
+    "buttonLink": "mailto:hr@stcolumbas.edu.in"
+  }
+}

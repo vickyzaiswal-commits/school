@@ -1,21 +1,24 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Edit, X, Send, Ban } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import footerDataJson from '@/data/footer.json';
 
 const Footer = () => {
   const [editMode, setEditMode] = useState(false);
   const [role, setRole] = useState(null);
   const [footerData, setFooterData] = useState({
-    schoolName: "Abc School",
-    year: "2026",
-    tagline: "An Edmund Rice Educational Institution"
+    schoolName: footerDataJson.schoolName || "Abc School",
+    year: footerDataJson.year || "2026",
+    tagline: footerDataJson.tagline || "An Edmund Rice Educational Institution"
   });
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [editData, setEditData] = useState({});
   const [originalData, setOriginalData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
   // Role detection
   useEffect(() => {
@@ -80,50 +83,7 @@ const Footer = () => {
     }
   }, [editMode]);
 
-  // Fetch footer data from backend
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const res = await apiRequest('save_data/get_all_footer_data', {});
-        
-        if (res.status === 200 && res.data && Array.isArray(res.data) && res.data.length > 0) {
-          let fetched = res.data[0]?.data || {};
-          
-          // Handle decryption if needed
-          if (typeof fetched === 'string' || (fetched && fetched.encrypted)) {
-            try {
-              const decrypted = await decryptObject(fetched);
-              if (decrypted) {
-                fetched = decrypted;
-              } else {
-                // If decryption fails but it's a string, try parsing
-                try {
-                  fetched = JSON.parse(fetched);
-                } catch (parseErr) {
-                  console.warn('Failed to parse footer data as JSON', parseErr);
-                  fetched = {};
-                }
-              }
-            } catch (decryptErr) {
-              console.warn('Failed to decrypt footer data', decryptErr);
-              fetched = {};
-            }
-          }
-          
-          setFooterData(prev => ({ ...prev, ...fetched }));
-        } else {
-          // No footer data found; using defaults
-        }
-      } catch (error) {
-        console.error('Footer fetch error:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  
 
   const openEditModal = () => {
     setEditData({ ...footerData });
@@ -212,17 +172,6 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* Floating edit button as a fallback and more visible control */}
-      {canEdit && (
-        <button
-          onClick={openEditModal}
-          aria-label="Edit Footer"
-          className="fixed bottom-6 right-6 z-50 bg-green-700 text-white p-3 rounded-full shadow-2xl hover:scale-105 transition transform"
-          title="Edit Footer"
-        >
-          <Edit className="h-5 w-5" />
-        </button>
-      )}
 
       {/* Edit Modal */}
       {editFormOpen && (

@@ -1,50 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Send, Ban, X } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
-import { encryptObject, decryptObject } from '@/utils/encryption';
+import { encryptObject } from '@/utils/encryption';
+import footerDataJson from '@/data/footer.json';
 
 const FooterEditPage = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
   const [editData, setEditData] = useState({
-    schoolName: '',
-    year: '',
-    tagline: '',
+    schoolName: footerDataJson.schoolName || '',
+    year: footerDataJson.year || '',
+    tagline: footerDataJson.tagline || '',
   });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const res = await apiRequest('save_data/get_all_footer_data', {});
-        if (res.status === 200 && res.data && Array.isArray(res.data) && res.data.length > 0) {
-          let fetched = res.data[0]?.data || {};
-
-          if (typeof fetched === 'string' || (fetched && fetched.encrypted)) {
-            try {
-              const decrypted = await decryptObject(fetched);
-              if (decrypted) fetched = decrypted;
-              else fetched = JSON.parse(fetched || '{}');
-            } catch (err) {
-              console.warn('Footer decrypt/parse failed', err);
-              fetched = {};
-            }
-          }
-
-          setEditData(prev => ({ ...prev, ...fetched }));
-        }
-      } catch (error) {
-        console.error('Failed to fetch footer data', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleChange = (key, value) => {
     setEditData(prev => ({ ...prev, [key]: value }));
@@ -74,14 +43,6 @@ const FooterEditPage = () => {
   };
 
   const cancel = () => router.back();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

@@ -1,0 +1,796 @@
+{
+  "showHero": true,
+  "showBenefits": true,
+  "showTabs": true,
+  "showDailySchedules": true,
+  "showAcademicCalendar": true,
+  "showBellSchedule": true,
+  "showTransport": true,
+  "showResources": true,
+  "showCta": true,
+  "hero": {
+    "show": true,
+    "title": "School Timings & Schedules",
+    "subtitle": "Discover our structured daily routines, academic calendar, and transportation schedules designed for optimal learning",
+    "height": "h-96",
+    "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "showImage": true,
+    "ctaButton": {
+      "label": "Download School Schedule",
+      "link": "#",
+      "show": true
+    }
+  },
+  "benefits": {
+    "show": true,
+    "title": "Benefits of Our Structured Schedule",
+    "description": "Our carefully designed timings ensure a balanced and productive school day",
+    "items": [
+      {
+        "icon": "Clock",
+        "title": "Structured Learning",
+        "description": "Consistent daily routine optimized for effective learning and development",
+        "show": true
+      },
+      {
+        "icon": "Calendar",
+        "title": "Academic Planning",
+        "description": "Well-planned academic calendar with balanced instructional days and breaks",
+        "show": true
+      },
+      {
+        "icon": "Users",
+        "title": "Community Coordination",
+        "description": "Synchronized schedules for students, teachers, and parents",
+        "show": true
+      },
+      {
+        "icon": "Bell",
+        "title": "Time Management",
+        "description": "Teaches students valuable time management and organizational skills",
+        "show": true
+      }
+    ]
+  },
+  "tabs": {
+    "show": true,
+    "title": "Timing Information",
+    "description": "Explore our school schedules and timings",
+    "items": [
+      {
+        "id": "daily",
+        "name": "Daily Schedule",
+        "icon": "Clock",
+        "description": "Class timings",
+        "show": true
+      },
+      {
+        "id": "calendar",
+        "name": "Academic Calendar",
+        "icon": "Calendar",
+        "description": "Yearly events",
+        "show": true
+      },
+      {
+        "id": "bell",
+        "name": "Bell Schedule",
+        "icon": "Bell",
+        "description": "Period changes",
+        "show": true
+      },
+      {
+        "id": "transport",
+        "name": "Transport Timings",
+        "icon": "Bus",
+        "description": "Bus schedules",
+        "show": true
+      }
+    ]
+  },
+  "dailySchedules": {
+    "show": true,
+    "title": "Daily School Schedules",
+    "description": "Structured daily routines for optimal learning across all grade levels",
+    "labels": {
+      "period": "Period",
+      "time": "Time",
+      "description": "Description",
+      "subject": "Subject"
+    },
+    "items": {
+      "primary": {
+        "title": "Primary School (Grades 1-5)",
+        "schedule": [
+          {
+            "period": "Morning Assembly",
+            "time": "8:00 AM - 8:15 AM",
+            "description": "Prayers, announcements, and national anthem",
+            "show": true
+          },
+          {
+            "period": "Period 1",
+            "time": "8:15 AM - 9:00 AM",
+            "subject": "English",
+            "show": true
+          },
+          {
+            "period": "Period 2",
+            "time": "9:00 AM - 9:45 AM",
+            "subject": "Mathematics",
+            "show": true
+          },
+          {
+            "period": "Short Break",
+            "time": "9:45 AM - 10:00 AM",
+            "description": "Snack time",
+            "show": true
+          },
+          {
+            "period": "Period 3",
+            "time": "10:00 AM - 10:45 AM",
+            "subject": "Environmental Studies",
+            "show": true
+          },
+          {
+            "period": "Period 4",
+            "time": "10:45 AM - 11:30 AM",
+            "subject": "Second Language",
+            "show": true
+          },
+          {
+            "period": "Lunch Break",
+            "time": "11:30 AM - 12:15 PM",
+            "description": "Lunch and recreation",
+            "show": true
+          },
+          {
+            "period": "Period 5",
+            "time": "12:15 PM - 1:00 PM",
+            "subject": "Art/Music/PE",
+            "show": true
+          },
+          {
+            "period": "Period 6",
+            "time": "1:00 PM - 1:45 PM",
+            "subject": "Value Education",
+            "show": true
+          },
+          {
+            "period": "Dispersal",
+            "time": "1:45 PM - 2:00 PM",
+            "description": "Preparation for home",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      "middle": {
+        "title": "Middle School (Grades 6-8)",
+        "schedule": [
+          {
+            "period": "Morning Assembly",
+            "time": "8:00 AM - 8:15 AM",
+            "description": "Prayers, announcements, and thought for the day",
+            "show": true
+          },
+          {
+            "period": "Period 1",
+            "time": "8:15 AM - 9:00 AM",
+            "subject": "English",
+            "show": true
+          },
+          {
+            "period": "Period 2",
+            "time": "9:00 AM - 9:45 AM",
+            "subject": "Mathematics",
+            "show": true
+          },
+          {
+            "period": "Period 3",
+            "time": "9:45 AM - 10:30 AM",
+            "subject": "Science",
+            "show": true
+          },
+          {
+            "period": "Short Break",
+            "time": "10:30 AM - 10:45 AM",
+            "description": "Snack time",
+            "show": true
+          },
+          {
+            "period": "Period 4",
+            "time": "10:45 AM - 11:30 AM",
+            "subject": "Social Studies",
+            "show": true
+          },
+          {
+            "period": "Period 5",
+            "time": "11:30 AM - 12:15 PM",
+            "subject": "Second Language",
+            "show": true
+          },
+          {
+            "period": "Lunch Break",
+            "time": "12:15 PM - 1:00 PM",
+            "description": "Lunch and recreation",
+            "show": true
+          },
+          {
+            "period": "Period 6",
+            "time": "1:00 PM - 1:45 PM",
+            "subject": "Computer Science",
+            "show": true
+          },
+          {
+            "period": "Period 7",
+            "time": "1:45 PM - 2:30 PM",
+            "subject": "Art/Music/PE",
+            "show": true
+          },
+          {
+            "period": "Period 8",
+            "time": "2:30 PM - 3:15 PM",
+            "subject": "Value Education/Life Skills",
+            "show": true
+          },
+          {
+            "period": "Dispersal",
+            "time": "3:15 PM - 3:30 PM",
+            "description": "Preparation for home",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      "high": {
+        "title": "High School (Grades 9-12)",
+        "schedule": [
+          {
+            "period": "Morning Assembly",
+            "time": "8:00 AM - 8:15 AM",
+            "description": "Prayers, announcements, and motivational talk",
+            "show": true
+          },
+          {
+            "period": "Period 1",
+            "time": "8:15 AM - 9:00 AM",
+            "subject": "English",
+            "show": true
+          },
+          {
+            "period": "Period 2",
+            "time": "9:00 AM - 9:45 AM",
+            "subject": "Mathematics",
+            "show": true
+          },
+          {
+            "period": "Period 3",
+            "time": "9:45 AM - 10:30 AM",
+            "subject": "Science",
+            "show": true
+          },
+          {
+            "period": "Short Break",
+            "time": "10:30 AM - 10:45 AM",
+            "description": "Snack time",
+            "show": true
+          },
+          {
+            "period": "Period 4",
+            "time": "10:45 AM - 11:30 AM",
+            "subject": "Social Studies",
+            "show": true
+          },
+          {
+            "period": "Period 5",
+            "time": "11:30 AM - 12:15 PM",
+            "subject": "Second Language",
+            "show": true
+          },
+          {
+            "period": "Period 6",
+            "time": "12:15 PM - 1:00 PM",
+            "subject": "Elective 1",
+            "show": true
+          },
+          {
+            "period": "Lunch Break",
+            "time": "1:00 PM - 1:45 PM",
+            "description": "Lunch and recreation",
+            "show": true
+          },
+          {
+            "period": "Period 7",
+            "time": "1:45 PM - 2:30 PM",
+            "subject": "Elective 2",
+            "show": true
+          },
+          {
+            "period": "Period 8",
+            "time": "2:30 PM - 3:15 PM",
+            "subject": "Physical Education",
+            "show": true
+          },
+          {
+            "period": "Period 9",
+            "time": "3:15 PM - 4:00 PM",
+            "subject": "Remedial/Enrichment",
+            "show": true
+          },
+          {
+            "period": "Dispersal",
+            "time": "4:00 PM - 4:15 PM",
+            "description": "Preparation for home",
+            "show": true
+          }
+        ],
+        "show": true
+      }
+    }
+  },
+  "academicCalendar": {
+    "show": true,
+    "title": "Academic Calendar 2024-25",
+    "description": "Key dates and events for the academic year",
+    "items": [
+      {
+        "month": "April 2024",
+        "events": [
+          {
+            "date": "1",
+            "description": "New Academic Year Begins",
+            "highlight": true,
+            "show": true
+          },
+          {
+            "date": "5-12",
+            "description": "Orientation Week",
+            "show": true
+          },
+          {
+            "date": "14",
+            "description": "Parent-Teacher Meeting",
+            "show": true
+          },
+          {
+            "date": "20",
+            "description": "Earth Day Celebration",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "May 2024",
+        "events": [
+          {
+            "date": "1",
+            "description": "Labour Day Holiday",
+            "show": true
+          },
+          {
+            "date": "10",
+            "description": "Summer Project Assignments",
+            "show": true
+          },
+          {
+            "date": "15-25",
+            "description": "Annual Examinations",
+            "show": true
+          },
+          {
+            "date": "28",
+            "description": "Summer Vacation Begins",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "June-July 2024",
+        "events": [
+          {
+            "date": "1 Jun - 15 Jul",
+            "description": "Summer Vacation",
+            "highlight": true,
+            "show": true
+          },
+          {
+            "date": "16 Jul",
+            "description": "School Reopens",
+            "show": true
+          },
+          {
+            "date": "20 Jul",
+            "description": "Sports Day Practice",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "August 2024",
+        "events": [
+          {
+            "date": "15",
+            "description": "Independence Day Celebration",
+            "highlight": true,
+            "show": true
+          },
+          {
+            "date": "20-25",
+            "description": "Mid-Term Assessments",
+            "show": true
+          },
+          {
+            "date": "30",
+            "description": "Results Declaration",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "September 2024",
+        "events": [
+          {
+            "date": "5",
+            "description": "Teacher's Day Celebration",
+            "show": true
+          },
+          {
+            "date": "15-20",
+            "description": "Science Exhibition",
+            "show": true
+          },
+          {
+            "date": "25",
+            "description": "Parent-Teacher Meeting",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "October 2024",
+        "events": [
+          {
+            "date": "2",
+            "description": "Gandhi Jayanti Holiday",
+            "show": true
+          },
+          {
+            "date": "8-12",
+            "description": "Autumn Break",
+            "show": true
+          },
+          {
+            "date": "20",
+            "description": "Cultural Fest Preparation",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "November 2024",
+        "events": [
+          {
+            "date": "1-3",
+            "description": "Annual Cultural Festival",
+            "highlight": true,
+            "show": true
+          },
+          {
+            "date": "14",
+            "description": "Children's Day Celebration",
+            "show": true
+          },
+          {
+            "date": "20-25",
+            "description": "Unit Tests",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "December 2024",
+        "events": [
+          {
+            "date": "25",
+            "description": "Christmas Celebration",
+            "show": true
+          },
+          {
+            "date": "28-31",
+            "description": "Winter Break Begins",
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "January 2025",
+        "events": [
+          {
+            "date": "1",
+            "description": "New Year Holiday",
+            "show": true
+          },
+          {
+            "date": "2",
+            "description": "School Reopens",
+            "show": true
+          },
+          {
+            "date": "15",
+            "description": "Makara Sankranti Celebration",
+            "show": true
+          },
+          {
+            "date": "26",
+            "description": "Republic Day Celebration",
+            "highlight": true,
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "February 2025",
+        "events": [
+          {
+            "date": "10-15",
+            "description": "Pre-Board Exams (X & XII)",
+            "show": true
+          },
+          {
+            "date": "20",
+            "description": "Annual Sports Day",
+            "highlight": true,
+            "show": true
+          }
+        ],
+        "show": true
+      },
+      {
+        "month": "March 2025",
+        "events": [
+          {
+            "date": "1-15",
+            "description": "Final Examinations",
+            "show": true
+          },
+          {
+            "date": "20",
+            "description": "Result Declaration",
+            "show": true
+          },
+          {
+            "date": "25",
+            "description": "Academic Year Ends",
+            "highlight": true,
+            "show": true
+          }
+        ],
+        "show": true
+      }
+    ]
+  },
+  "bellSchedule": {
+    "show": true,
+    "title": "Bell Schedule",
+    "description": "Detailed timing for period changes and breaks",
+    "labels": {
+      "period": "Period",
+      "time": "Time",
+      "description": "Description"
+    },
+    "items": [
+      {
+        "period": "Morning Bell",
+        "time": "7:55 AM",
+        "description": "First bell - students proceed to assembly",
+        "show": true
+      },
+      {
+        "period": "Period 1",
+        "time": "8:15 AM",
+        "description": "Class begins",
+        "show": true
+      },
+      {
+        "period": "Period 2",
+        "time": "9:00 AM",
+        "description": "Change of periods",
+        "show": true
+      },
+      {
+        "period": "Short Break",
+        "time": "9:45 AM",
+        "description": "Break bell",
+        "show": true
+      },
+      {
+        "period": "Period 3",
+        "time": "10:00 AM",
+        "description": "Classes resume",
+        "show": true
+      },
+      {
+        "period": "Period 4",
+        "time": "10:45 AM",
+        "description": "Change of periods",
+        "show": true
+      },
+      {
+        "period": "Period 5",
+        "time": "11:30 AM",
+        "description": "Change of periods",
+        "show": true
+      },
+      {
+        "period": "Lunch Break",
+        "time": "12:15 PM",
+        "description": "Lunch bell",
+        "show": true
+      },
+      {
+        "period": "Period 6",
+        "time": "1:00 PM",
+        "description": "Classes resume after lunch",
+        "show": true
+      },
+      {
+        "period": "Period 7",
+        "time": "1:45 PM",
+        "description": "Change of periods",
+        "show": true
+      },
+      {
+        "period": "Period 8",
+        "time": "2:30 PM",
+        "description": "Change of periods",
+        "show": true
+      },
+      {
+        "period": "Dispersal",
+        "time": "3:15 PM",
+        "description": "Final bell - end of school day",
+        "show": true
+      }
+    ]
+  },
+  "transport": {
+    "show": true,
+    "title": "Transportation Schedule",
+    "description": "School bus timings for different routes and zones",
+    "labels": {
+      "route": "Route",
+      "morningPickup": "Morning Pickup",
+      "afternoonDropoff": "Afternoon Dropoff",
+      "stops": "Stops"
+    },
+    "items": [
+      {
+        "route": "Route 1 - North Zone",
+        "morningPickup": "7:00 AM - 7:45 AM",
+        "afternoonDropoff": "3:30 PM - 4:15 PM",
+        "stops": "Sector 12, Main Market, Park Road",
+        "show": true
+      },
+      {
+        "route": "Route 2 - East Zone",
+        "morningPickup": "6:45 AM - 7:30 AM",
+        "afternoonDropoff": "3:45 PM - 4:30 PM",
+        "stops": "River Side, Temple Area, Bus Stand",
+        "show": true
+      },
+      {
+        "route": "Route 3 - South Zone",
+        "morningPickup": "7:15 AM - 8:00 AM",
+        "afternoonDropoff": "3:15 PM - 4:00 PM",
+        "stops": "Industrial Area, Hospital Road, Railway Station",
+        "show": true
+      },
+      {
+        "route": "Route 4 - West Zone",
+        "morningPickup": "6:30 AM - 7:15 AM",
+        "afternoonDropoff": "4:00 PM - 4:45 PM",
+        "stops": "Farm Area, Village Road, Highway Point",
+        "show": true
+      }
+    ],
+    "policiesTitle": "Transportation Policies",
+    "policies": [
+      {
+        "text": "Students must be at stops 5 minutes before scheduled pickup time",
+        "show": true
+      },
+      {
+        "text": "Late students will not be waited for beyond 2 minutes",
+        "show": true
+      },
+      {
+        "text": "Route changes require 48 hours advance notice",
+        "show": true
+      }
+    ],
+    "safetyTitle": "Safety Information",
+    "safety": [
+      {
+        "text": "All buses equipped with GPS tracking and speed governors",
+        "show": true
+      },
+      {
+        "text": "Female attendants on all buses with primary students",
+        "show": true
+      },
+      {
+        "text": "Emergency contact numbers displayed inside each bus",
+        "show": true
+      }
+    ]
+  },
+  "resources": {
+    "show": true,
+    "title": "Schedule Resources",
+    "description": "Download important timing-related documents and forms",
+    "downloadLabel": "Download",
+    "items": [
+      {
+        "title": "Complete School Calendar",
+        "description": "Full academic year schedule with holidays",
+        "format": "PDF",
+        "size": "1.2 MB",
+        "icon": "Calendar",
+        "link": "#",
+        "show": true
+      },
+      {
+        "title": "Daily Schedule Handbook",
+        "description": "Detailed daily timings for all grades",
+        "format": "PDF",
+        "size": "0.8 MB",
+        "icon": "Book",
+        "show": true
+      },
+      {
+        "title": "Transport Route Map",
+        "description": "Detailed map of all bus routes",
+        "format": "PDF",
+        "size": "2.1 MB",
+        "icon": "MapPin",
+        "show": true
+      },
+      {
+        "title": "Bell Schedule Chart",
+        "description": "Visual representation of daily bell timings",
+        "format": "PDF",
+        "size": "0.5 MB",
+        "icon": "Bell",
+        "show": true
+      }
+    ]
+  },
+  "cta": {
+    "show": true,
+    "title": "Stay Organized with Our Schedules",
+    "description": "Download our comprehensive schedules and plan your academic year effectively",
+    "buttons": [
+      {
+        "label": "View Full Calendar",
+        "variant": "primary",
+        "link": "#",
+        "show": true
+      },
+      {
+        "label": "Contact Transport Office",
+        "variant": "secondary",
+        "link": "#",
+        "show": true
+      }
+    ]
+  }
+}

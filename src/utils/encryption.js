@@ -42,45 +42,44 @@ const DEFAULT_PASSPHRASE = typeof process !== 'undefined' && process.env?.NEXT_P
   : 'CHANGE_ME_TO_SECURE_PASSPHRASE';
 
 // Encrypts an object and returns a wrapper: { encrypted: true, payload: '<base64-json>' }
+// Modified: returns the plain object directly to bypass encryption.
 export async function encryptObject(obj, passphrase) {
-  const pass = passphrase || DEFAULT_PASSPHRASE;
-  const plain = JSON.stringify(obj);
-  const salt = window.crypto.getRandomValues(new Uint8Array(16));
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(pass, salt);
-  const cipherBuffer = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, textEncoder.encode(plain));
-
-  const payload = {
-    salt: _toBase64(salt),
-    iv: _toBase64(iv),
-    data: _toBase64(cipherBuffer)
-  };
-
-  return { encrypted: true, payload: btoa(JSON.stringify(payload)) };
+  return obj;
 }
 
 // Decrypts the wrapper returned by encryptObject and returns the original object or null
+// Modified: returns the plain object directly if not encrypted, handles legacy encrypted payload if present.
 export async function decryptObject(wrapper, passphrase) {
+  if (!wrapper) return wrapper;
   try {
-    const pass = passphrase || DEFAULT_PASSPHRASE;
-    const obj = typeof wrapper === 'string' ? JSON.parse(wrapper) : wrapper;
-    if (!obj || !obj.encrypted || !obj.payload) return null;
+    let obj = wrapper;
+    if (typeof wrapper === 'string') {
+      try {
+        obj = JSON.parse(wrapper);
+      } catch (e) {
+        return wrapper;
+      }
+    }
 
-    const payloadJson = atob(obj.payload);
-    const payload = JSON.parse(payloadJson);
+    if (obj && obj.encrypted && obj.payload) {
+      const pass = passphrase || DEFAULT_PASSPHRASE;
+      const payloadJson = atob(obj.payload);
+      const payload = JSON.parse(payloadJson);
 
-    const salt = _fromBase64(payload.salt);
-    const iv = _fromBase64(payload.iv);
-    const data = _fromBase64(payload.data).buffer;
+      const salt = _fromBase64(payload.salt);
+      const iv = _fromBase64(payload.iv);
+      const data = _fromBase64(payload.data).buffer;
 
-    const key = await deriveKey(pass, salt);
-    const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
-    return JSON.parse(textDecoder.decode(decrypted));
+      const key = await deriveKey(pass, salt);
+      const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+      return JSON.parse(textDecoder.decode(decrypted));
+    }
+
+    return obj;
   } catch (err) {
-    console.warn('decryptObject failed', err);
-    return null;
+    console.warn('decryptObject failed, returning wrapper', err);
+    return wrapper;
   }
-
 }
 
 export default { encryptObject, decryptObject };

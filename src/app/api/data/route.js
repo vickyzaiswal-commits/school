@@ -223,13 +223,16 @@ function saveSingleRecord(modelName) {
     const filename = fileMappings[modelName] || `${modelName.toLowerCase()}.json`;
     const filePath = path.join(process.cwd(), "src/data", filename);
     try {
-      const { payload } = body;
+      const payload = body?.payload ?? body;
+      const normalizedPayload = payload && typeof payload === "object" && payload.encrypted && payload.payload
+        ? payload.payload
+        : payload;
       
       // Ensure the directory exists
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       
       // Write JSON to file
-      await fs.writeFile(filePath, JSON.stringify(payload, null, 2), "utf-8");
+      await fs.writeFile(filePath, JSON.stringify(normalizedPayload, null, 2), "utf-8");
       
       return {
         status: 200,
@@ -256,7 +259,10 @@ function getAllRecords(modelName) {
     const filePath = path.join(process.cwd(), "src/data", filename);
     try {
       const fileContent = await fs.readFile(filePath, "utf-8");
-      const payload = JSON.parse(fileContent);
+      const parsedPayload = JSON.parse(fileContent);
+      const payload = parsedPayload && typeof parsedPayload === "object" && parsedPayload.encrypted && parsedPayload.payload
+        ? parsedPayload.payload
+        : parsedPayload;
       return {
         status: 200,
         message: `${modelName} retrieved successfully`,
@@ -302,11 +308,40 @@ export async function POST(request) {
   try {
     const { action, ...body } = await request.json();
 
-    if (!handlers[action]) {
-      return NextResponse.json({ message: "Invalid action" }, { status: 400 });
+    let handler = handlers[action];
+    
+    if (!handler && typeof action === "string") {
+      let normalizedAction = action;
+      
+      // Strip trailing _data suffix
+      if (normalizedAction.endsWith("_data")) {
+        normalizedAction = normalizedAction.replace(/_data$/, "");
+      }
+      
+      // Normalize common alias variations
+      if (normalizedAction === "save_contact") normalizedAction = "save_contact_us";
+      if (normalizedAction === "get_all_contact") normalizedAction = "get_all_contact_us";
+      if (normalizedAction === "delete_contact") normalizedAction = "delete_contact_us";
+      
+      if (normalizedAction === "save_preprimary") normalizedAction = "save_pre_primary_school";
+      if (normalizedAction === "get_all_preprimary") normalizedAction = "get_all_pre_primary_school";
+      
+      if (normalizedAction === "save_primary") normalizedAction = "save_primaryschool";
+      if (normalizedAction === "get_all_primary") normalizedAction = "get_all_primaryschool";
+      
+      if (normalizedAction === "save_middle") normalizedAction = "save_middleschool";
+      if (normalizedAction === "get_all_middle") normalizedAction = "get_all_middleschool";
+      
+      if (normalizedAction === "save_senior") normalizedAction = "save_seniorschool";
+      if (normalizedAction === "get_all_senior") normalizedAction = "get_all_seniorschool";
+
+      handler = handlers[normalizedAction];
     }
 
-    const handler = handlers[action];
+    if (!handler) {
+      return NextResponse.json({ message: `Invalid action: ${action}` }, { status: 400 });
+    }
+
     const result = await handler(body);
 
     return NextResponse.json(result, { status: result.status });

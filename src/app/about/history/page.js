@@ -1,4 +1,6 @@
 "use client";
+import defaultData from '@/data/history.json';
+
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar,
@@ -29,10 +31,8 @@ import {
 import Image from 'next/image';
 import { apiRequest } from '@/utils/apiRequest';
 import FileUpload from '@/utils/fileUpload';
-import { encryptObject, decryptObject } from '@/utils/encryption';
 import Spinner from '@components/Spinner/Spinner';
-
-import defaultData from '@/data/history.json';
+import historyData from '@/data/history.json';
 
 const OurHistoryPage = () => {
   const [activeTimeline, setActiveTimeline] = useState(0);
@@ -64,21 +64,6 @@ const OurHistoryPage = () => {
           return;
         }
 
-        // If it's an encrypted wrapper, attempt to decrypt
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn('Failed to decrypt stored ecareUser', e);
-            setRole(null);
-            return;
-          }
-        }
-
-        // Otherwise parsed is likely the user object or a wrapper with `user`
         const user = parsed.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
@@ -89,6 +74,9 @@ const OurHistoryPage = () => {
 
     initRole();
   }, []);
+
+  // Default data structure
+  
 
   // Icon mapping for rendering
   const iconMap = {
@@ -122,8 +110,8 @@ const OurHistoryPage = () => {
     callToAction: 'showCTA'
   };
 
-  // Initialize data with default
-  const [data, setData] = useState(defaultData);
+  // Initialize data with the dedicated JSON file fallback
+  const [data, setData] = useState(historyData || defaultData);
 
   // Manage Section Visibility modal state
   const [sectionVisibilityModal, setSectionVisibilityModal] = useState(false);
@@ -195,9 +183,7 @@ const OurHistoryPage = () => {
         version: '1.0'
       };
 
-      // Encrypt payload before sending
-      const encrypted = await encryptObject(payload);
-      const res = await apiRequest('save_data/save_history', { payload: encrypted });
+      const res = await apiRequest('save_data/save_history', { payload });
       if (res?.status === 200) {
         setSectionVisibilityModal(false);
       } else {
@@ -255,46 +241,7 @@ const OurHistoryPage = () => {
   }, [role]);
 
   // Fetch data from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_history_data', {});
-       
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          const fetchedRaw = res.data[0]?.data || {};
-          
-
-          let fetchedData = fetchedRaw;
-          // If server sent encrypted wrapper (object or JSON string), attempt to decrypt
-          if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
-            const decrypted = await decryptObject(fetchedRaw);
-            if (decrypted) {
-              fetchedData = decrypted;
-            } else {
-              // If decryption failed but server returned a JSON string, try parsing
-              try {
-                fetchedData = JSON.parse(fetchedRaw);
-              } catch (e) {
-                console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
-                fetchedData = {};
-              }
-            }
-          }
-
-         
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-        
-          setData(defaultData);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setData(defaultData);
-      }
-    };
- 
-    fetchData();
-  }, []);
+  
 
   // IntersectionObserver for animations
   useEffect(() => {
@@ -387,9 +334,7 @@ const OurHistoryPage = () => {
 
       
 
-      // Encrypt payload before sending
-      const encryptedPayload = await encryptObject(payload);
-      const save_data = await apiRequest('save_data/save_history', { payload: encryptedPayload });
+      const save_data = await apiRequest('save_data/save_history', { payload });
       
 
       if (save_data?.status === 200) {

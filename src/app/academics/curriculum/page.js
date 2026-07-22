@@ -30,7 +30,6 @@ import {
   Send
 } from 'lucide-react';
 import { apiRequest } from '@/utils/apiRequest';
-import { encryptObject, decryptObject } from '@/utils/encryption';
 import FileUpload from '@/utils/fileUpload';
 import Image from 'next/image';
 
@@ -55,18 +54,6 @@ const CurriculumPage = () => {
         if (!raw) { setRole(null); return; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn('Failed to decrypt stored ecareUser', e);
-            setRole(null);
-            return;
-          }
-        }
         const user = parsed.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
@@ -129,39 +116,7 @@ const CurriculumPage = () => {
   }, [role]);
 
   // Fetch data from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_curriculum_data', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedRaw = res.data[0]?.data || {};
-
-          let fetchedData = fetchedRaw;
-          if (typeof fetchedRaw === 'string' || (fetchedRaw && typeof fetchedRaw === 'object' && fetchedRaw.encrypted)) {
-            const decrypted = await decryptObject(fetchedRaw);
-            if (decrypted) fetchedData = decrypted;
-            else {
-              try {
-                fetchedData = JSON.parse(fetchedRaw);
-              } catch (e) {
-                console.warn('Failed to parse fetchedRaw as JSON and decryption failed');
-                fetchedData = {};
-              }
-            }
-          }
-
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-          setData(defaultData);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setData(defaultData);
-      }
-    };
- 
-    fetchData();
-  }, []);
+  
 
   // IntersectionObserver for animations
   useEffect(() => {

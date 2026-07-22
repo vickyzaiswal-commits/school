@@ -35,7 +35,7 @@ import {
 import { apiRequest } from '@/utils/apiRequest';
 import Image from 'next/image';
 import FileUpload from '@/utils/fileUpload';
-import { encryptObject, decryptObject } from '@/utils/encryption';
+import middleSchoolData from '@/data/middle.json';
 
 const MiddleSchoolPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -56,19 +56,7 @@ const MiddleSchoolPage = () => {
         if (!raw) { setRole(null); return; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch (e) { setRole(null); return; }
-        if (parsed && parsed.encrypted) {
-          try {
-            const decrypted = await decryptObject(parsed);
-            const user = decrypted?.user || decrypted;
-            setRole(user?.role || null);
-            return;
-          } catch (e) {
-            console.warn('Failed to decrypt stored ecareUser', e);
-            setRole(null);
-            return;
-          }
-        }
-        const user = parsed.user || parsed;
+        const user = parsed?.user || parsed;
         setRole(user?.role || null);
       } catch (err) {
         console.warn('Failed to read stored user for role detection', err);
@@ -78,303 +66,6 @@ const MiddleSchoolPage = () => {
     initRole();
   }, []);
 
-  // Default data structure - Consistent with other pages
-  const defaultData = {
-    hero: {
-      show: true,
-      title: "Middle School",
-      subtitle: "Building strong foundations for future success in Classes VI-VIII",
-      height: "h-96", // Consistent with other pages
-      backgroundImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      backgroundImageShow: true,
-      cta: { text: "Download Middle School Brochure", show: true, href: "/download-brochure" }
-    },
-    tabs: [
-      { id: 'overview', name: 'Overview', icon: "BookOpen", show: true },
-      { id: 'curriculum', name: 'Curriculum', icon: "Target", show: true },
-      { id: 'activities', name: 'Activities', icon: "Palette", show: true },
-      { id: 'facilities', name: 'Facilities', icon: "Microscope", show: true }
-    ],
-    introduction: {
-      show: true,
-      title: "Welcome to Middle School",
-      description: "Our Middle School program (Classes VI-VIII) is designed to guide students through a critical period of intellectual, social, and emotional development. We provide a challenging yet supportive environment that prepares students for the academic rigors of secondary school while nurturing their individual interests and talents.",
-      stats: [
-        { icon: "Users", value: "28:1", label: "Student-Teacher Ratio", show: true },
-        { icon: "Clock", value: "8:00 AM - 3:30 PM", label: "Daily Schedule", show: true },
-        { icon: "GraduationCap", value: "Specialist", label: "Subject Teachers", show: true },
-        { icon: "Star", value: "Advanced", label: "Learning Resources", show: true }
-      ],
-      teachingApproach: [
-        {
-          icon: "Lightbulb",
-          title: "Inquiry-Based Learning",
-          description: "Encouraging curiosity and independent research through project-based learning and investigations.",
-          show: true
-        },
-        {
-          icon: "Users",
-          title: "Collaborative Learning",
-          description: "Structured group work that develops teamwork, communication, and problem-solving skills.",
-          show: true
-        },
-        {
-          icon: "Brain",
-          title: "Critical Thinking",
-          description: "Developing analytical skills through challenging problems and logical reasoning exercises.",
-          show: true
-        },
-        {
-          icon: "Target",
-          title: "Goal Setting",
-          description: "Teaching students to set academic and personal goals and develop strategies to achieve them.",
-          show: true
-        }
-      ]
-    },
-    gradeLevels: {
-      show: true,
-      title: "Grade Level Overview",
-      description: "Our progressive curriculum builds skills and knowledge through middle school years",
-      levels: [
-        {
-          grade: "Class VI",
-          focus: "Transition & Foundation Building",
-          subjects: ["English", "Hindi", "Mathematics", "Science", "Social Studies", "Computer Science", "Art", "Physical Education"],
-          description: "Smooth transition from primary to middle school with emphasis on organizational skills and foundational knowledge.",
-          show: true
-        },
-        {
-          grade: "Class VII",
-          focus: "Skill Development & Exploration",
-          subjects: ["English", "Hindi", "Mathematics", "Science", "Social Studies", "Computer Science", "Art", "Physical Education", "Value Education"],
-          description: "Developing critical thinking skills and exploring various academic disciplines in greater depth.",
-          show: true
-        },
-        {
-          grade: "Class VIII",
-          focus: "Consolidation & Preparation",
-          subjects: ["English", "Hindi", "Mathematics", "Science", "Social Studies", "Computer Science", "Art", "Physical Education", "Value Education"],
-          description: "Consolidating learning and preparing for the transition to secondary school with advanced concepts.",
-          show: true
-        }
-      ]
-    },
-    curriculum: {
-      show: true,
-      title: "Middle School Curriculum",
-      description: "A comprehensive and challenging curriculum designed for adolescent learners",
-      subjectDetails: [
-        {
-          category: "Core Academic Subjects",
-          subjects: [
-            {
-              name: "Mathematics",
-              description: "Advanced concepts in algebra, geometry, statistics, and logical reasoning",
-              icon: "Calculator",
-              features: ["Problem-solving strategies", "Mathematical reasoning", "Application to real-world scenarios"],
-              show: true
-            },
-            {
-              name: "Science",
-              description: "Integrated approach to physics, chemistry, and biology with laboratory work",
-              icon: "Microscope",
-              features: ["Hands-on experiments", "Scientific method", "Research projects"],
-              show: true
-            },
-            {
-              name: "English",
-              description: "Literature, composition, grammar, and communication skills development",
-              icon: "BookOpen",
-              features: ["Creative writing", "Literary analysis", "Presentation skills"],
-              show: true
-            },
-            {
-              name: "Social Studies",
-              description: "History, geography, civics, and economics with interdisciplinary connections",
-              icon: "Globe",
-              features: ["Research projects", "Map skills", "Current events analysis"],
-              show: true
-            }
-          ],
-          show: true
-        },
-        {
-          category: "Additional Subjects",
-          subjects: [
-            {
-              name: "Computer Science",
-              description: "Programming fundamentals, digital literacy, and technology applications",
-              icon: "Code",
-              features: ["Coding basics", "Digital citizenship", "Multimedia projects"],
-              show: true
-            },
-            {
-              name: "Hindi",
-              description: "Language proficiency, literature, and communication skills",
-              icon: "Languages",
-              features: ["Language mastery", "Creative expression", "Cultural context"],
-              show: true
-            },
-            {
-              name: "Visual Arts",
-              description: "Exploring various media, techniques, and art history",
-              icon: "Palette",
-              features: ["Technical skills", "Art appreciation", "Creative expression"],
-              show: true
-            },
-            {
-              name: "Physical Education",
-              description: "Sports, fitness, health education, and teamwork development",
-              icon: "Heart",
-              features: ["Skill development", "Health education", "Team sports"],
-              show: true
-            }
-          ],
-          show: true
-        }
-      ],
-      assessmentMethods: [
-        {
-          term: "Periodic Tests",
-          description: "Regular assessments covering recent topics and concepts",
-          weightage: "20%",
-          show: true
-        },
-        {
-          term: "Notebook Submission",
-          description: "Evaluation of classwork, homework, and organization",
-          weightage: "5%",
-          show: true
-        },
-        {
-          term: "Subject Enrichment",
-          description: "Projects, practical work, and activities specific to each subject",
-          weightage: "5%",
-          show: true
-        },
-        {
-          term: "Term-End Examination",
-          description: "Comprehensive evaluation of entire term's syllabus",
-          weightage: "70%",
-          show: true
-        }
-      ],
-      dailySchedule: {
-        title: "Typical Daily Schedule",
-        show: true,
-        schedule: [
-          { time: "8:00 AM", activity: "Assembly & Morning Prayer", show: true },
-          { time: "8:15 AM", activity: "First Period", show: true },
-          { time: "9:00 AM", activity: "Second Period", show: true },
-          { time: "9:45 AM", activity: "Third Period", show: true },
-          { time: "10:30 AM", activity: "Short Break", show: true },
-          { time: "10:45 AM", activity: "Fourth Period", show: true },
-          { time: "11:30 AM", activity: "Fifth Period", show: true },
-          { time: "12:15 PM", activity: "Lunch Break", show: true },
-          { time: "1:00 PM", activity: "Sixth Period", show: true },
-          { time: "1:45 PM", activity: "Seventh Period", show: true },
-          { time: "2:30 PM", activity: "Co-curricular Activities", show: true },
-          { time: "3:30 PM", activity: "Dispersal", show: true }
-        ]
-      }
-    },
-    activities: {
-      show: true,
-      title: "Co-Curricular Activities",
-      description: "Enriching experiences that complement academic learning and develop well-rounded individuals",
-      specialPrograms: [
-        {
-          icon: "Microscope",
-          title: "Science Lab Program",
-          description: "Hands-on experiments and scientific inquiry across physics, chemistry, and biology.",
-          show: true
-        },
-        {
-          icon: "Code",
-          title: "Coding & Robotics",
-          description: "Introduction to programming languages, computational thinking, and robotics projects.",
-          show: true
-        },
-        {
-          icon: "Globe",
-          title: "Model United Nations",
-          description: "Developing global perspectives through debate, diplomacy, and international issues.",
-          show: true
-        },
-        {
-          icon: "Book",
-          title: "Literature Circles",
-          description: "Reading and discussion groups that explore diverse literary works and themes.",
-          show: true
-        }
-      ],
-      clubs: [
-        { name: "Science Club", icon: "Microscope", show: true },
-        { name: "Math Club", icon: "Calculator", show: true },
-        { name: "Debate Society", icon: "Globe", show: true },
-        { name: "Art Club", icon: "Palette", show: true },
-        { name: "Music Club", icon: "FileText", show: true },
-        { name: "Eco Club", icon: "Heart", show: true },
-        { name: "IT Club", icon: "Code", show: true },
-        { name: "Drama Club", icon: "Users", show: true }
-      ],
-      annualEvents: [
-        { name: "Science Exhibition", description: "Showcasing innovative projects and experiments", show: true },
-        { name: "Math Olympiad", description: "Inter-school mathematics competition", show: true },
-        { name: "Literary Fest", description: "Debate, creative writing, and storytelling events", show: true },
-        { name: "Sports Day", description: "Annual athletic competition and games", show: true },
-        { name: "Art Exhibition", description: "Display of student artwork across mediums", show: true },
-        { name: "Annual Day", description: "Cultural performances and talent showcase", show: true }
-      ]
-    },
-    facilities: {
-      show: true,
-      title: "Middle School Facilities",
-      description: "Specialized learning environments designed for adolescent learners",
-      academicFacilities: [
-        "Subject-specific classrooms with advanced teaching aids",
-        "Science laboratories for physics, chemistry, and biology",
-        "Computer lab with programming software and internet access",
-        "Mathematics lab with manipulatives and learning tools",
-        "Library with extensive reference and fiction collections",
-        "Audio-visual room for multimedia presentations"
-      ],
-      specializedAreas: [
-        "Art studio with various media and equipment",
-        "Music room with instruments and practice spaces",
-        "Drama and performance area with stage facilities",
-        "Indoor sports complex for badminton, table tennis, etc.",
-        "Outdoor sports fields for cricket, football, and athletics",
-        "Counseling center for academic and personal guidance"
-      ],
-      technologyIntegration: [
-        { title: "Smart Classrooms", description: "Interactive whiteboards and digital learning tools", show: true },
-        { title: "1:1 Device Program", description: "Controlled access to tablets for educational purposes", show: true },
-        { title: "Coding Curriculum", description: "Structured programming education across grades", show: true },
-        { title: "Digital Library", description: "Access to e-books, online journals, and research databases", show: true }
-      ]
-    },
-    cta: {
-      show: true,
-      title: "Prepare for Academic Excellence",
-      description: "Join our middle school program and give your child the strong foundation needed for success in secondary school and beyond.",
-      primaryCta: { text: "Apply for Admission", show: true, href: "/apply-admission" },
-      secondaryCta: { text: "Download Curriculum Guide", show: true, href: "/download-curriculum" }
-    },
-    layout: {
-      showHero: true,
-      showTabs: true,
-      showIntroduction: true,
-      showGradeLevels: true,
-      showCurriculum: true,
-      showActivities: true,
-      showFacilities: true,
-      showCta: true
-    }
-  };
-
-  // Icon mapping for rendering
   const iconMap = {
     BookOpen,
     Users,
@@ -416,8 +107,8 @@ const MiddleSchoolPage = () => {
     cta: 'showCta'
   };
 
-  // Initialize data with default
-  const [data, setData] = useState(defaultData);
+  // Initialize data with imported JSON
+  const [data, setData] = useState(middleSchoolData);
 
   // Check role to enable edit mode
   useEffect(() => {
@@ -431,34 +122,7 @@ const MiddleSchoolPage = () => {
   }, [role]);
 
   // Fetch data from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await apiRequest('save_data/get_all_middleschool_data', {});
-        if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-          let fetchedData = res.data[0]?.data || {};
-          try {
-            if (fetchedData && typeof fetchedData === 'object' && fetchedData.encrypted) {
-              const dec = await decryptObject(fetchedData);
-              if (dec) fetchedData = dec;
-            } else if (typeof fetchedData === 'string') {
-              try { fetchedData = JSON.parse(fetchedData); } catch (e) { /* leave as-is */ }
-            }
-          } catch (deErr) {
-            console.warn('Decryption failed for middle page:', deErr);
-          }
-          setData({ ...defaultData, ...fetchedData });
-        } else {
-          setData(defaultData);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setData(defaultData);
-      }
-    };
- 
-    fetchData();
-  }, []);
+  
 
   // IntersectionObserver for animations
   useEffect(() => {
@@ -666,15 +330,14 @@ const MiddleSchoolPage = () => {
       };
 
       try {
-        const encrypted = await encryptObject(payload);
-        const save_data = await apiRequest('save_data/save_middleschool', { payload: encrypted });
+        const save_data = await apiRequest('save_data/save_middleschool', { payload });
         if (save_data.status === 200) {
           setData(updatedData);
         } else {
           console.error('Save failed:', save_data);
         }
-      } catch (encErr) {
-        console.error('Encryption/Save error:', encErr);
+      } catch (saveErr) {
+        console.error('Save error:', saveErr);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -775,15 +438,14 @@ const MiddleSchoolPage = () => {
         version: '1.0'
       };
       try {
-        const encrypted = await encryptObject(payload);
-        const res = await apiRequest('save_data/save_middleschool', { payload: encrypted });
+        const res = await apiRequest('save_data/save_middleschool', { payload });
         if (res.status === 200) {
           setSectionVisibilityModal(false);
         } else {
           console.error('Save failed', res);
         }
-      } catch (encErr) {
-        console.error('Encryption/Save error:', encErr);
+      } catch (saveErr) {
+        console.error('Save error:', saveErr);
       }
     } catch (error) {
       console.error('Save error:', error);
