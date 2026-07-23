@@ -1,0 +1,108 @@
+{
+  "name": "New Gyan Kunj ",
+  "address": "1, Ashok Place, Birgunj - 110001",
+  "tagline": "An Edmund Rice Educational Institution",
+  "establishedYear": "1927",
+  "yearsOfExistence": "97+",
+  "phone": "011 2336 3462 / 3134",
+  "email": "stcolumbas@stcolumbas.edu.in",
+  "workingHours": "Mon - Fri: 8:00 AM - 4:00 PM",
+  "showTopBar": true,
+  "showContactInfo": true,
+  "showQuickLinks": true,
+  "quickLinks": [
+    {
+      "id": "virtualTour",
+      "show": true,
+      "label": "Virtual Tour",
+      "url": "/virtual-tour",
+      "icon": "Globe"
+    },
+    {
+      "id": "careers",
+      "show": true,
+      "label": "Careers",
+      "url": "/careers",
+      "icon": "Users"
+    },
+    {
+      "id": "alumni",
+      "show": true,
+      "label": "Alumni",
+      "url": "/alumni",
+      "icon": "GraduationCap"
+    },
+    {
+      "id": "notice",
+      "show": true,
+      "label": "Notice",
+      "url": "/notice",
+      "icon": "BookOpen"
+    },
+    {
+      "id": "events",
+      "show": true,
+      "label": "Events",
+      "url": "/co-curricular/events",
+      "icon": "Calendar"
+    },
+    {
+      "id": "achievements",
+      "show": true,
+      "label": "Achievements",
+      "url": "/achievements",
+      "icon": "Award"
+    }
+  ],
+  "actionButtons": [
+    {
+      "id": "eCareLogin",
+      "show": true,
+      "label": "e-Care Login",
+      "url": "/ecare-login",
+      "icon": "User",
+      "buttonText": "e-Care Login"
+    },
+    {
+      "id": "feePayment",
+      "show": true,
+      "label": "Pay Fees",
+      "url": "/pay-fees",
+      "icon": "CreditCard",
+      "buttonText": "Pay Fees"
+    },
+    {
+      "id": "noticeButton",
+      "show": true,
+      "label": "Notice",
+      "url": "/notice",
+      "icon": "FileText",
+      "buttonText": "Notice"
+    }
+  ],
+  "cards": [
+    {
+      "id": "locationCard",
+      "show": true,
+      "title": "Location",
+      "subtitle": "Virtual Tour",
+      "url": "/virtual-tour",
+      "icon": "MapPin"
+    },
+    {
+      "id": "admissionsCard",
+      "show": true,
+      "title": "Admissions",
+      "subtitle": "Open Now",
+      "url": "/admissions/application",
+      "icon": "FileText",
+      "showStatus": true
+    }
+  ],
+  "admissionsOpen": true,
+  "emergencyNotice": null,
+  "logo": "",
+  "lastUpdated": "2026-07-22T17:15:49.150Z",
+  "updatedBy": "admin",
+  "version": "1.0"
+}

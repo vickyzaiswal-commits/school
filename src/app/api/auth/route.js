@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import os from "os";
 
 const LOGIN_FILE_PATH = path.join(process.cwd(), "src/data/login.json");
+const TMP_LOGIN_FILE_PATH = path.join(os.tmpdir(), "login.json");
 
 const FAILED_LOGINS = new Map();
 const MAX_ATTEMPTS = 5;
@@ -39,17 +41,32 @@ function clearFailedAttempts(key) {
 // Helper to read users
 async function readUsers() {
   try {
-    const data = await fs.readFile(LOGIN_FILE_PATH, "utf-8");
-    return JSON.parse(data);
-  } catch (err) {
-    console.error("Error reading login.json, returning empty list:", err);
-    return [];
+    const tmpData = await fs.readFile(TMP_LOGIN_FILE_PATH, "utf-8");
+    return JSON.parse(tmpData);
+  } catch (tmpErr) {
+    try {
+      const data = await fs.readFile(LOGIN_FILE_PATH, "utf-8");
+      return JSON.parse(data);
+    } catch (err) {
+      console.error("Error reading login.json, returning empty list:", err);
+      return [];
+    }
   }
 }
 
 // Helper to write users
 async function writeUsers(users) {
-  await fs.writeFile(LOGIN_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
+  try {
+    await fs.mkdir(path.dirname(LOGIN_FILE_PATH), { recursive: true });
+    await fs.writeFile(LOGIN_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Could not write to project login.json (read-only filesystem), falling back to tmp:", err.message);
+    try {
+      await fs.writeFile(TMP_LOGIN_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
+    } catch (tmpErr) {
+      console.error("Failed to write users to tmp:", tmpErr.message);
+    }
+  }
 }
 
 export async function POST(request) {

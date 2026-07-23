@@ -3,9 +3,21 @@ import axios from "axios";
 
 const getBaseUrl = () => {
   const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  // If running in browser and env URL is localhost but current origin is not localhost, use relative path
-  if (typeof window !== 'undefined' && envUrl && envUrl.includes('localhost') && !window.location.hostname.includes('localhost')) {
-    return '';
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.hostname === '::1';
+    
+    // If running on localhost in browser but envUrl points to an external server or different host,
+    // use relative path so requests hit the local Next.js dev server.
+    if (isLocalhost && envUrl && !envUrl.includes(window.location.host)) {
+      return '';
+    }
+
+    // If envUrl is localhost but running in browser on remote host, use relative path.
+    if (envUrl && envUrl.includes('localhost') && !isLocalhost) {
+      return '';
+    }
   }
   return envUrl || "";
 };
@@ -40,6 +52,18 @@ export const apiRequest = async (endpoint, payload = {}) => {
     });
     return response.data;
   } catch (error) {
+    // If fullUrl was absolute and failed due to a network error, attempt fallback to relative /api route
+    if (base && (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || !error.response)) {
+      const fallbackUrl = `/api/${url}`;
+      try {
+        const fallbackResponse = await axios.post(fallbackUrl, body, {
+          headers: { "Content-Type": "application/json" }
+        });
+        return fallbackResponse.data;
+      } catch (fallbackError) {
+        // preserve original error if fallback also fails
+      }
+    }
     console.error(`API Error [${endpoint}]:`, error.response?.data || error.message);
     throw error;
   }

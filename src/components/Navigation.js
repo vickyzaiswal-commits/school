@@ -38,6 +38,7 @@ import {
   Send,
   Download as DownloadIcon
 } from 'lucide-react';
+import defaultNavItems from '@/data/navigation.json';
 
 const Navigation = ({ schoolData = {} }) => {
   const [role, setRole] = useState(null);
@@ -93,74 +94,7 @@ const Navigation = ({ schoolData = {} }) => {
     Menu, X, Edit, Plus, Ban, Send, DownloadIcon
   };
 
-  const defaultNavItems = [
-    { name: 'Home', href: '/', icon: 'Home', show: true },
-    {
-      name: 'About Us', href: '/about', icon: 'Users', show: true,
-      dropdown: [
-        { name: 'Our History', href: '/about/history', desc: 'School legacy', icon: 'Clock', show: true },
-        { name: 'Vision & Mission', href: '/about/vision-mission', desc: 'Our guiding principles', icon: 'Target', show: true },
-        { name: 'Principal\'s Message', href: '/about/principal-message', desc: 'Leadership perspective', icon: 'UserCheck', show: true },
-        { name: 'School Infrastructure', href: '/about/infrastructure', desc: 'Campus facilities', icon: 'Building', show: true }
-      ]
-    },
-    {
-      name: 'Academics', href: '/academics', icon: 'BookOpen', show: true,
-      dropdown: [
-        { name: 'Curriculum', href: '/academics/curriculum', desc: 'Academic framework', icon: 'Book', show: true },
-        { name: 'Pre-Primary School', href: '/academics/pre-primary', desc: 'Early years', icon: 'Book', show: true },
-        { name: 'Primary School', href: '/academics/primary', desc: 'Foundation years', icon: 'GraduationCap', show: true },
-        { name: 'Middle School', href: '/academics/middle', desc: 'Developing skills', icon: 'Calculator', show: true },
-        { name: 'Senior School', href: '/academics/senior', desc: 'Specialized learning', icon: 'Library', show: true },
-        { name: 'Higher Education', href: '/academics/higher-education', desc: 'Undergraduate & postgraduate', icon: 'GraduationCap', show: true }
-      ]
-    },
-    {
-      name: 'Admissions', href: '/admissions', icon: 'FileText', show: true,
-      dropdown: [
-        { name: 'Admission Process', href: '/admissions/process', desc: 'Step-by-step guide', icon: 'ArrowRight', show: true },
-        { name: 'Application Form', href: '/admissions/application', desc: 'Apply online', icon: 'FileText', show: true },
-        { name: 'Fee Structure', href: '/admissions/fees', desc: 'Financial information', icon: 'Calculator', show: true }
-      ]
-    },
-    {
-      name: 'Co-Curricular', href: '/co-curricular', icon: 'Palette', show: true,
-      dropdown: [
-        { name: 'Sports', href: '/co-curricular/sports', desc: 'Physical education programs', icon: 'Activity', show: true },
-        { name: 'Arts & Culture', href: '/co-curricular/arts', desc: 'Creative expression', icon: 'Palette', show: true },
-        { name: 'Music & Dance', href: '/co-curricular/music', desc: 'Performing arts', icon: 'Music', show: true },
-        { name: 'Clubs & Societies', href: '/co-curricular/clubs', desc: 'Student organizations', icon: 'Users', show: true },
-        { name: 'Competitions', href: '/co-curricular/competitions', desc: 'Inter-school events', icon: 'Trophy', show: true },
-        { name: 'Annual Events', href: '/co-curricular/events', desc: 'School celebrations', icon: 'Star', show: true }
-      ]
-    },
-    {
-      name: 'Student Life', href: '/student-life', icon: 'Users', show: true,
-      dropdown: [
-        { name: 'School Timings', href: '/student-life/timings', desc: 'Daily schedule', icon: 'Clock', show: true },
-        { name: 'School Calendar', href: '/student-life/calendar', desc: 'Academic year events', icon: 'Calendar', show: true },
-        { name: 'Transport', href: '/student-life/transport', desc: 'Bus routes & fees', icon: 'Bus', show: true },
-        { name: 'Canteen', href: '/student-life/canteen', desc: 'Meal services', icon: 'Utensils', show: true },
-        { name: 'House System', href: '/student-life/houses', desc: 'Inter-house activities', icon: 'Building', show: true },
-        { name: 'Student Council', href: '/student-life/council', desc: 'Leadership opportunities', icon: 'Award', show: true }
-      ]
-    },
-    {
-      name: 'Gallery', href: '/gallery', icon: 'Camera', show: true
-    },
-    {
-      name: 'Downloads', href: '/downloads', icon: 'DownloadIcon', show: true,
-      dropdown: [
-        { name: 'Forms & Applications', href: '/downloads/forms', desc: 'Official documents', icon: 'FileText', show: true },
-        { name: 'Syllabus & Curriculum', href: '/downloads/syllabus', desc: 'Academic materials', icon: 'Book', show: true },
-        { name: 'Fee Structure', href: '/downloads/fee-structure', desc: 'Payment information', icon: 'Calculator', show: true },
-        { name: 'School Policies', href: '/downloads/policies', desc: 'Rules & guidelines', icon: 'ShieldCheck', show: true }
-      ]
-    },
-    {
-      name: 'Contact Us', href: '/contact', icon: 'Phone', show: true
-    }
-  ];
+
 
   const getIconComponent = (iconName) => iconMap[iconName] || Home;
 
@@ -496,6 +430,16 @@ const Navigation = ({ schoolData = {} }) => {
         <>
           <div className="fixed inset-0 bg-black bg-opacity-40 z-40" onClick={toggleMobileMenu} />
           <div className="lg:hidden fixed inset-x-0 top-14 bottom-0 bg-white z-50 overflow-y-auto border-t border-gray-200">
+            <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-100">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation Menu</span>
+              <button 
+                onClick={toggleMobileMenu}
+                className="flex items-center space-x-1 text-red-600 hover:text-red-700 font-medium text-sm px-2 py-1 rounded hover:bg-red-50 transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>Close</span>
+              </button>
+            </div>
             <div className="px-4 py-2 space-y-1">
               {filteredNavItems.map((item) => {
                 const IconComponent = getIconComponent(item.icon);

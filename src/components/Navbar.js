@@ -32,6 +32,11 @@ import {
 import FileUpload from '@/utils/fileUpload';
 import { apiRequest } from '@/utils/apiRequest';
 import { encryptObject, decryptObject } from '@/utils/encryption';
+import defaultConfig from '@/data/navbar.json';
+
+const getInitialConfig = (schoolData) => {
+  return { ...defaultConfig, ...(schoolData || {}) };
+};
 
 const Navbar = ({ schoolData }) => {
   const [role, setRole] = useState(null);
@@ -70,9 +75,9 @@ const Navbar = ({ schoolData }) => {
   const [editMode, setEditMode] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState(() => getInitialConfig(schoolData));
   const [errors, setErrors] = useState({});
-  const [originalConfig, setOriginalConfig] = useState(null);
+  const [originalConfig, setOriginalConfig] = useState(() => getInitialConfig(schoolData));
 
   // Track eCare user login state
   const [user, setUser] = useState(null);
@@ -138,121 +143,7 @@ const Navbar = ({ schoolData }) => {
     window.location.href = '/';
   };
 
-  // Default configuration
-  const defaultConfig = {
-    name: "Abc School",
-    address: "1, Ashok Place, Birgunj - 110001",
-    tagline: "An Edmund Rice Educational Institution",
-    establishedYear: "1927",
-    yearsOfExistence: "97+",
-    
-    phone: "011 2336 3462 / 3134",
-    email: "stcolumbas@stcolumbas.edu.in",
-    workingHours: "Mon - Fri: 8:00 AM - 4:00 PM",
-    
-    showTopBar: true,
-    showContactInfo: true,
-    showQuickLinks: true,
-    
-    quickLinks: [
-      {
-        id: 'virtualTour',
-        show: true,
-        label: "Virtual Tour",
-        url: "/virtual-tour",
-        icon: "Globe"
-      },
-      {
-        id: 'careers',
-        show: true,
-        label: "Careers",
-        url: "/careers",
-        icon: "Users"
-      },
-      {
-        id: 'alumni',
-        show: true,
-        label: "Alumni",
-        url: "/alumni",
-        icon: "GraduationCap"
-      },
-      {
-        id: 'notice',
-        show: true,
-        label: "Notice",
-        url: "/notice",
-        icon: "BookOpen"
-      },
-      {
-        id: 'events',
-        show: true,
-        label: "Events",
-        url: "/co-curricular/events",
-        icon: "Calendar"
-      },
-      {
-        id: 'achievements',
-        show: true,
-        label: "Achievements",
-        url: "/achievements",
-        icon: "Award"
-      }
-    ],
-    
-    actionButtons: [
-      {
-        id: 'eCareLogin',
-        show: true,
-        label: "e-Care Login",
-        url: "/ecare-login",
-        icon: "User",
-        buttonText: "e-Care Login"
-      },
-      {
-        id: 'feePayment',
-        show: true,
-        label: "Pay Fees",
-        url: "/pay-fees",
-        icon: "CreditCard",
-        buttonText: "Pay Fees"
-      },
-      {
-        id: 'noticeButton',
-        show: true,
-        label: "Notice",
-        url: "/notice",
-        icon: "FileText",
-        buttonText: "Notice"
-      }
-    ],
-    
-    cards: [
-      {
-        id: 'locationCard',
-        show: true,
-        title: "Location",
-        subtitle: "Virtual Tour",
-        url: "/virtual-tour",
-        icon: "MapPin"
-      },
-      {
-        id: 'admissionsCard',
-        show: true,
-        title: "Admissions",
-        subtitle: "Open Now",
-        url: "/admissions/application",
-        icon: "FileText",
-        showStatus: true
-      }
-    ],
-    
-    
-    admissionsOpen: true,
-    emergencyNotice: null
-    ,
-    // logo url (optional) - if provided will render image instead of icon
-    logo: ''
-  };
+
 
   
   // Icon mapping
@@ -277,70 +168,44 @@ const Navbar = ({ schoolData }) => {
     return `/img/${trimmed}`;
   };
 
-  // Initialize config: prefer remote data but fallback to static after timeout
+  // Load cached config & fetch remote navbar data after hydration
   useEffect(() => {
     let mounted = true;
-    let usedFallback = false;
-    const TIMEOUT_MS = 30000; // 30 seconds
+
+    try {
+      const cached = localStorage.getItem('navbarConfig');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+          const mergedCached = { ...defaultConfig, ...parsed };
+          setConfig(mergedCached);
+          setOriginalConfig(JSON.parse(JSON.stringify(mergedCached)));
+        }
+      }
+    } catch (e) {}
 
     const fetchNavbar = async () => {
-      // do not set local defaults immediately — wait for remote or timeout
+      try {
+        const res = await apiRequest('save_data/get_navbar_data', {});
+        const remoteData = Array.isArray(res.data) && res.data.length > 0
+          ? res.data[0].data
+          : res.data?.Data || res.data;
 
-      const fetchPromise = (async () => {
-        try {
-          const res = await apiRequest('save_data/get_navbar_data', {});
-          const remoteData = Array.isArray(res.data) && res.data.length > 0
-            ? res.data[0].data
-            : res.data?.Data || res.data;
-          return { timeout: false, remoteData };
-        } catch (err) {
-          return { timeout: false, remoteData: null, error: err };
-        }
-      })();
-
-      const timeoutPromise = new Promise((resolve) => {
-        setTimeout(() => resolve({ timeout: true }), TIMEOUT_MS);
-      });
-
-      const result = await Promise.race([fetchPromise, timeoutPromise]);
-
-      if (!mounted) return;
-
-      if (result && result.timeout) {
-        // timeout won: use static merged config as fallback
-        usedFallback = true;
-        const mergedConfig = { ...defaultConfig, ...schoolData };
-        setConfig(mergedConfig);
-        setOriginalConfig(JSON.parse(JSON.stringify(mergedConfig)));
-
-        // still attempt to fetch in background but do not override fallback
-        fetchPromise.then((r) => {
-          if (!mounted || usedFallback) return; // do not override
-          const remoteData = r?.remoteData || null;
-          if (remoteData) {
-            const merged = { ...defaultConfig, ...remoteData };
-            setConfig(merged);
-            setOriginalConfig(JSON.parse(JSON.stringify(merged)));
-          }
-        }).catch(() => {});
-      } else {
-        // fetch completed first (or immediately)
-        const remote = result?.remoteData || null;
-        if (remote) {
-          const merged = { ...defaultConfig, ...remote };
+        if (mounted && remoteData && typeof remoteData === 'object' && Object.keys(remoteData).length > 0) {
+          const merged = { ...defaultConfig, ...remoteData };
           setConfig(merged);
           setOriginalConfig(JSON.parse(JSON.stringify(merged)));
-        } else {
-          // fetch completed but no remote data; fall back
-          const mergedConfig = { ...defaultConfig, ...schoolData };
-          setConfig(mergedConfig);
-          setOriginalConfig(JSON.parse(JSON.stringify(mergedConfig)));
+          try {
+            localStorage.setItem('navbarConfig', JSON.stringify(remoteData));
+          } catch (e) {}
         }
+      } catch (err) {
+        console.warn('Failed to fetch remote navbar config, using local/cached config', err);
       }
     };
 
     fetchNavbar();
-    return () => { mounted = false };
+    return () => { mounted = false; };
   }, [schoolData]);
 
   useEffect(() => {
@@ -433,13 +298,14 @@ const Navbar = ({ schoolData }) => {
   const handleSave = () => {
     if (validateConfig()) {
       const payload = preparePayload();
-      // localStorage.setItem('navbarConfig', JSON.stringify(payload));
+      try {
+        localStorage.setItem('navbarConfig', JSON.stringify(payload));
+      } catch (e) {}
       (async () => {
         try {
           await apiRequest('save_data/save_navbar_data', { payload });
         } catch (err) {
           console.warn('Failed to save navbar remotely', err);
-          // we do not persist to localStorage; inform admin to retry
         }
         setPreviewMode(false);
         setEditFormOpen(false);

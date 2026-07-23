@@ -5,6 +5,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig = {
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./src/data/**/*.json'],
+  },
   turbopack: {
     root: __dirname,
   },

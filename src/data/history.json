@@ -21,7 +21,7 @@
     ],
     "height": "h-96",
     "backgroundImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "backgroundImageShow": true
+    "backgroundImageShow": false
   },
   "edmundRiceValues": {
     "title": "Edmund Rice Legacy",
@@ -236,5 +236,8 @@
     "showAchievements": true,
     "showQuote": true,
     "showCTA": true
-  }
+  },
+  "lastUpdated": "2026-07-23T03:06:32.176Z",
+  "updatedBy": "admin",
+  "version": "1.0"
 }
